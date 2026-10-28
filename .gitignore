@@ -1,0 +1,25 @@
+# Java
+target/
+*.class
+.gradle/
+build/
+
+# Python
+__pycache__/
+.venv/
+*.pyc
+.pytest_cache/
+
+# Node
+node_modules/
+.next/
+
+# Ortam ve sırlar
+.env
+.env.*
+!.env.example
+
+# IDE
+.idea/
+.vscode/
+*.iml
