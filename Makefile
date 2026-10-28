@@ -1,6 +1,6 @@
 COMPOSE = docker compose -f infra/compose/compose.yaml --env-file .env
 
-.PHONY: up down ps logs psql reset
+.PHONY: up down ps logs psql reset smoke
 
 up:
 	$(COMPOSE) up -d --wait
@@ -19,3 +19,6 @@ psql:
 
 reset:
 	$(COMPOSE) down -v
+
+smoke:
+	$(COMPOSE) exec -T postgres psql -U meridian -d meridian -v ON_ERROR_STOP=1 < infra/compose/postgres/smoke.sql
