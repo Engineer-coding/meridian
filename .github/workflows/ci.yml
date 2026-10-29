@@ -46,3 +46,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: make eval-validate PYTHON=python3
+  
+  api-build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+      - run: make api-test

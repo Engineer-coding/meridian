@@ -4,7 +4,7 @@ COMPOSE = docker compose -f infra/compose/compose.yaml --env-file .env
 
 PYTHON ?= python
 
-.PHONY: up down ps logs psql reset smoke contract-lint eval-validate
+.PHONY: up down ps logs psql reset smoke contract-lint eval-validate api-test
 
 up:
 	$(COMPOSE) up -d --wait
@@ -32,3 +32,6 @@ contract-lint:
 
 eval-validate:
 	$(PYTHON) -I packages/eval/scripts/validate_golden.py packages/eval/golden/v0.jsonl
+
+api-test:
+	cd apps/api && ./mvnw -B verify
