@@ -40,3 +40,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: make contract-lint
+
+  eval-validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: make eval-validate PYTHON=python3

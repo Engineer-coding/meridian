@@ -1,0 +1,22 @@
+{
+  "version": "v0",
+  "corpora": [
+    {
+      "id": "k8s",
+      "description": "Kubernetes docs — concepts bölümü",
+      "repository": "https://github.com/kubernetes/website",
+      "commit": "ef4f9c6cb53846e9b33b9c05f9da5e7becabba9b",
+      "paths": ["content/en/docs/concepts/"],
+      "license": "CC-BY-4.0",
+      "attribution": "© The Kubernetes Authors"
+    },
+    {
+      "id": "kvkk",
+      "description": "6698 sayılı Kişisel Verilerin Korunması Kanunu (güncel konsolide metin)",
+      "url": "https://www.mevzuat.gov.tr/mevzuat?MevzuatNo=6698&MevzuatTur=1&MevzuatTertip=5",
+      "retrieved_at": "2026-10-29",
+      "sha256": "1ad27253b0068d4c3d991b92b68c6bc1104439430160f4350a3f04fbb211f2b5",
+      "license": "FSEK md. 31 — kanun metinleri serbest"
+    }
+  ]
+}

@@ -1,8 +1,10 @@
 export MSYS_NO_PATHCONV := 1
 
-COMPOSE = docker compose -f infra/compose/compose.yaml --env-file .env
+COMPOSE = docker compose -f infra/compose/compose.yaml --env-file .env 
 
-.PHONY: up down ps logs psql reset smoke contract-lint
+PYTHON ?= python
+
+.PHONY: up down ps logs psql reset smoke contract-lint eval-validate
 
 up:
 	$(COMPOSE) up -d --wait
@@ -27,3 +29,6 @@ smoke:
 
 contract-lint:
 	docker run --rm -v "$(CURDIR)/packages/api-contract:/spec" -w /spec redocly/cli:2.62.2 lint openapi.yaml
+
+eval-validate:
+	$(PYTHON) -I packages/eval/scripts/validate_golden.py packages/eval/golden/v0.jsonl
