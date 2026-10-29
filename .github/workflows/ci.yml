@@ -34,3 +34,9 @@ jobs:
         run: make ps && docker compose -f infra/compose/compose.yaml --env-file .env logs --tail=50
       - if: always()
         run: make down
+  
+  contract-lint:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: make contract-lint

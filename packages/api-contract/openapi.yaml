@@ -1,0 +1,491 @@
+openapi: 3.1.0
+info:
+  title: Meridian API
+  version: 0.1.0
+  summary: Çok kiracılı kurumsal bilgi ve ajan platformu
+  description: |
+    Meridian çekirdek API sözleşmesi (v0: kimlik, kiracı, kaynak).
+    Hatalar RFC 9457 `application/problem+json` biçimindedir.
+    Başka bir kiracıya ait kaynaklar her zaman `404` döner (varlık bilgisi sızdırılmaz).
+  license:
+    name: Apache-2.0
+    identifier: Apache-2.0
+servers:
+  - url: /
+    description: API ile aynı köken (yerelde http://localhost:8080)
+security:
+  - oidc: []
+  - apiKey: []
+tags:
+  - name: identity
+    description: Oturum sahibi kullanıcı
+  - name: tenants
+    description: Kiracı yönetimi
+  - name: sources
+    description: Bilgi kaynakları ve indeksleme
+
+paths:
+  /v1/me:
+    get:
+      tags: [identity]
+      operationId: getMe
+      summary: Oturum sahibi kullanıcı ve üyelikleri
+      responses:
+        '200':
+          description: Kullanıcı bilgisi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Me'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /v1/tenants:
+    post:
+      tags: [tenants]
+      operationId: createTenant
+      summary: Yeni kiracı oluştur (çağıran kullanıcı sahibi olur)
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTenantRequest'
+      responses:
+        '201':
+          description: Kiracı oluşturuldu
+          headers:
+            Location:
+              description: Yeni kiracının adresi
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tenant'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /v1/tenants/{tenantId}:
+    parameters:
+      - $ref: '#/components/parameters/TenantId'
+    get:
+      tags: [tenants]
+      operationId: getTenant
+      summary: Kiracı ayrıntısı
+      responses:
+        '200':
+          description: Kiracı
+          headers:
+            ETag:
+              $ref: '#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tenant'
+        '304':
+          description: Değişmedi (If-None-Match eşleşti)
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /v1/tenants/{tenantId}/sources:
+    parameters:
+      - $ref: '#/components/parameters/TenantId'
+    get:
+      tags: [sources]
+      operationId: listSources
+      summary: Kaynakları listele (cursor tabanlı sayfalama)
+      parameters:
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Kaynak sayfası
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SourcePage'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      tags: [sources]
+      operationId: createSource
+      summary: Kaynak ekle ve indekslemeyi başlat
+      description: |
+        Kaynak kaydı ve indeksleme olayı aynı veritabanı işleminde yazılır (outbox).
+        İndeksleme asenkrondur; durum `status` alanından izlenir.
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSourceRequest'
+      responses:
+        '202':
+          description: Kaynak kabul edildi, indeksleme kuyruğa alındı
+          headers:
+            Location:
+              description: Kaynağın adresi
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Source'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+
+  /v1/tenants/{tenantId}/sources/{sourceId}:
+    parameters:
+      - $ref: '#/components/parameters/TenantId'
+      - $ref: '#/components/parameters/SourceId'
+    get:
+      tags: [sources]
+      operationId: getSource
+      summary: Kaynak ayrıntısı ve indeksleme durumu
+      responses:
+        '200':
+          description: Kaynak
+          headers:
+            ETag:
+              $ref: '#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Source'
+        '304':
+          description: Değişmedi (If-None-Match eşleşti)
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags: [sources]
+      operationId: deleteSource
+      summary: Kaynağı ve tüm parçalarını sil (asenkron)
+      responses:
+        '202':
+          description: Silme kuyruğa alındı
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+components:
+  securitySchemes:
+    oidc:
+      type: openIdConnect
+      openIdConnectUrl: http://localhost:8180/realms/meridian/.well-known/openid-configuration
+    apiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+
+  parameters:
+    TenantId:
+      name: tenantId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    SourceId:
+      name: sourceId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    Cursor:
+      name: cursor
+      in: query
+      description: Önceki sayfanın `nextCursor` değeri (opak)
+      schema:
+        type: string
+    Limit:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      description: Aynı anahtarla tekrarlanan istek ilk cevabı döndürür, işlemi tekrar yapmaz (24 saat saklanır).
+      schema:
+        type: string
+        minLength: 8
+        maxLength: 128
+
+  headers:
+    ETag:
+      description: Kaynak sürümü; koşullu GET için `If-None-Match` ile gönderilir
+      schema:
+        type: string
+
+  responses:
+    BadRequest:
+      description: Geçersiz istek
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    Unauthorized:
+      description: Kimlik doğrulanamadı
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    Forbidden:
+      description: Rol bu işlem için yetkili değil
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    NotFound:
+      description: Bulunamadı veya erişim yok (ayrım bilerek yapılmaz)
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    Conflict:
+      description: Çakışma (ör. slug kullanımda)
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    TooManyRequests:
+      description: Oran sınırı veya kota aşıldı
+      headers:
+        Retry-After:
+          description: Saniye cinsinden bekleme süresi
+          schema:
+            type: integer
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+
+  schemas:
+    Problem:
+      type: object
+      description: RFC 9457 Problem Details
+      required: [type, title, status]
+      properties:
+        type:
+          type: string
+          format: uri-reference
+          examples: ['https://meridian.dev/problems/quota-exceeded']
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        instance:
+          type: string
+        traceId:
+          type: string
+          description: Destek talebinde paylaşılacak trace kimliği
+
+    Role:
+      type: string
+      enum: [owner, admin, member, viewer]
+
+    Membership:
+      type: object
+      required: [tenantId, tenantName, role]
+      properties:
+        tenantId:
+          type: string
+          format: uuid
+        tenantName:
+          type: string
+        role:
+          $ref: '#/components/schemas/Role'
+
+    Me:
+      type: object
+      required: [id, email, memberships]
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        displayName:
+          type: string
+        memberships:
+          type: array
+          items:
+            $ref: '#/components/schemas/Membership'
+
+    CreateTenantRequest:
+      type: object
+      required: [name, slug]
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 100
+        slug:
+          type: string
+          pattern: '^[a-z0-9](?:[a-z0-9-]{1,38}[a-z0-9])$'
+
+    Tenant:
+      type: object
+      required: [id, name, slug, plan, createdAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        slug:
+          type: string
+        plan:
+          type: string
+          enum: [free, team, enterprise]
+        createdAt:
+          type: string
+          format: date-time
+
+    SourceType:
+      type: string
+      enum: [upload, web, github]
+
+    SourceStatus:
+      type: string
+      enum: [pending, indexing, ready, failed, deleting]
+
+    UploadSourceConfig:
+      type: object
+      required: [type]
+      additionalProperties: false
+      properties:
+        type:
+          const: upload
+
+    WebSourceConfig:
+      type: object
+      required: [type, startUrl]
+      additionalProperties: false
+      properties:
+        type:
+          const: web
+        startUrl:
+          type: string
+          format: uri
+        maxPages:
+          type: integer
+          minimum: 1
+          maximum: 1000
+          default: 100
+
+    GithubSourceConfig:
+      type: object
+      required: [type, repository]
+      additionalProperties: false
+      properties:
+        type:
+          const: github
+        repository:
+          type: string
+          pattern: '^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$'
+          examples: ['spring-projects/spring-boot']
+        branch:
+          type: string
+          default: main
+
+    SourceConfig:
+      oneOf:
+        - $ref: '#/components/schemas/UploadSourceConfig'
+        - $ref: '#/components/schemas/WebSourceConfig'
+        - $ref: '#/components/schemas/GithubSourceConfig'
+      discriminator:
+        propertyName: type
+        mapping:
+          upload: '#/components/schemas/UploadSourceConfig'
+          web: '#/components/schemas/WebSourceConfig'
+          github: '#/components/schemas/GithubSourceConfig'
+
+    CreateSourceRequest:
+      type: object
+      required: [name, collectionId, config]
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        collectionId:
+          type: string
+          format: uuid
+        config:
+          $ref: '#/components/schemas/SourceConfig'
+
+    Source:
+      type: object
+      required: [id, name, collectionId, type, status, createdAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        collectionId:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/SourceType'
+        status:
+          $ref: '#/components/schemas/SourceStatus'
+        documentCount:
+          type: integer
+        lastIndexedAt:
+          type: [string, 'null']
+          format: date-time
+        lastError:
+          type: [string, 'null']
+        createdAt:
+          type: string
+          format: date-time
+
+    SourcePage:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Source'
+        nextCursor:
+          type: [string, 'null']
+          description: Son sayfada `null`
