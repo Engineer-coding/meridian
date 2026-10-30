@@ -15,6 +15,12 @@ public final class TenantContext {
     public record Identity(UUID userId, UUID tenantId) {
     }
 
+    /** Kontrollü istisna fırlatabilen iş (ör. servlet filtre zinciri). */
+    @FunctionalInterface
+    public interface CheckedAction<X extends Exception> {
+        void run() throws X;
+    }
+
     private static final ScopedValue<Identity> CURRENT = ScopedValue.newInstance();
 
     private TenantContext() {
@@ -30,5 +36,12 @@ public final class TenantContext {
 
     public static void runAs(Identity identity, Runnable action) {
         ScopedValue.where(CURRENT, identity).run(action);
+    }
+
+    public static <X extends Exception> void runChecked(Identity identity, CheckedAction<X> action) throws X {
+        ScopedValue.where(CURRENT, identity).call(() -> {
+            action.run();
+            return null;
+        });
     }
 }
