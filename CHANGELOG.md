@@ -4,6 +4,15 @@ Bu proje [Semantic Versioning](https://semver.org) kullanır.
 Biçim: [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/).
 
 ## [Unreleased]
+### Added
+- Spring Boot 4.1 çekirdek API: Flyway şeması, sahip/uygulama rolleri, zorunlu RLS ve kiracı bağlamının her işleme aktarılması.
+- Keycloak 26.8 ile OIDC kimlik doğrulama; adresteki kiracı yalnızca üyelik doğrulandıktan sonra kabul edilir.
+- OpenAPI sözleşmesinden üretilen sunucu arayüzleri; sözleşmeye uymayan kod derlenmez.
+- `POST /v1/tenants`: `Idempotency-Key` ile tekrarlanabilir kiracı oluşturma (aynı anahtar + farklı gövde → 422).
+- Kiracı sızıntı paketi: sözleşmedeki her `{tenantId}` uç noktası için otomatik üretilen erişim testi.
+
+### Fixed
+- Sözleşmede kaynak türü alanlarına `type: string` eklendi; kod üretici discriminator'ı doğru kuruyor.
 
 ## [0.1.0] - 2026-10-29
 ### Added

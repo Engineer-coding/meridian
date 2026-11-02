@@ -71,6 +71,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '409':
           $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/IdempotencyKeyReused'
 
   /v1/tenants/{tenantId}:
     parameters:
@@ -152,6 +154,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/IdempotencyKeyReused'
         '429':
           $ref: '#/components/responses/TooManyRequests'
 
@@ -279,6 +283,12 @@ components:
         application/problem+json:
           schema:
             $ref: '#/components/schemas/Problem'
+    IdempotencyKeyReused:
+      description: Aynı Idempotency-Key farklı bir istek gövdesiyle kullanıldı
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
     TooManyRequests:
       description: Oran sınırı veya kota aşıldı
       headers:
@@ -391,6 +401,7 @@ components:
       additionalProperties: false
       properties:
         type:
+          type: string
           const: upload
 
     WebSourceConfig:
@@ -399,6 +410,7 @@ components:
       additionalProperties: false
       properties:
         type:
+          type: string
           const: web
         startUrl:
           type: string
@@ -415,6 +427,7 @@ components:
       additionalProperties: false
       properties:
         type:
+          type: string
           const: github
         repository:
           type: string

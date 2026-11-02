@@ -1,5 +1,6 @@
 package dev.meridian.api.tenancy;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -19,7 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class TenantRepository {
 
     private static final RowMapper<Tenant> TENANT = (rs, rowNum) -> new Tenant(
-        rs.getObject("id", UUID.class), rs.getString("slug"), rs.getString("name"), rs.getString("plan"));
+        rs.getObject("id", UUID.class), rs.getString("slug"), rs.getString("name"), rs.getString("plan"),
+        rs.getObject("created_at", OffsetDateTime.class));
 
     private final JdbcClient jdbc;
 
@@ -36,7 +38,7 @@ public class TenantRepository {
             .update();
         Tenant tenant = jdbc.sql("""
                 INSERT INTO tenants (id, slug, name) VALUES (current_tenant_id(), :slug, :name)
-                RETURNING id, slug, name, plan""")
+                RETURNING id, slug, name, plan, created_at""")
             .param("slug", slug)
             .param("name", name)
             .query(TENANT)
@@ -56,12 +58,12 @@ public class TenantRepository {
 
     @Transactional(readOnly = true)
     public List<Tenant> findVisible() {
-        return jdbc.sql("SELECT id, slug, name, plan FROM tenants ORDER BY slug").query(TENANT).list();
+        return jdbc.sql("SELECT id, slug, name, plan, created_at FROM tenants ORDER BY slug").query(TENANT).list();
     }
 
     @Transactional(readOnly = true)
     public Optional<Tenant> findById(UUID id) {
-        return jdbc.sql("SELECT id, slug, name, plan FROM tenants WHERE id = :id")
+        return jdbc.sql("SELECT id, slug, name, plan, created_at FROM tenants WHERE id = :id")
             .param("id", id)
             .query(TENANT)
             .optional();

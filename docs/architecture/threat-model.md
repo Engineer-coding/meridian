@@ -28,7 +28,7 @@
 ## Tehditler
 | # | Tehdit | STRIDE | Sınır | Önlem | Doğrulama | Durum |
 |---|---|---|---|---|---|---|
-| T1 | Kiracılar arası veri sızıntısı | I | 1, 2 | RLS + `FORCE`, ayrı uygulama rolü, `SET LOCAL` bağlam, sorgu seviyesinde ACL ([ADR-0002](../adr/0002-tenant-isolation-rls.md)) | Uç nokta başına üretilen sızıntı testleri; RLS'i kapalı tablo için şema testi | Planlandı |
+| T1 | Kiracılar arası veri sızıntısı | I | 1, 2 | RLS + `FORCE`, ayrı uygulama rolü, `SET LOCAL` bağlam, sorgu seviyesinde ACL ([ADR-0002](../adr/0002-tenant-isolation-rls.md)) | Uç nokta başına üretilen sızıntı testleri; RLS'i kapalı tablo için şema testi | **Uygulandı** (Faz 2: `TenantScopedEndpointsTest`, `RlsSchemaTest`; adresteki kiracı ancak üyelik doğrulandıktan sonra bağlama yazılır) |
 | T2 | Yetkisiz parçanın LLM'e ulaşması | I | 2, 3 | Yetki filtresi retrieval sorgusunda (sonradan süzme yok) ([ADR-0003](../adr/0003-pgvector.md)) | Kısıtlı koleksiyonla retrieval testi | Planlandı |
 | T3 | Dolaylı prompt injection (doküman içinden) | T, E | 5, 6 | Doküman içeriği "veri" olarak işaretlenir; araçlar en az yetkiyle; şemalı çıktı doğrulaması | CI'da kırmızı-takım seti | Planlandı |
 | T4 | Web tarayıcıda SSRF | S, I | 4 | Hedef allowlist'i, özel/link-local IP aralıklarının engellenmesi (DNS çözümünden sonra), yönlendirme takibinde tekrar kontrol, çıkış proxy'si | Birim + entegrasyon testleri (`169.254.169.254`, `localhost`, DNS rebinding) | Planlandı |
@@ -39,6 +39,7 @@
 | T9 | Hassas veri (PII) sızıntısı | I | 3 | İndekslemede ve loglarda maskeleme; hassas kiracı için kendi sunucuda model; at-rest şifreleme; her yerde TLS | Log taraması, şifreleme kontrol testleri | Planlandı |
 | T10 | Denetim kaydının değiştirilmesi / inkâr | R, T | 2 | `audit_log` append-only (uygulama rolüne `UPDATE`/`DELETE` yetkisi yok) | Yetki testi | Planlandı |
 | T11 | Yerel geliştirme servislerinin ağa açılması | I | 1 | Compose portları yalnızca `127.0.0.1`'e bağlı | Compose dosyası incelemesi | **Uygulandı** |
+| T12 | Slug numaralandırma: 409 cevabı başka kiracının slug'ını kullandığını açığa çıkarır | I | 1 | Slug'lar adreste görünen, gizli olmayan tanımlayıcılardır; kiracı verisi sızmaz | — | **Kabul edilen risk** |
 
 STRIDE: **S**poofing, **T**ampering, **R**epudiation, **I**nformation disclosure, **D**enial of service, **E**levation of privilege.
 
