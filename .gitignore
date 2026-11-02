@@ -23,3 +23,8 @@ node_modules/
 .idea/
 .vscode/
 *.iml
+
+# Değerlendirme raporları: yalnızca kayıtlı baseline sürüm kontrolünde
+packages/eval/reports/*
+!packages/eval/reports/baseline.json
+!packages/eval/reports/baseline.md

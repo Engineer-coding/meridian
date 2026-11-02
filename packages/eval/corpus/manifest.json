@@ -16,7 +16,9 @@
       "url": "https://www.mevzuat.gov.tr/mevzuat?MevzuatNo=6698&MevzuatTur=1&MevzuatTertip=5",
       "retrieved_at": "2026-10-29",
       "sha256": "1ad27253b0068d4c3d991b92b68c6bc1104439430160f4350a3f04fbb211f2b5",
-      "license": "FSEK md. 31 — kanun metinleri serbest"
+      "license": "FSEK md. 31 — kanun metinleri serbest",
+      "file": "kvkk/6698.md",
+      "converter": "packages/eval/scripts/kvkk_to_markdown.py (pypdf 6.1.1); sha256 resmî PDF içindir"
     }
   ]
 }

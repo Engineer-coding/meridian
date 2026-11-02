@@ -30,7 +30,7 @@ def create_app(settings: Settings | None = None, embedder: Embedder | None = Non
     if embedder.dimensions != DIMENSIONS:
         raise ValueError(f"embedding boyutu {embedder.dimensions}, şema {DIMENSIONS} bekliyor")
 
-    pool = create_pool(settings)
+    pool = create_pool(settings.database_conninfo)
     http = httpx.AsyncClient(timeout=httpx.Timeout(30.0), follow_redirects=True)
     token = settings.github_token.get_secret_value() if settings.github_token else None
     handler: Handler = Indexer(

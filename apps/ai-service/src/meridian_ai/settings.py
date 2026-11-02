@@ -4,6 +4,8 @@ from urllib.parse import quote
 from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from meridian_ai.embedding import DEFAULT_MODEL
+
 
 class Settings(BaseSettings):
     """Ortam değişkenlerinden okunur; yerelde kökteki .env dosyası da kullanılır."""
@@ -33,7 +35,7 @@ class Settings(BaseSettings):
     db_ai_password: str = ""
 
     # Embedding (ADR-0012). Model ilk kullanımda indirilir ve önbellekte tutulur.
-    embedding_model: str = "intfloat/multilingual-e5-large"
+    embedding_model: str = DEFAULT_MODEL
     embedding_cache_dir: Path = Path.home() / ".cache" / "meridian" / "fastembed"
     embedding_batch_size: int = Field(default=16, ge=1)
 

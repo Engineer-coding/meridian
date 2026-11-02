@@ -1,0 +1,71 @@
+"""Altın set ve alaka eşleştirmesi: bir parça, altın kaynaklardan hangisini karşılıyor?"""
+
+import json
+import re
+import unicodedata
+from dataclasses import dataclass
+from pathlib import Path
+
+
+@dataclass(frozen=True)
+class SourceRef:
+    doc: str
+    section: str
+
+
+@dataclass(frozen=True)
+class Question:
+    id: str
+    question: str
+    lang: str
+    type: str
+    corpus: str
+    sources: tuple[SourceRef, ...]
+
+    @property
+    def answerable(self) -> bool:
+        return self.type != "unanswerable"
+
+
+def load_golden(path: Path) -> list[Question]:
+    questions = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if line.strip():
+            item = json.loads(line)
+            questions.append(
+                Question(
+                    id=item["id"],
+                    question=item["question"],
+                    lang=item["lang"],
+                    type=item["type"],
+                    corpus=item["corpus"],
+                    sources=tuple(SourceRef(s["doc"], s["section"]) for s in item["sources"]),
+                )
+            )
+    return questions
+
+
+_PUNCTUATION = re.compile(r"[^\w\s]")
+# Altın sette giriş bölümü (ilk başlıktan önceki metin) "Giriş" ile anılır.
+_INTRO = re.compile(r"^giriş\b")
+
+
+def normalize(text: str) -> str:
+    text = unicodedata.normalize("NFKC", text).casefold()
+    return " ".join(_PUNCTUATION.sub(" ", text).split())
+
+
+def matches(ref: SourceRef, doc_path: str, section: str) -> bool:
+    """Parça, kaynağın belgesinde ve adı geçen başlığın (ya da alt başlıklarının) altındaysa alakalıdır.
+
+    ``section`` başlık yoludur: "Belge başlığı > H2 > H3". Başlık adı kelime sınırında önek
+    olarak eşleşir: "Madde 13" → "Madde 13 – Veri sorumlusuna başvuru" (ama "Madde 130" değil);
+    "type: ClusterIP" → "`type: ClusterIP`".
+    """
+    if doc_path != ref.doc:
+        return False
+    path = [normalize(part) for part in section.split(" > ")]
+    wanted = normalize(ref.section)
+    if _INTRO.match(wanted):
+        return len(path) == 1
+    return any(part == wanted or part.startswith(wanted + " ") for part in path[1:])

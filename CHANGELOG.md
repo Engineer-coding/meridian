@@ -4,7 +4,17 @@ Bu proje [Semantic Versioning](https://semver.org) kullanır.
 Biçim: [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/).
 
 ## [Unreleased]
+
+## [0.3.0] - 2026-11-02
+Faz 3 (AI servisi ve indeksleme) kapısı geçildi: recall@k altın set v0 üzerinde ölçülüyor ve
+raporlanıyor ([packages/eval/reports/baseline.md](packages/eval/reports/baseline.md)). Vektör
+arama (multilingual-e5-large): recall@5 0,87, recall@10 0,91, MRR 0,82 (23 cevaplı soru).
+
 ### Added
+- Retrieval değerlendirmesi (`make eval`, `make eval-smoke`): korpus üretimdeki indeksleme hattıyla geçici bir veritabanına indekslenir; vektör, sözcüksel ve hibrit (RRF) arama için recall@k, MRR ve nDCG@k raporlanır. Altın kaynakların indekste karşılığı yoksa ölçüm yapılmaz.
+- Kayıtlı baseline raporu ve CI kapısı: altın set ya da korpus manifesti değişip rapor yenilenmezse test kırılır; `eval-smoke` CI işi tüm hattı modelsiz olarak gerçek korpusla çalıştırır.
+- `Retriever`: kiracı (RLS) ve isteğe bağlı koleksiyon kapsamlı vektör / sözcüksel / hibrit arama.
+- KVKK korpusu: resmî PDF'ten (sha256 doğrulamalı) madde başlıklı Markdown'a dönüştürücü.
 - Koleksiyon ve kaynak uçları (`/v1/tenants/{tenantId}/collections`, `/sources`): idempotent oluşturma, rol denetimi (viewer → 403), cursor sayfalaması, asenkron silme.
 - Transactional outbox ve RabbitMQ aktarıcısı (ADR-0004): olay kayıtla aynı işlemde yazılır, broker onayından sonra silinir; ayrı `meridian_relay` veritabanı rolü.
 - RabbitMQ topolojisi: `meridian.events` → `ai.indexing` (quorum, teslim sınırı 5) → `ai.indexing.dlq`.
@@ -18,6 +28,7 @@ Biçim: [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/).
 ### Changed
 - Yeni ortam değişkenleri `DB_RELAY_PASSWORD` ve `DB_AI_PASSWORD`. Mevcut yerel veritabanında roller yoksa `make reset && make up`.
 - `web` ve `upload` kaynakları henüz indekslenmez; `failed` durumuna geçer ve nedeni `lastError`'da yazar.
+- API sözleşmesi 0.3.0: GitHub kaynaklarına isteğe bağlı `paths` alanı.
 
 ## [0.2.0] - 2026-11-02
 Faz 2 (çekirdek backend) kapısı geçildi: sözleşmedeki her kiracıya bağlı uç nokta için

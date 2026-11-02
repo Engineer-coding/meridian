@@ -1,0 +1,1416 @@
+{
+  "name": "baseline",
+  "created_at": "2026-11-02",
+  "git_commit": "9ce23f6",
+  "embedding": {
+    "model": "intfloat/multilingual-e5-large"
+  },
+  "chunking": {
+    "max_chars": 1200,
+    "overlap_chars": 150
+  },
+  "golden": {
+    "file": "packages/eval/golden/v0.jsonl",
+    "sha256": "d785ef51a1d4f15ee8a7f246dd6c3fc5ba885f0f982a372065068a597d033ea1"
+  },
+  "manifest_sha256": "b75736c0fd687f691db54fbdfa3f914bb8f6c6712711633e556bf5d9cc7195ee",
+  "corpora": [
+    {
+      "id": "k8s",
+      "version": "ef4f9c6cb53846e9b33b9c05f9da5e7becabba9b",
+      "documents": 187
+    },
+    {
+      "id": "kvkk",
+      "version": "5f9e7fa79319",
+      "documents": 1
+    }
+  ],
+  "index": {
+    "documents": 187,
+    "chunks": 3093,
+    "seconds": 25.8
+  },
+  "questions": {
+    "total": 30,
+    "answerable": 23
+  },
+  "ks": [
+    1,
+    3,
+    5,
+    10
+  ],
+  "summary": {
+    "vector": {
+      "overall": {
+        "recall@1": 0.5652,
+        "recall@3": 0.8261,
+        "recall@5": 0.8696,
+        "recall@10": 0.913,
+        "mrr": 0.8207,
+        "ndcg@1": 0.6957,
+        "ndcg@3": 0.7717,
+        "ndcg@5": 0.7935,
+        "ndcg@10": 0.8072,
+        "n": 23
+      },
+      "groups": {
+        "corpus=k8s": {
+          "recall@1": 0.3929,
+          "recall@3": 0.75,
+          "recall@5": 0.7857,
+          "recall@10": 0.8571,
+          "mrr": 0.7054,
+          "ndcg@1": 0.5,
+          "ndcg@3": 0.6526,
+          "ndcg@5": 0.6715,
+          "ndcg@10": 0.694,
+          "n": 14
+        },
+        "corpus=kvkk": {
+          "recall@1": 0.8333,
+          "recall@3": 0.9444,
+          "recall@5": 1.0,
+          "recall@10": 1.0,
+          "mrr": 1.0,
+          "ndcg@1": 1.0,
+          "ndcg@3": 0.957,
+          "ndcg@5": 0.9834,
+          "ndcg@10": 0.9834,
+          "n": 9
+        },
+        "lang=en": {
+          "recall@1": 0.3929,
+          "recall@3": 0.75,
+          "recall@5": 0.7857,
+          "recall@10": 0.8571,
+          "mrr": 0.7054,
+          "ndcg@1": 0.5,
+          "ndcg@3": 0.6526,
+          "ndcg@5": 0.6715,
+          "ndcg@10": 0.694,
+          "n": 14
+        },
+        "lang=tr": {
+          "recall@1": 0.8333,
+          "recall@3": 0.9444,
+          "recall@5": 1.0,
+          "recall@10": 1.0,
+          "mrr": 1.0,
+          "ndcg@1": 1.0,
+          "ndcg@3": 0.957,
+          "ndcg@5": 0.9834,
+          "ndcg@10": 0.9834,
+          "n": 9
+        },
+        "type=multi_hop": {
+          "recall@1": 0.375,
+          "recall@3": 0.625,
+          "recall@5": 0.75,
+          "recall@10": 0.75,
+          "mrr": 0.8438,
+          "ndcg@1": 0.75,
+          "ndcg@3": 0.6533,
+          "ndcg@5": 0.7159,
+          "ndcg@10": 0.7159,
+          "n": 8
+        },
+        "type=single_hop": {
+          "recall@1": 0.6667,
+          "recall@3": 0.9333,
+          "recall@5": 0.9333,
+          "recall@10": 1.0,
+          "mrr": 0.8083,
+          "ndcg@1": 0.6667,
+          "ndcg@3": 0.8349,
+          "ndcg@5": 0.8349,
+          "ndcg@10": 0.8559,
+          "n": 15
+        }
+      },
+      "top_score": {
+        "answerable": {
+          "mean": 0.8879,
+          "min": 0.8467,
+          "max": 0.9121
+        },
+        "unanswerable": {
+          "mean": 0.8471,
+          "min": 0.7918,
+          "max": 0.8683
+        }
+      }
+    },
+    "lexical": {
+      "overall": {
+        "recall@1": 0.5,
+        "recall@3": 0.6739,
+        "recall@5": 0.7391,
+        "recall@10": 0.8478,
+        "mrr": 0.6678,
+        "ndcg@1": 0.5652,
+        "ndcg@3": 0.6235,
+        "ndcg@5": 0.6506,
+        "ndcg@10": 0.6893,
+        "n": 23
+      },
+      "groups": {
+        "corpus=k8s": {
+          "recall@1": 0.3571,
+          "recall@3": 0.5357,
+          "recall@5": 0.6071,
+          "recall@10": 0.7857,
+          "mrr": 0.547,
+          "ndcg@1": 0.4286,
+          "ndcg@3": 0.4747,
+          "ndcg@5": 0.5023,
+          "ndcg@10": 0.5659,
+          "n": 14
+        },
+        "corpus=kvkk": {
+          "recall@1": 0.7222,
+          "recall@3": 0.8889,
+          "recall@5": 0.9444,
+          "recall@10": 0.9444,
+          "mrr": 0.8556,
+          "ndcg@1": 0.7778,
+          "ndcg@3": 0.8548,
+          "ndcg@5": 0.8812,
+          "ndcg@10": 0.8812,
+          "n": 9
+        },
+        "lang=en": {
+          "recall@1": 0.3571,
+          "recall@3": 0.5357,
+          "recall@5": 0.6071,
+          "recall@10": 0.7857,
+          "mrr": 0.547,
+          "ndcg@1": 0.4286,
+          "ndcg@3": 0.4747,
+          "ndcg@5": 0.5023,
+          "ndcg@10": 0.5659,
+          "n": 14
+        },
+        "lang=tr": {
+          "recall@1": 0.7222,
+          "recall@3": 0.8889,
+          "recall@5": 0.9444,
+          "recall@10": 0.9444,
+          "mrr": 0.8556,
+          "ndcg@1": 0.7778,
+          "ndcg@3": 0.8548,
+          "ndcg@5": 0.8812,
+          "ndcg@10": 0.8812,
+          "n": 9
+        },
+        "type=multi_hop": {
+          "recall@1": 0.1875,
+          "recall@3": 0.5625,
+          "recall@5": 0.625,
+          "recall@10": 0.6875,
+          "mrr": 0.5667,
+          "ndcg@1": 0.375,
+          "ndcg@3": 0.4799,
+          "ndcg@5": 0.5096,
+          "ndcg@10": 0.5369,
+          "n": 8
+        },
+        "type=single_hop": {
+          "recall@1": 0.6667,
+          "recall@3": 0.7333,
+          "recall@5": 0.8,
+          "recall@10": 0.9333,
+          "mrr": 0.7217,
+          "ndcg@1": 0.6667,
+          "ndcg@3": 0.7,
+          "ndcg@5": 0.7258,
+          "ndcg@10": 0.7706,
+          "n": 15
+        }
+      },
+      "top_score": {
+        "answerable": {
+          "mean": 0.0063,
+          "min": 0.0021,
+          "max": 0.012
+        },
+        "unanswerable": {
+          "mean": 0.0058,
+          "min": 0.0028,
+          "max": 0.0087
+        }
+      }
+    },
+    "hybrid": {
+      "overall": {
+        "recall@1": 0.6957,
+        "recall@3": 0.7609,
+        "recall@5": 0.7826,
+        "recall@10": 0.8696,
+        "mrr": 0.8551,
+        "ndcg@1": 0.8261,
+        "ndcg@3": 0.7756,
+        "ndcg@5": 0.7871,
+        "ndcg@10": 0.8187,
+        "n": 23
+      },
+      "groups": {
+        "corpus=k8s": {
+          "recall@1": 0.6071,
+          "recall@3": 0.6429,
+          "recall@5": 0.6786,
+          "recall@10": 0.7857,
+          "mrr": 0.7619,
+          "ndcg@1": 0.7143,
+          "ndcg@3": 0.659,
+          "ndcg@5": 0.6779,
+          "ndcg@10": 0.716,
+          "n": 14
+        },
+        "corpus=kvkk": {
+          "recall@1": 0.8333,
+          "recall@3": 0.9444,
+          "recall@5": 0.9444,
+          "recall@10": 1.0,
+          "mrr": 1.0,
+          "ndcg@1": 1.0,
+          "ndcg@3": 0.957,
+          "ndcg@5": 0.957,
+          "ndcg@10": 0.9785,
+          "n": 9
+        },
+        "lang=en": {
+          "recall@1": 0.6071,
+          "recall@3": 0.6429,
+          "recall@5": 0.6786,
+          "recall@10": 0.7857,
+          "mrr": 0.7619,
+          "ndcg@1": 0.7143,
+          "ndcg@3": 0.659,
+          "ndcg@5": 0.6779,
+          "ndcg@10": 0.716,
+          "n": 14
+        },
+        "lang=tr": {
+          "recall@1": 0.8333,
+          "recall@3": 0.9444,
+          "recall@5": 0.9444,
+          "recall@10": 1.0,
+          "mrr": 1.0,
+          "ndcg@1": 1.0,
+          "ndcg@3": 0.957,
+          "ndcg@5": 0.957,
+          "ndcg@10": 0.9785,
+          "n": 9
+        },
+        "type=multi_hop": {
+          "recall@1": 0.375,
+          "recall@3": 0.5625,
+          "recall@5": 0.625,
+          "recall@10": 0.75,
+          "mrr": 0.8125,
+          "ndcg@1": 0.75,
+          "ndcg@3": 0.6049,
+          "ndcg@5": 0.6379,
+          "ndcg@10": 0.6843,
+          "n": 8
+        },
+        "type=single_hop": {
+          "recall@1": 0.8667,
+          "recall@3": 0.8667,
+          "recall@5": 0.8667,
+          "recall@10": 0.9333,
+          "mrr": 0.8778,
+          "ndcg@1": 0.8667,
+          "ndcg@3": 0.8667,
+          "ndcg@5": 0.8667,
+          "ndcg@10": 0.8904,
+          "n": 15
+        }
+      },
+      "top_score": {
+        "answerable": {
+          "mean": 0.0322,
+          "min": 0.0299,
+          "max": 0.0328
+        },
+        "unanswerable": {
+          "mean": 0.0316,
+          "min": 0.0308,
+          "max": 0.0323
+        }
+      }
+    }
+  },
+  "per_question": {
+    "vector": [
+      {
+        "id": "kvkk-001",
+        "source_ranks": [
+          1
+        ],
+        "top_score": 0.9022,
+        "top": [
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 13 – Veri sorumlusuna başvuru",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 15 – Şikâyet üzerine veya resen incelemenin usul ve esasları",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 15 – Şikâyet üzerine veya resen incelemenin usul ve esasları"
+        ]
+      },
+      {
+        "id": "kvkk-002",
+        "source_ranks": [
+          2,
+          1
+        ],
+        "top_score": 0.8956,
+        "top": [
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 8 – Kişisel verilerin aktarılması",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 6 – Özel nitelikli kişisel verilerin işlenme şartları",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 9 – Kişisel verilerin yurt dışına aktarılması"
+        ]
+      },
+      {
+        "id": "kvkk-003",
+        "source_ranks": [],
+        "top_score": 0.8683,
+        "top": [
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 15 – Şikâyet üzerine veya resen incelemenin usul ve esasları",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 14 – Kurula şikâyet",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 15 – Şikâyet üzerine veya resen incelemenin usul ve esasları"
+        ]
+      },
+      {
+        "id": "kvkk-004",
+        "source_ranks": [
+          1
+        ],
+        "top_score": 0.904,
+        "top": [
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 21 – Kişisel Verileri Koruma Kurulu",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 21 – Kişisel Verileri Koruma Kurulu",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 19 – Kişisel Verileri Koruma Kurumu"
+        ]
+      },
+      {
+        "id": "kvkk-005",
+        "source_ranks": [
+          1
+        ],
+        "top_score": 0.8611,
+        "top": [
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 21 – Kişisel Verileri Koruma Kurulu",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 21 – Kişisel Verileri Koruma Kurulu",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 21 – Kişisel Verileri Koruma Kurulu"
+        ]
+      },
+      {
+        "id": "kvkk-006",
+        "source_ranks": [
+          1
+        ],
+        "top_score": 0.8793,
+        "top": [
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 9 – Kişisel verilerin yurt dışına aktarılması",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 9 – Kişisel verilerin yurt dışına aktarılması",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Üçüncü Bölüm – Haklar ve Yükümlülükler > Madde 12 – Veri güvenliğine ilişkin yükümlülükler"
+        ]
+      },
+      {
+        "id": "kvkk-007",
+        "source_ranks": [
+          1
+        ],
+        "top_score": 0.8627,
+        "top": [
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Beşinci Bölüm – Suçlar ve Kabahatler > Madde 18 – Kabahatler",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Beşinci Bölüm – Suçlar ve Kabahatler > Madde 18 – Kabahatler",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 15 – Şikâyet üzerine veya resen incelemenin usul ve esasları"
+        ]
+      },
+      {
+        "id": "kvkk-008",
+        "source_ranks": [
+          1
+        ],
+        "top_score": 0.9113,
+        "top": [
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 14 – Kurula şikâyet",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 13 – Veri sorumlusuna başvuru",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 15 – Şikâyet üzerine veya resen incelemenin usul ve esasları"
+        ]
+      },
+      {
+        "id": "kvkk-009",
+        "source_ranks": [
+          1,
+          2
+        ],
+        "top_score": 0.9001,
+        "top": [
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 14 – Kurula şikâyet",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 15 – Şikâyet üzerine veya resen incelemenin usul ve esasları",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 15 – Şikâyet üzerine veya resen incelemenin usul ve esasları"
+        ]
+      },
+      {
+        "id": "kvkk-010",
+        "source_ranks": [
+          1,
+          5
+        ],
+        "top_score": 0.8467,
+        "top": [
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Üçüncü Bölüm – Haklar ve Yükümlülükler > Madde 12 – Veri güvenliğine ilişkin yükümlülükler",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 15 – Şikâyet üzerine veya resen incelemenin usul ve esasları",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 9 – Kişisel verilerin yurt dışına aktarılması"
+        ]
+      },
+      {
+        "id": "kvkk-011",
+        "source_ranks": [],
+        "top_score": 0.7918,
+        "top": [
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 27 – Personele ve özlük haklarına ilişkin hükümler",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 27 – Personele ve özlük haklarına ilişkin hükümler",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 27 – Personele ve özlük haklarına ilişkin hükümler"
+        ]
+      },
+      {
+        "id": "kvkk-012",
+        "source_ranks": [],
+        "top_score": 0.8582,
+        "top": [
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 21 – Kişisel Verileri Koruma Kurulu",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 4 – Genel ilkeler",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 27 – Personele ve özlük haklarına ilişkin hükümler"
+        ]
+      },
+      {
+        "id": "k8s-001",
+        "source_ranks": [
+          1
+        ],
+        "top_score": 0.877,
+        "top": [
+          "content/en/docs/concepts/services-networking/service.md § Service > Service type > `type: ClusterIP`",
+          "content/en/docs/concepts/services-networking/service.md § Service > Service type",
+          "content/en/docs/concepts/services-networking/cluster-ip-allocation.md § Service ClusterIP allocation"
+        ]
+      },
+      {
+        "id": "k8s-002",
+        "source_ranks": [
+          4,
+          null
+        ],
+        "top_score": 0.901,
+        "top": [
+          "content/en/docs/concepts/workloads/pods/probes.md § Liveness, Readiness, and Startup Probes > Probe results",
+          "content/en/docs/concepts/workloads/pods/probes.md § Liveness, Readiness, and Startup Probes > Configuration fields",
+          "content/en/docs/concepts/workloads/pods/probes.md § Liveness, Readiness, and Startup Probes > Types of probe > Liveness probe"
+        ]
+      },
+      {
+        "id": "k8s-003",
+        "source_ranks": [],
+        "top_score": 0.8556,
+        "top": [
+          "content/en/docs/concepts/architecture/_index.md § Cluster Architecture > Control plane components > cloud-controller-manager",
+          "content/en/docs/concepts/security/multi-tenancy.md § Multi-tenancy > Implementations",
+          "content/en/docs/concepts/security/multi-tenancy.md § Multi-tenancy > Implementations > Virtual control plane per tenant"
+        ]
+      },
+      {
+        "id": "k8s-004",
+        "source_ranks": [
+          1
+        ],
+        "top_score": 0.9066,
+        "top": [
+          "content/en/docs/concepts/services-networking/service.md § Service > Service type > `type: NodePort`",
+          "content/en/docs/concepts/services-networking/service.md § Service > Service type > `type: NodePort` > Choosing your own port",
+          "content/en/docs/concepts/services-networking/service.md § Service > Service type > `type: NodePort` > Reserve Nodeport ranges to avoid collisions"
+        ]
+      },
+      {
+        "id": "k8s-005",
+        "source_ranks": [
+          2
+        ],
+        "top_score": 0.8853,
+        "top": [
+          "content/en/docs/concepts/windows/intro.md § Windows containers in Kubernetes > Compatibility and limitations > API compatibility > Field compatibility for Pod specifications",
+          "content/en/docs/concepts/workloads/pods/pod-lifecycle.md § Pod Lifecycle > Pod phase",
+          "content/en/docs/concepts/workloads/pods/pod-lifecycle.md § Pod Lifecycle > Termination of Pods > Pod Termination Flow"
+        ]
+      },
+      {
+        "id": "k8s-006",
+        "source_ranks": [
+          2
+        ],
+        "top_score": 0.8733,
+        "top": [
+          "content/en/docs/concepts/workloads/controllers/deployment.md § Deployments > Writing a Deployment Spec > Strategy > Rolling Update Deployment > Max Unavailable",
+          "content/en/docs/concepts/workloads/controllers/deployment.md § Deployments > Updating a Deployment > Rollover (aka multiple updates in-flight)",
+          "content/en/docs/concepts/workloads/controllers/deployment.md § Deployments > Updating a Deployment"
+        ]
+      },
+      {
+        "id": "k8s-007",
+        "source_ranks": [
+          1
+        ],
+        "top_score": 0.9001,
+        "top": [
+          "content/en/docs/concepts/overview/working-with-objects/namespaces.md § Namespaces > Initial namespaces",
+          "content/en/docs/concepts/overview/working-with-objects/namespaces.md § Namespaces",
+          "content/en/docs/concepts/architecture/leases.md § Leases > Node heartbeats"
+        ]
+      },
+      {
+        "id": "k8s-008",
+        "source_ranks": [
+          8
+        ],
+        "top_score": 0.8941,
+        "top": [
+          "content/en/docs/concepts/security/secrets-good-practices.md § Good practices for Kubernetes Secrets > Cluster administrators > Configure encryption at rest",
+          "content/en/docs/concepts/security/security-checklist.md § Security Checklist > Secrets",
+          "content/en/docs/concepts/security/security-checklist.md § Security Checklist > Secrets"
+        ]
+      },
+      {
+        "id": "k8s-009",
+        "source_ranks": [
+          1
+        ],
+        "top_score": 0.8767,
+        "top": [
+          "content/en/docs/concepts/configuration/configmap.md § ConfigMaps > Motivation",
+          "content/en/docs/concepts/configuration/configmap.md § ConfigMaps > ConfigMap object",
+          "content/en/docs/concepts/configuration/configmap.md § ConfigMaps > ConfigMaps and Pods"
+        ]
+      },
+      {
+        "id": "k8s-010",
+        "source_ranks": [
+          2
+        ],
+        "top_score": 0.8931,
+        "top": [
+          "content/en/docs/concepts/workloads/controllers/job.md § Jobs > Handling Pod and container failures",
+          "content/en/docs/concepts/workloads/controllers/job.md § Jobs > Handling Pod and container failures > Pod backoff failure policy",
+          "content/en/docs/concepts/workloads/controllers/job.md § Jobs > Handling Pod and container failures > Pod failure policy"
+        ]
+      },
+      {
+        "id": "k8s-011",
+        "source_ranks": [
+          2
+        ],
+        "top_score": 0.8897,
+        "top": [
+          "content/en/docs/concepts/workloads/controllers/replicaset.md § ReplicaSet > Writing a ReplicaSet manifest > Pod Template",
+          "content/en/docs/concepts/workloads/controllers/job.md § Jobs > Writing a Job spec > Pod Template",
+          "content/en/docs/concepts/workloads/controllers/job.md § Jobs > Job termination and cleanup"
+        ]
+      },
+      {
+        "id": "k8s-012",
+        "source_ranks": [
+          2,
+          null
+        ],
+        "top_score": 0.8792,
+        "top": [
+          "content/en/docs/concepts/workloads/controllers/statefulset.md § StatefulSets",
+          "content/en/docs/concepts/workloads/controllers/statefulset.md § StatefulSets > Limitations",
+          "content/en/docs/concepts/workloads/controllers/statefulset.md § StatefulSets > Using StatefulSets"
+        ]
+      },
+      {
+        "id": "k8s-013",
+        "source_ranks": [
+          1,
+          null
+        ],
+        "top_score": 0.9121,
+        "top": [
+          "content/en/docs/concepts/scheduling-eviction/node-pressure-eviction.md § Node-pressure Eviction > Node conditions > Pod selection for kubelet eviction",
+          "content/en/docs/concepts/workloads/pods/pod-qos.md § Pod Quality of Service Classes > Quality of Service classes",
+          "content/en/docs/concepts/scheduling-eviction/pod-priority-preemption.md § Pod Priority and Preemption > Interactions between Pod priority and quality of service"
+        ]
+      },
+      {
+        "id": "k8s-014",
+        "source_ranks": [
+          1,
+          null
+        ],
+        "top_score": 0.8805,
+        "top": [
+          "content/en/docs/concepts/services-networking/network-policies.md § Network Policies > Targeting a Namespace by its name",
+          "content/en/docs/concepts/services-networking/network-policies.md § Network Policies > Default policies > Default deny all ingress traffic",
+          "content/en/docs/concepts/services-networking/network-policies.md § Network Policies > The NetworkPolicy resource"
+        ]
+      },
+      {
+        "id": "k8s-015",
+        "source_ranks": [
+          2,
+          1
+        ],
+        "top_score": 0.8903,
+        "top": [
+          "content/en/docs/concepts/storage/persistent-volumes.md § Persistent Volumes > Lifecycle of a volume and claim > Reclaiming > Delete",
+          "content/en/docs/concepts/storage/storage-classes.md § Storage Classes > Reclaim policy",
+          "content/en/docs/concepts/storage/storage-classes.md § Storage Classes > StorageClass objects"
+        ]
+      },
+      {
+        "id": "k8s-016",
+        "source_ranks": [],
+        "top_score": 0.8344,
+        "top": [
+          "content/en/docs/concepts/security/multi-tenancy.md § Multi-tenancy > Implementations > Virtual control plane per tenant",
+          "content/en/docs/concepts/security/api-server-bypass-risks.md § Kubernetes API Server Bypass Risks > The etcd API",
+          "content/en/docs/concepts/overview/components.md § Kubernetes Components > Core Components > Control Plane Components"
+        ]
+      },
+      {
+        "id": "k8s-017",
+        "source_ranks": [],
+        "top_score": 0.857,
+        "top": [
+          "content/en/docs/concepts/policy/pid-limiting.md § Process ID Limits And Reservations",
+          "content/en/docs/concepts/policy/pid-limiting.md § Process ID Limits And Reservations > Pod PID limits",
+          "content/en/docs/concepts/workloads/pods/user-namespaces.md § User Namespaces > ID count for each of Pods"
+        ]
+      },
+      {
+        "id": "k8s-018",
+        "source_ranks": [],
+        "top_score": 0.8641,
+        "top": [
+          "content/en/docs/concepts/configuration/secret.md § Secrets > Immutable Secrets",
+          "content/en/docs/concepts/configuration/secret.md § Secrets",
+          "content/en/docs/concepts/configuration/secret.md § Secrets > Working with Secrets > Using Secrets as files from a Pod"
+        ]
+      }
+    ],
+    "lexical": [
+      {
+        "id": "kvkk-001",
+        "source_ranks": [
+          1
+        ],
+        "top_score": 0.0071,
+        "top": [
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 13 – Veri sorumlusuna başvuru",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 15 – Şikâyet üzerine veya resen incelemenin usul ve esasları",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 15 – Şikâyet üzerine veya resen incelemenin usul ve esasları"
+        ]
+      },
+      {
+        "id": "kvkk-002",
+        "source_ranks": [
+          2,
+          1
+        ],
+        "top_score": 0.0058,
+        "top": [
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 8 – Kişisel verilerin aktarılması",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 6 – Özel nitelikli kişisel verilerin işlenme şartları",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 5 – Kişisel verilerin işlenme şartları"
+        ]
+      },
+      {
+        "id": "kvkk-003",
+        "source_ranks": [],
+        "top_score": 0.0035,
+        "top": [
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 22 – Kurulun görev ve yetkileri",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Yedinci Bölüm – Çeşitli Hükümler > Geçici Madde 1 – Geçiş hükümleri",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 16 – Veri Sorumluları Sicili"
+        ]
+      },
+      {
+        "id": "kvkk-004",
+        "source_ranks": [
+          1
+        ],
+        "top_score": 0.0062,
+        "top": [
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 21 – Kişisel Verileri Koruma Kurulu",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 21 – Kişisel Verileri Koruma Kurulu",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 21 – Kişisel Verileri Koruma Kurulu"
+        ]
+      },
+      {
+        "id": "kvkk-005",
+        "source_ranks": [
+          1
+        ],
+        "top_score": 0.0069,
+        "top": [
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 21 – Kişisel Verileri Koruma Kurulu",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 21 – Kişisel Verileri Koruma Kurulu",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 21 – Kişisel Verileri Koruma Kurulu"
+        ]
+      },
+      {
+        "id": "kvkk-006",
+        "source_ranks": [
+          1
+        ],
+        "top_score": 0.0047,
+        "top": [
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 9 – Kişisel verilerin yurt dışına aktarılması",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 9 – Kişisel verilerin yurt dışına aktarılması",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 9 – Kişisel verilerin yurt dışına aktarılması"
+        ]
+      },
+      {
+        "id": "kvkk-007",
+        "source_ranks": [
+          1
+        ],
+        "top_score": 0.0057,
+        "top": [
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Beşinci Bölüm – Suçlar ve Kabahatler > Madde 18 – Kabahatler",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Beşinci Bölüm – Suçlar ve Kabahatler > Madde 18 – Kabahatler",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Üçüncü Bölüm – Haklar ve Yükümlülükler > Madde 12 – Veri güvenliğine ilişkin yükümlülükler"
+        ]
+      },
+      {
+        "id": "kvkk-008",
+        "source_ranks": [
+          1
+        ],
+        "top_score": 0.0048,
+        "top": [
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 14 – Kurula şikâyet",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 15 – Şikâyet üzerine veya resen incelemenin usul ve esasları",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Beşinci Bölüm – Suçlar ve Kabahatler > Madde 18 – Kabahatler"
+        ]
+      },
+      {
+        "id": "kvkk-009",
+        "source_ranks": [
+          2,
+          3
+        ],
+        "top_score": 0.0038,
+        "top": [
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 9 – Kişisel verilerin yurt dışına aktarılması",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 14 – Kurula şikâyet",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 15 – Şikâyet üzerine veya resen incelemenin usul ve esasları"
+        ]
+      },
+      {
+        "id": "kvkk-010",
+        "source_ranks": [
+          5,
+          null
+        ],
+        "top_score": 0.0021,
+        "top": [
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Üçüncü Bölüm – Haklar ve Yükümlülükler > Madde 11 – İlgili kişinin hakları",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Birinci Bölüm – Amaç, Kapsam ve Tanımlar > Madde 3 – Tanımlar",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Birinci Bölüm – Amaç, Kapsam ve Tanımlar > Madde 2 – Kapsam"
+        ]
+      },
+      {
+        "id": "kvkk-011",
+        "source_ranks": [],
+        "top_score": 0.0028,
+        "top": [
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 25 – Başkanlığın oluşumu ve görevleri",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Yedinci Bölüm – Çeşitli Hükümler > Madde 28 – İstisnalar",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 24 – Başkan"
+        ]
+      },
+      {
+        "id": "kvkk-012",
+        "source_ranks": [],
+        "top_score": 0.0069,
+        "top": [
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Yedinci Bölüm – Çeşitli Hükümler > Geçici Madde 1 – Geçiş hükümleri",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 8 – Kişisel verilerin aktarılması",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 7 – Kişisel verilerin silinmesi, yok edilmesi veya anonim hâle getirilmesi"
+        ]
+      },
+      {
+        "id": "k8s-001",
+        "source_ranks": [
+          1
+        ],
+        "top_score": 0.012,
+        "top": [
+          "content/en/docs/concepts/services-networking/service.md § Service > Service type > `type: ClusterIP`",
+          "content/en/docs/concepts/services-networking/service.md § Service > Service type > `type: LoadBalancer` > Load balancers with mixed protocol types",
+          "content/en/docs/concepts/services-networking/service.md § Service > Service type"
+        ]
+      },
+      {
+        "id": "k8s-002",
+        "source_ranks": [
+          3,
+          null
+        ],
+        "top_score": 0.0065,
+        "top": [
+          "content/en/docs/concepts/workloads/pods/probes.md § Liveness, Readiness, and Startup Probes > Types of probe > Startup probe",
+          "content/en/docs/concepts/workloads/pods/pod-lifecycle.md § Pod Lifecycle > Container probes > Startup probe",
+          "content/en/docs/concepts/workloads/pods/pod-lifecycle.md § Pod Lifecycle > Container probes > Liveness probe"
+        ]
+      },
+      {
+        "id": "k8s-003",
+        "source_ranks": [],
+        "top_score": 0.0064,
+        "top": [
+          "content/en/docs/concepts/architecture/_index.md § Cluster Architecture > Architecture variations > Control plane deployment options",
+          "content/en/docs/concepts/security/multi-tenancy.md § Multi-tenancy > Implementations",
+          "content/en/docs/concepts/architecture/_index.md § Cluster Architecture > Architecture variations > Customization and extensibility"
+        ]
+      },
+      {
+        "id": "k8s-004",
+        "source_ranks": [
+          1
+        ],
+        "top_score": 0.0073,
+        "top": [
+          "content/en/docs/concepts/services-networking/service.md § Service > Service type > `type: NodePort`",
+          "content/en/docs/concepts/services-networking/service.md § Service > Service type > `type: NodePort` > Choosing your own port",
+          "content/en/docs/concepts/services-networking/service.md § Service > Service type > `type: NodePort` > Reserve Nodeport ranges to avoid collisions"
+        ]
+      },
+      {
+        "id": "k8s-005",
+        "source_ranks": [
+          null
+        ],
+        "top_score": 0.0062,
+        "top": [
+          "content/en/docs/concepts/workloads/pods/_index.md § Pods > Pods with multiple containers",
+          "content/en/docs/concepts/workloads/pods/pod-lifecycle.md § Pod Lifecycle > Pod behavior during kubelet restarts > Detection of kubelet restarts",
+          "content/en/docs/concepts/cluster-administration/node-shutdown.md § Node Shutdowns > Graceful node shutdown > Pod Priority based graceful node shutdown"
+        ]
+      },
+      {
+        "id": "k8s-006",
+        "source_ranks": [
+          1
+        ],
+        "top_score": 0.0055,
+        "top": [
+          "content/en/docs/concepts/workloads/controllers/deployment.md § Deployments > Updating a Deployment > Rollover (aka multiple updates in-flight)",
+          "content/en/docs/concepts/workloads/controllers/deployment.md § Deployments > Updating a Deployment",
+          "content/en/docs/concepts/workloads/management.md § Managing Workloads > Updating your application without an outage"
+        ]
+      },
+      {
+        "id": "k8s-007",
+        "source_ranks": [
+          1
+        ],
+        "top_score": 0.0089,
+        "top": [
+          "content/en/docs/concepts/overview/working-with-objects/namespaces.md § Namespaces > Initial namespaces",
+          "content/en/docs/concepts/overview/working-with-objects/namespaces.md § Namespaces > Working with Namespaces > Viewing namespaces",
+          "content/en/docs/concepts/cluster-administration/admission-webhooks-good-practices.md § Admission Webhook Good Practices > Request filtering > Limit the scope of each webhook"
+        ]
+      },
+      {
+        "id": "k8s-008",
+        "source_ranks": [
+          8
+        ],
+        "top_score": 0.0079,
+        "top": [
+          "content/en/docs/concepts/security/secrets-good-practices.md § Good practices for Kubernetes Secrets > Cluster administrators > Improve etcd management policies",
+          "content/en/docs/concepts/security/security-checklist.md § Security Checklist > Secrets",
+          "content/en/docs/concepts/security/secrets-good-practices.md § Good practices for Kubernetes Secrets > Cluster administrators > Configure encryption at rest"
+        ]
+      },
+      {
+        "id": "k8s-009",
+        "source_ranks": [
+          3
+        ],
+        "top_score": 0.0063,
+        "top": [
+          "content/en/docs/concepts/extend-kubernetes/api-extension/custom-resources.md § Custom Resources > Should I use a ConfigMap or a custom resource?",
+          "content/en/docs/concepts/storage/volumes.md § Volumes > Types of volumes > configMap",
+          "content/en/docs/concepts/configuration/configmap.md § ConfigMaps > Motivation"
+        ]
+      },
+      {
+        "id": "k8s-010",
+        "source_ranks": [
+          6
+        ],
+        "top_score": 0.0046,
+        "top": [
+          "content/en/docs/concepts/extend-kubernetes/compute-storage-net/device-plugins.md § Device Plugins > Device plugin implementation > Device plugin and unhealthy devices",
+          "content/en/docs/concepts/workloads/controllers/job.md § Jobs > Job termination and cleanup",
+          "content/en/docs/concepts/workloads/controllers/job.md § Jobs > Handling Pod and container failures > Backoff limit per index"
+        ]
+      },
+      {
+        "id": "k8s-011",
+        "source_ranks": [
+          5
+        ],
+        "top_score": 0.0091,
+        "top": [
+          "content/en/docs/concepts/workloads/pods/pod-lifecycle.md § Pod Lifecycle > How Pods handle problems with containers > Container restarts > Pod-level container restart policy > Example scenarios",
+          "content/en/docs/concepts/workloads/pods/_index.md § Pods > Working with Pods > Pod templates",
+          "content/en/docs/concepts/workloads/pods/pod-lifecycle.md § Pod Lifecycle > How Pods handle problems with containers > Container restarts > Pod-level container restart policy > Restart behavior comparison"
+        ]
+      },
+      {
+        "id": "k8s-012",
+        "source_ranks": [
+          null,
+          1
+        ],
+        "top_score": 0.0052,
+        "top": [
+          "content/en/docs/concepts/services-networking/service.md § Service > Headless Services > Without selectors",
+          "content/en/docs/concepts/services-networking/service.md § Service > Defining a Service",
+          "content/en/docs/concepts/security/service-accounts.md § Service Accounts > Authenticating service account credentials > Authenticating service account credentials in your own code"
+        ]
+      },
+      {
+        "id": "k8s-013",
+        "source_ranks": [
+          1,
+          3
+        ],
+        "top_score": 0.0074,
+        "top": [
+          "content/en/docs/concepts/scheduling-eviction/node-pressure-eviction.md § Node-pressure Eviction > Node conditions > Pod selection for kubelet eviction",
+          "content/en/docs/concepts/workloads/pods/pod-qos.md § Pod Quality of Service Classes > Quality of Service classes",
+          "content/en/docs/concepts/workloads/pods/pod-qos.md § Pod Quality of Service Classes > Quality of Service classes > BestEffort"
+        ]
+      },
+      {
+        "id": "k8s-014",
+        "source_ranks": [
+          6,
+          null
+        ],
+        "top_score": 0.0055,
+        "top": [
+          "content/en/docs/concepts/security/multi-tenancy.md § Multi-tenancy > Data Plane Isolation > Network isolation",
+          "content/en/docs/concepts/services-networking/gateway.md § Gateway API > Resource model > GRPCRoute",
+          "content/en/docs/concepts/services-networking/network-policies.md § Network Policies > Targeting multiple namespaces by label"
+        ]
+      },
+      {
+        "id": "k8s-015",
+        "source_ranks": [
+          null,
+          3
+        ],
+        "top_score": 0.0052,
+        "top": [
+          "content/en/docs/concepts/storage/persistent-volumes.md § Persistent Volumes > Lifecycle of a volume and claim > PersistentVolume deletion protection finalizer",
+          "content/en/docs/concepts/storage/storage-classes.md § Storage Classes > StorageClass objects",
+          "content/en/docs/concepts/storage/persistent-volumes.md § Persistent Volumes > Lifecycle of a volume and claim > Reclaiming > Delete"
+        ]
+      },
+      {
+        "id": "k8s-016",
+        "source_ranks": [],
+        "top_score": 0.0059,
+        "top": [
+          "content/en/docs/concepts/security/multi-tenancy.md § Multi-tenancy > Control plane isolation",
+          "content/en/docs/concepts/security/security-checklist.md § Security Checklist > Network security",
+          "content/en/docs/concepts/architecture/garbage-collection.md § Garbage Collection > Owners and dependents"
+        ]
+      },
+      {
+        "id": "k8s-017",
+        "source_ranks": [],
+        "top_score": 0.0087,
+        "top": [
+          "content/en/docs/concepts/storage/storage-limits.md § Node-specific Volume Limits > Kubernetes default limits",
+          "content/en/docs/concepts/storage/storage-limits.md § Node-specific Volume Limits",
+          "content/en/docs/concepts/policy/pid-limiting.md § Process ID Limits And Reservations"
+        ]
+      },
+      {
+        "id": "k8s-018",
+        "source_ranks": [],
+        "top_score": 0.0061,
+        "top": [
+          "content/en/docs/concepts/security/_index.md § Security > Kubernetes security mechanisms > Secrets",
+          "content/en/docs/concepts/configuration/secret.md § Secrets > Information security for Secrets",
+          "content/en/docs/concepts/security/security-checklist.md § Security Checklist > Secrets"
+        ]
+      }
+    ],
+    "hybrid": [
+      {
+        "id": "kvkk-001",
+        "source_ranks": [
+          1
+        ],
+        "top_score": 0.0328,
+        "top": [
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 13 – Veri sorumlusuna başvuru",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 15 – Şikâyet üzerine veya resen incelemenin usul ve esasları",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 15 – Şikâyet üzerine veya resen incelemenin usul ve esasları"
+        ]
+      },
+      {
+        "id": "kvkk-002",
+        "source_ranks": [
+          2,
+          1
+        ],
+        "top_score": 0.0328,
+        "top": [
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 8 – Kişisel verilerin aktarılması",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 6 – Özel nitelikli kişisel verilerin işlenme şartları",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 5 – Kişisel verilerin işlenme şartları"
+        ]
+      },
+      {
+        "id": "kvkk-003",
+        "source_ranks": [],
+        "top_score": 0.0318,
+        "top": [
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 14 – Kurula şikâyet",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Üçüncü Bölüm – Haklar ve Yükümlülükler > Madde 12 – Veri güvenliğine ilişkin yükümlülükler",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Yedinci Bölüm – Çeşitli Hükümler > Geçici Madde 1 – Geçiş hükümleri"
+        ]
+      },
+      {
+        "id": "kvkk-004",
+        "source_ranks": [
+          1
+        ],
+        "top_score": 0.032,
+        "top": [
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 21 – Kişisel Verileri Koruma Kurulu",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 21 – Kişisel Verileri Koruma Kurulu",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 21 – Kişisel Verileri Koruma Kurulu"
+        ]
+      },
+      {
+        "id": "kvkk-005",
+        "source_ranks": [
+          1
+        ],
+        "top_score": 0.0328,
+        "top": [
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 21 – Kişisel Verileri Koruma Kurulu",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 21 – Kişisel Verileri Koruma Kurulu",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 21 – Kişisel Verileri Koruma Kurulu"
+        ]
+      },
+      {
+        "id": "kvkk-006",
+        "source_ranks": [
+          1
+        ],
+        "top_score": 0.0328,
+        "top": [
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 9 – Kişisel verilerin yurt dışına aktarılması",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 9 – Kişisel verilerin yurt dışına aktarılması",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 9 – Kişisel verilerin yurt dışına aktarılması"
+        ]
+      },
+      {
+        "id": "kvkk-007",
+        "source_ranks": [
+          1
+        ],
+        "top_score": 0.0328,
+        "top": [
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Beşinci Bölüm – Suçlar ve Kabahatler > Madde 18 – Kabahatler",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Beşinci Bölüm – Suçlar ve Kabahatler > Madde 18 – Kabahatler",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Üçüncü Bölüm – Haklar ve Yükümlülükler > Madde 12 – Veri güvenliğine ilişkin yükümlülükler"
+        ]
+      },
+      {
+        "id": "kvkk-008",
+        "source_ranks": [
+          1
+        ],
+        "top_score": 0.0328,
+        "top": [
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 14 – Kurula şikâyet",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 15 – Şikâyet üzerine veya resen incelemenin usul ve esasları",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 13 – Veri sorumlusuna başvuru"
+        ]
+      },
+      {
+        "id": "kvkk-009",
+        "source_ranks": [
+          1,
+          2
+        ],
+        "top_score": 0.0325,
+        "top": [
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 14 – Kurula şikâyet",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 15 – Şikâyet üzerine veya resen incelemenin usul ve esasları",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Üçüncü Bölüm – Haklar ve Yükümlülükler > Madde 12 – Veri güvenliğine ilişkin yükümlülükler"
+        ]
+      },
+      {
+        "id": "kvkk-010",
+        "source_ranks": [
+          1,
+          8
+        ],
+        "top_score": 0.0318,
+        "top": [
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Üçüncü Bölüm – Haklar ve Yükümlülükler > Madde 12 – Veri güvenliğine ilişkin yükümlülükler",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Üçüncü Bölüm – Haklar ve Yükümlülükler > Madde 11 – İlgili kişinin hakları",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 9 – Kişisel verilerin yurt dışına aktarılması"
+        ]
+      },
+      {
+        "id": "kvkk-011",
+        "source_ranks": [],
+        "top_score": 0.0308,
+        "top": [
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 27 – Personele ve özlük haklarına ilişkin hükümler",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Yedinci Bölüm – Çeşitli Hükümler > Geçici Madde 2",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Yedinci Bölüm – Çeşitli Hükümler > Madde 28 – İstisnalar"
+        ]
+      },
+      {
+        "id": "kvkk-012",
+        "source_ranks": [],
+        "top_score": 0.032,
+        "top": [
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Yedinci Bölüm – Çeşitli Hükümler > Geçici Madde 1 – Geçiş hükümleri",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 4 – Genel ilkeler",
+          "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 8 – Kişisel verilerin aktarılması"
+        ]
+      },
+      {
+        "id": "k8s-001",
+        "source_ranks": [
+          1
+        ],
+        "top_score": 0.0328,
+        "top": [
+          "content/en/docs/concepts/services-networking/service.md § Service > Service type > `type: ClusterIP`",
+          "content/en/docs/concepts/services-networking/service.md § Service > Service type",
+          "content/en/docs/concepts/services-networking/service.md § Service > Service type > `type: LoadBalancer` > Load balancers with mixed protocol types"
+        ]
+      },
+      {
+        "id": "k8s-002",
+        "source_ranks": [
+          2,
+          null
+        ],
+        "top_score": 0.0318,
+        "top": [
+          "content/en/docs/concepts/workloads/pods/probes.md § Liveness, Readiness, and Startup Probes > Probe results",
+          "content/en/docs/concepts/workloads/pods/pod-lifecycle.md § Pod Lifecycle > Container probes > Liveness probe",
+          "content/en/docs/concepts/workloads/pods/probes.md § Liveness, Readiness, and Startup Probes > Types of probe > Startup probe"
+        ]
+      },
+      {
+        "id": "k8s-003",
+        "source_ranks": [],
+        "top_score": 0.0315,
+        "top": [
+          "content/en/docs/concepts/security/multi-tenancy.md § Multi-tenancy > Implementations > Virtual control plane per tenant",
+          "content/en/docs/concepts/architecture/_index.md § Cluster Architecture > Architecture variations > Control plane deployment options",
+          "content/en/docs/concepts/security/multi-tenancy.md § Multi-tenancy > Implementations > Virtual control plane per tenant"
+        ]
+      },
+      {
+        "id": "k8s-004",
+        "source_ranks": [
+          1
+        ],
+        "top_score": 0.0328,
+        "top": [
+          "content/en/docs/concepts/services-networking/service.md § Service > Service type > `type: NodePort`",
+          "content/en/docs/concepts/services-networking/service.md § Service > Service type > `type: NodePort` > Choosing your own port",
+          "content/en/docs/concepts/services-networking/service.md § Service > Service type > `type: NodePort` > Reserve Nodeport ranges to avoid collisions"
+        ]
+      },
+      {
+        "id": "k8s-005",
+        "source_ranks": [
+          null
+        ],
+        "top_score": 0.0315,
+        "top": [
+          "content/en/docs/concepts/cluster-administration/node-shutdown.md § Node Shutdowns > Graceful node shutdown > Pod Priority based graceful node shutdown",
+          "content/en/docs/concepts/workloads/pods/pod-lifecycle.md § Pod Lifecycle > Termination of Pods > Pod Termination Flow",
+          "content/en/docs/concepts/workloads/controllers/statefulset.md § StatefulSets > Limitations"
+        ]
+      },
+      {
+        "id": "k8s-006",
+        "source_ranks": [
+          1
+        ],
+        "top_score": 0.0325,
+        "top": [
+          "content/en/docs/concepts/workloads/controllers/deployment.md § Deployments > Updating a Deployment > Rollover (aka multiple updates in-flight)",
+          "content/en/docs/concepts/workloads/controllers/deployment.md § Deployments > Writing a Deployment Spec > Strategy > Rolling Update Deployment > Max Unavailable",
+          "content/en/docs/concepts/workloads/controllers/deployment.md § Deployments > Updating a Deployment"
+        ]
+      },
+      {
+        "id": "k8s-007",
+        "source_ranks": [
+          1
+        ],
+        "top_score": 0.0328,
+        "top": [
+          "content/en/docs/concepts/overview/working-with-objects/namespaces.md § Namespaces > Initial namespaces",
+          "content/en/docs/concepts/overview/working-with-objects/namespaces.md § Namespaces > Working with Namespaces > Viewing namespaces",
+          "content/en/docs/concepts/architecture/leases.md § Leases > Node heartbeats"
+        ]
+      },
+      {
+        "id": "k8s-008",
+        "source_ranks": [
+          6
+        ],
+        "top_score": 0.0323,
+        "top": [
+          "content/en/docs/concepts/security/secrets-good-practices.md § Good practices for Kubernetes Secrets > Cluster administrators > Configure encryption at rest",
+          "content/en/docs/concepts/security/secrets-good-practices.md § Good practices for Kubernetes Secrets > Cluster administrators > Improve etcd management policies",
+          "content/en/docs/concepts/security/security-checklist.md § Security Checklist > Secrets"
+        ]
+      },
+      {
+        "id": "k8s-009",
+        "source_ranks": [
+          1
+        ],
+        "top_score": 0.0323,
+        "top": [
+          "content/en/docs/concepts/configuration/configmap.md § ConfigMaps > Motivation",
+          "content/en/docs/concepts/configuration/configmap.md § ConfigMaps",
+          "content/en/docs/concepts/storage/volumes.md § Volumes > Types of volumes > configMap"
+        ]
+      },
+      {
+        "id": "k8s-010",
+        "source_ranks": [
+          1
+        ],
+        "top_score": 0.0313,
+        "top": [
+          "content/en/docs/concepts/workloads/controllers/job.md § Jobs > Handling Pod and container failures > Pod backoff failure policy",
+          "content/en/docs/concepts/workloads/controllers/job.md § Jobs > Handling Pod and container failures > Backoff limit per index",
+          "content/en/docs/concepts/workloads/controllers/job.md § Jobs > Handling Pod and container failures > Pod failure policy"
+        ]
+      },
+      {
+        "id": "k8s-011",
+        "source_ranks": [
+          1
+        ],
+        "top_score": 0.0315,
+        "top": [
+          "content/en/docs/concepts/workloads/controllers/job.md § Jobs > Writing a Job spec > Pod Template",
+          "content/en/docs/concepts/workloads/controllers/daemonset.md § DaemonSet > Writing a DaemonSet Spec > Pod Template",
+          "content/en/docs/concepts/workloads/controllers/job.md § Jobs > Job termination and cleanup"
+        ]
+      },
+      {
+        "id": "k8s-012",
+        "source_ranks": [
+          null,
+          null
+        ],
+        "top_score": 0.0299,
+        "top": [
+          "content/en/docs/concepts/workloads/controllers/statefulset.md § StatefulSets > Pod Identity > Pod Name Label",
+          "content/en/docs/concepts/services-networking/service.md § Service > Defining a Service",
+          "content/en/docs/concepts/services-networking/service.md § Service > Services in Kubernetes"
+        ]
+      },
+      {
+        "id": "k8s-013",
+        "source_ranks": [
+          1,
+          10
+        ],
+        "top_score": 0.0328,
+        "top": [
+          "content/en/docs/concepts/scheduling-eviction/node-pressure-eviction.md § Node-pressure Eviction > Node conditions > Pod selection for kubelet eviction",
+          "content/en/docs/concepts/workloads/pods/pod-qos.md § Pod Quality of Service Classes > Quality of Service classes",
+          "content/en/docs/concepts/scheduling-eviction/pod-priority-preemption.md § Pod Priority and Preemption > Interactions between Pod priority and quality of service"
+        ]
+      },
+      {
+        "id": "k8s-014",
+        "source_ranks": [
+          1,
+          null
+        ],
+        "top_score": 0.0315,
+        "top": [
+          "content/en/docs/concepts/services-networking/network-policies.md § Network Policies > Targeting a Namespace by its name",
+          "content/en/docs/concepts/services-networking/network-policies.md § Network Policies > Targeting multiple namespaces by label",
+          "content/en/docs/concepts/services-networking/network-policies.md § Network Policies > Default policies > Default deny all ingress traffic"
+        ]
+      },
+      {
+        "id": "k8s-015",
+        "source_ranks": [
+          4,
+          1
+        ],
+        "top_score": 0.0323,
+        "top": [
+          "content/en/docs/concepts/storage/persistent-volumes.md § Persistent Volumes > Lifecycle of a volume and claim > Reclaiming > Delete",
+          "content/en/docs/concepts/storage/storage-classes.md § Storage Classes > StorageClass objects",
+          "content/en/docs/concepts/storage/persistent-volumes.md § Persistent Volumes > PersistentVolumeClaims > Class"
+        ]
+      },
+      {
+        "id": "k8s-016",
+        "source_ranks": [],
+        "top_score": 0.0315,
+        "top": [
+          "content/en/docs/concepts/security/multi-tenancy.md § Multi-tenancy > Implementations > Virtual control plane per tenant",
+          "content/en/docs/concepts/security/security-checklist.md § Security Checklist > Network security",
+          "content/en/docs/concepts/architecture/_index.md § Cluster Architecture"
+        ]
+      },
+      {
+        "id": "k8s-017",
+        "source_ranks": [],
+        "top_score": 0.0323,
+        "top": [
+          "content/en/docs/concepts/policy/pid-limiting.md § Process ID Limits And Reservations",
+          "content/en/docs/concepts/storage/storage-limits.md § Node-specific Volume Limits",
+          "content/en/docs/concepts/storage/storage-limits.md § Node-specific Volume Limits > Kubernetes default limits"
+        ]
+      },
+      {
+        "id": "k8s-018",
+        "source_ranks": [],
+        "top_score": 0.0311,
+        "top": [
+          "content/en/docs/concepts/configuration/secret.md § Secrets > Information security for Secrets",
+          "content/en/docs/concepts/configuration/secret.md § Secrets",
+          "content/en/docs/concepts/security/security-checklist.md § Security Checklist > Secrets"
+        ]
+      }
+    ]
+  }
+}

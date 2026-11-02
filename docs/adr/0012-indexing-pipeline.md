@@ -72,6 +72,12 @@ Bu hızla `concepts` bölümünün tamamı (~3000 parça) saatler sürer: aşağ
 **şimdiden oluşmuştur** ve Adım 17'de değerlendirme korpusu için ele alınacaktır (GPU, daha küçük
 model ya da API; kalite farkı ölçülerek).
 
+**Değerlendirme (Adım 17, [baseline](../../packages/eval/reports/baseline.md)):** tüm korpus
+(188 belge, 3093 parça) 98 dakikada gömüldü (~1,9 sn/parça, 12 çekirdekli dizüstü CPU). Vektör
+arama recall@5 0,87 / recall@10 0,91 / MRR 0,82; Türkçe sorularda recall@5 1,00. Hız sorunu
+değerlendirme için embedding önbelleğiyle çözüldü (bir kez gömülür); üretimdeki büyük kaynaklar
+için hâlâ geçerlidir.
+
 **Olumsuz / kabul edilen riskler**
 - Yeniden indeksleme her seferinde tüm belgeleri yeniden gömer; değişmeyen belgeler için
   `content_hash` ile atlama ileride eklenecek.

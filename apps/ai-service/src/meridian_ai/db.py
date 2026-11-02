@@ -8,8 +8,6 @@ from pgvector.psycopg import register_vector_async
 from psycopg import AsyncConnection
 from psycopg_pool import AsyncConnectionPool
 
-from meridian_ai.settings import Settings
-
 
 async def _configure(connection: AsyncConnection) -> None:
     await register_vector_async(connection)
@@ -17,9 +15,9 @@ async def _configure(connection: AsyncConnection) -> None:
     await connection.commit()
 
 
-def create_pool(settings: Settings) -> AsyncConnectionPool:
+def create_pool(conninfo: str) -> AsyncConnectionPool:
     return AsyncConnectionPool(
-        settings.database_conninfo,
+        conninfo,
         min_size=1,
         max_size=4,
         open=False,

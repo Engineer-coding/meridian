@@ -42,6 +42,11 @@ class _Document:
     chunks: list[Chunk]
 
 
+def embedding_text(chunk: Chunk) -> str:
+    """Gömülen metin: başlık yolu parçaya bağlam katar ("Pod Lifecycle > Pod phase")."""
+    return f"{chunk.section}\n{chunk.content}"
+
+
 def _sha256(text: str) -> str:
     return hashlib.sha256(text.encode()).hexdigest()
 
@@ -98,7 +103,7 @@ class Indexer:
             if chunks:
                 documents.append(_Document(uuid4(), raw, parsed.title, chunks))
 
-        texts = [f"{c.section}\n{c.content}" for d in documents for c in d.chunks]
+        texts = [embedding_text(c) for d in documents for c in d.chunks]
         vectors: list[list[float]] = []
         for batch in batched(texts, EMBED_BATCH, strict=False):
             vectors.extend(await self._embedder.embed_passages(list(batch)))

@@ -4,7 +4,7 @@ COMPOSE = docker compose -f infra/compose/compose.yaml --env-file .env
 
 PYTHON ?= python
 
-.PHONY: up down ps logs psql reset smoke contract-lint eval-validate api-test ai-test ai-run
+.PHONY: up down ps logs psql reset smoke contract-lint eval-validate api-test ai-test ai-run eval eval-smoke
 
 up:
 	$(COMPOSE) up -d --wait
@@ -41,3 +41,14 @@ ai-test:
 
 ai-run:
 	cd apps/ai-service && PYTHONUTF8=1 uv run python -m meridian_ai
+
+# Retrieval değerlendirmesi (Faz 3 kapısı). İlk çalıştırma korpusu gömer (CPU'da ~1,5 saat);
+# embedding'ler ~/.cache/meridian/eval altında saklanır, sonraki çalıştırmalar dakikalar sürer.
+# Kayıtlı baseline'ı güncellemek için: make eval NAME=baseline
+NAME ?= latest
+eval:
+	cd apps/ai-service && PYTHONUTF8=1 uv run python -m meridian_ai.evaluation --name $(NAME)
+
+# Modelsiz duman testi: korpus + altın set + indeksleme + arama hattını doğrular, kaliteyi ölçmez.
+eval-smoke:
+	cd apps/ai-service && PYTHONUTF8=1 uv run python -m meridian_ai.evaluation --embedder hash --name smoke

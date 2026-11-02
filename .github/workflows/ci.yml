@@ -68,3 +68,17 @@ jobs:
           enable-cache: true
           cache-dependency-glob: apps/ai-service/uv.lock
       - run: make ai-test
+
+  eval-smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: '0.9.4'
+          enable-cache: true
+          cache-dependency-glob: apps/ai-service/uv.lock
+      - run: make eval-smoke
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -12,16 +12,15 @@ import aio_pika
 import psycopg
 import pytest
 from aio_pika import DeliveryMode, Message
-from conftest import AI_PASSWORD, SUPERUSER_PASSWORD, conninfo
 from fastapi.testclient import TestClient
 from psycopg_pool import AsyncConnectionPool
-from testcontainers.community.postgres import PostgresContainer
 
 from meridian_ai import topology
 from meridian_ai.app import create_app
 from meridian_ai.consumer import IndexingConsumer
 from meridian_ai.db import create_pool, tenant_transaction
 from meridian_ai.embedding import HashEmbedder
+from meridian_ai.evaluation.database import Database
 from meridian_ai.events import Event
 from meridian_ai.fetchers import RawDocument
 from meridian_ai.handlers import PermanentError
@@ -63,8 +62,8 @@ class FakeFetcher:
 class Seed:
     """Testin ihtiyaç duyduğu kiracı, koleksiyon ve kaynakları süper kullanıcıyla (RLS dışında) kurar."""
 
-    def __init__(self, database: PostgresContainer) -> None:
-        self._conninfo = conninfo(database, "meridian", SUPERUSER_PASSWORD)
+    def __init__(self, database: Database) -> None:
+        self._conninfo = database.conninfo("meridian")
 
     def query(self, sql: str, *params: Any) -> list[tuple]:
         with psycopg.connect(self._conninfo, autocommit=True) as conn:
@@ -121,13 +120,13 @@ def event(tenant: UUID, source: UUID, type_: str = "source.created") -> Event:
 
 
 @pytest.fixture(scope="session")
-def seed(database: PostgresContainer) -> Seed:
+def seed(database: Database) -> Seed:
     return Seed(database)
 
 
 @pytest.fixture(scope="session")
 async def pool(settings: Settings) -> AsyncIterator[AsyncConnectionPool]:
-    pool = create_pool(settings)
+    pool = create_pool(settings.database_conninfo)
     await pool.open(wait=True)
     yield pool
     await pool.close()
@@ -294,8 +293,8 @@ async def test_unknown_event_type_is_permanent(indexer: Indexer, seed: Seed) -> 
         await indexer.handle(event(seed.tenant(), uuid4(), "source.renamed"))
 
 
-def as_ai(database: PostgresContainer, *statements: str) -> list[tuple]:
-    with psycopg.connect(conninfo(database, "meridian_ai", AI_PASSWORD)) as conn:
+def as_ai(database: Database, *statements: str) -> list[tuple]:
+    with psycopg.connect(database.conninfo("meridian_ai")) as conn:
         cursor = None
         for statement in statements:
             cursor = conn.execute(statement)
@@ -305,12 +304,12 @@ def as_ai(database: PostgresContainer, *statements: str) -> list[tuple]:
 @pytest.mark.parametrize(
     "table", ["tenants", "users", "memberships", "collections", "outbox", "idempotency_keys"]
 )
-def test_ai_role_cannot_read_identity_or_core_tables(database: PostgresContainer, table: str) -> None:
+def test_ai_role_cannot_read_identity_or_core_tables(database: Database, table: str) -> None:
     with pytest.raises(psycopg.errors.InsufficientPrivilege):
         as_ai(database, f"SELECT count(*) FROM core.{table}")
 
 
-def test_ai_role_cannot_change_what_a_source_is(database: PostgresContainer, seed: Seed) -> None:
+def test_ai_role_cannot_change_what_a_source_is(database: Database, seed: Seed) -> None:
     tenant = seed.tenant()
     source = seed.source(tenant)
     with pytest.raises(psycopg.errors.InsufficientPrivilege):
@@ -322,7 +321,7 @@ def test_ai_role_cannot_change_what_a_source_is(database: PostgresContainer, see
 
 
 async def test_ai_role_cannot_write_or_see_another_tenants_index(
-    indexer: Indexer, database: PostgresContainer, seed: Seed
+    indexer: Indexer, database: Database, seed: Seed
 ) -> None:
     owner, other = seed.tenant(), seed.tenant()
     source = seed.source(owner)

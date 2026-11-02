@@ -10,6 +10,7 @@ from typing import Protocol
 
 # Şema ile aynı olmalı: chunks.embedding vector(1024).
 DIMENSIONS = 1024
+DEFAULT_MODEL = "intfloat/multilingual-e5-large"
 
 _WORD = re.compile(r"\w+", re.UNICODE)
 
