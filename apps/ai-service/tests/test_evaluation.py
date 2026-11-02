@@ -82,8 +82,25 @@ def test_reference_matching(ref: SourceRef, doc: str, section: str, expected: bo
     assert matches(ref, doc, section) is expected
 
 
+def test_alternative_section_satisfies_the_same_source() -> None:
+    ref = SourceRef("lifecycle.md", "Liveness probe", (SourceRef("probes.md", "Liveness probe"),))
+    assert matches(ref, "probes.md", "Probes > Types of probe > Liveness probe")
+    assert matches(ref, "lifecycle.md", "Pod Lifecycle > Container probes > Liveness probe")
+    assert not matches(ref, "probes.md", "Probes > Readiness probe")
+
+
+def test_golden_v1_differs_from_v0_only_by_alternatives() -> None:
+    v0 = {q.id: q for q in load_golden(EVAL_DIR / "golden" / "v0.jsonl")}
+    v1 = {q.id: q for q in load_golden(EVAL_DIR / "golden" / "v1.jsonl")}
+    assert v0.keys() == v1.keys()
+    for qid, q in v1.items():
+        stripped = tuple(SourceRef(s.doc, s.section) for s in q.sources)
+        assert (q.question, stripped) == (v0[qid].question, v0[qid].sources), qid
+    assert {qid for qid, q in v1.items() if any(s.alternatives for s in q.sources)} == {"k8s-002", "k8s-005"}
+
+
 def test_golden_set_loads_with_expected_shape() -> None:
-    questions = load_golden(EVAL_DIR / "golden" / "v0.jsonl")
+    questions = load_golden(EVAL_DIR / "golden" / "v1.jsonl")
     assert len(questions) == 30
     assert all(q.sources for q in questions if q.answerable)
     assert not any(q.sources for q in questions if not q.answerable)
@@ -143,6 +160,12 @@ async def test_golden_reference_missing_from_the_index_fails_loudly(database: Da
 
     with pytest.raises(runner.GoldenMismatch, match="Startup probe"):
         await runner.run(database, corpora, broken, HashEmbedder())
+
+    typo = SourceRef("docs/probes.md", "Liveness probe", (SourceRef("docs/probes.md", "Livenes probe"),))
+    with pytest.raises(runner.GoldenMismatch, match="Livenes probe"):
+        await runner.run(
+            database, corpora, [Question("y", "?", "en", "single_hop", "k8s", (typo,))], HashEmbedder()
+        )
 
 
 async def test_search_is_scoped_to_the_tenant_and_collection(database: Database) -> None:

@@ -4,6 +4,8 @@ Bu proje [Semantic Versioning](https://semver.org) kullanır.
 Biçim: [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/).
 
 ## [Unreleased]
+### Changed
+- Altın set v1: `k8s-002` ve `k8s-005` kaynaklarına aynı bilgiyi taşıyan alternatif bölümler eklendi (`alternatives`); değerlendirme ve doğrulayıcı v1'i kullanır, baseline yeniden üretildi. v0 değiştirilmeden saklanır.
 
 ## [0.3.0] - 2026-11-02
 Faz 3 (AI servisi ve indeksleme) kapısı geçildi: recall@k altın set v0 üzerinde ölçülüyor ve

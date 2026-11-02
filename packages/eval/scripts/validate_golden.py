@@ -45,6 +45,13 @@ def validate_item(item: dict, line_no: int) -> list[str]:
         for src in sources:
             if not isinstance(src, dict) or not src.get("doc") or not src.get("section"):
                 errors.append(f"satır {line_no}: her kaynakta 'doc' ve 'section' olmalı")
+                continue
+            # v1: aynı bilgiyi taşıyan başka bir bölüm de bu kaynağı karşılar.
+            alternatives = src.get("alternatives", [])
+            if not isinstance(alternatives, list) or not all(
+                isinstance(a, dict) and a.get("doc") and a.get("section") for a in alternatives
+            ):
+                errors.append(f"satır {line_no}: 'alternatives' doc ve section içeren nesnelerin listesi olmalı")
     return errors
 
 

@@ -31,7 +31,7 @@ contract-lint:
 	docker run --rm -v "$(CURDIR)/packages/api-contract:/spec" -w /spec redocly/cli:2.62.2 lint openapi.yaml
 
 eval-validate:
-	$(PYTHON) -I packages/eval/scripts/validate_golden.py packages/eval/golden/v0.jsonl
+	$(PYTHON) -I packages/eval/scripts/validate_golden.py packages/eval/golden/v1.jsonl
 
 api-test:
 	cd apps/api && ./mvnw -B verify

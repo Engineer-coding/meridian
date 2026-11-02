@@ -100,7 +100,7 @@ async def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(prog="python -m meridian_ai.evaluation")
     parser.add_argument("--name", default="latest", help="rapor adı (packages/eval/reports/<ad>.json)")
     parser.add_argument("--embedder", choices=["e5", "hash"], default="e5")
-    parser.add_argument("--golden", type=Path, default=corpus.EVAL_DIR / "golden" / "v0.jsonl")
+    parser.add_argument("--golden", type=Path, default=corpus.EVAL_DIR / "golden" / "v1.jsonl")
     args = parser.parse_args(argv)
 
     if args.embedder == "e5":

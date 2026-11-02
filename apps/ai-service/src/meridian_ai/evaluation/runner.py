@@ -144,11 +144,14 @@ def _check_golden(database: Database, questions: Sequence[Question]) -> None:
         database,
         "SELECT d.path, c.section FROM core.chunks c JOIN core.documents d ON d.id = c.document_id",
     )
+    # Alternatifler dahil her aday tek tek denetlenir: yanlış yazılmış bir alternatif sessizce
+    # yok sayılmasın.
     missing = [
-        f"{q.id}: {ref.doc} § {ref.section}"
+        f"{q.id}: {candidate.doc} § {candidate.section}"
         for q in questions
         for ref in q.sources
-        if not any(matches(ref, path, section) for path, section in rows)
+        for candidate in ref.candidates()
+        if not any(matches(candidate, path, section) for path, section in rows)
     ]
     if missing:
         raise GoldenMismatch("indekste karşılığı olmayan altın kaynaklar:\n  " + "\n  ".join(missing))

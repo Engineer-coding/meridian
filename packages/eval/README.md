@@ -7,7 +7,8 @@ recall@k ölçülür ve raporlanır ([reports/baseline.md](reports/baseline.md))
 |---|---|
 | `corpus/manifest.json` | Korpus sürümleri: Kubernetes `concepts` (sabit commit) ve KVKK (resmî PDF'in sha256'sı) |
 | `corpus/kvkk/6698.md` | KVKK metni; PDF'ten `scripts/kvkk_to_markdown.py` ile üretilir, her madde bir başlık |
-| `golden/v0.jsonl` | 30 soru: 23 cevaplı (15 tek kaynaklı, 8 çok kaynaklı), 7 cevapsız; 12 Türkçe, 18 İngilizce |
+| `golden/v1.jsonl` | 30 soru: 23 cevaplı (15 tek kaynaklı, 8 çok kaynaklı), 7 cevapsız; 12 Türkçe, 18 İngilizce. Kaynaklar `alternatives` ile aynı bilgiyi taşıyan başka bölümleri de kabul edebilir |
+| `golden/v0.jsonl` | İlk sürüm (v0.3.0 baseline'ı bununla ölçüldü); değiştirilmez |
 | `reports/baseline.{json,md}` | Kayıtlı ölçüm; altın set ya da manifest değişirse CI yeniden üretilmesini ister |
 
 ```bash
@@ -52,9 +53,12 @@ kaynağın ikinci parçası yeni bilgi getirmediği için her kaynak en fazla bi
 - **Cevapsız sorular skorla ayrılamıyor:** en iyi vektör skoru cevaplı sorularda 0,85–0,91,
   cevapsızlarda 0,79–0,87; aralıklar örtüşüyor. "Bilmiyorum" kararı tek bir benzerlik eşiğiyle
   verilemez, Faz 4'te cevap üretimi aşamasında ele alınmalı.
-- **Altın set v1 için düzeltme adayları** (elle doğrulama gerektirir, bu sürümde değiştirilmedi):
-  - `k8s-005`: cevap (30 sn'lik kapanma süresi) "Pod phase" değil "Termination of Pods" bölümünde;
-    arama o bölümü 3. sırada buluyor.
-  - `k8s-002`: bu commit'te prob'ların ayrı bir sayfası var (`workloads/pods/probes.md`); arama
-    doğru içeriği oradan buluyor ama altın set yalnızca `pod-lifecycle.md`'yi kabul ediyor.
-    Altın kaynaklar için "alternatif belge" desteği gerekiyor.
+- **Altın set v1** (v0.3.0 sonrası): iki soruya alternatif kaynak eklendi, sorular ve asıl
+  kaynaklar değişmedi.
+  - `k8s-005`: 30 sn'lik varsayılan gerçekten "Pod phase" bölümünde (asıl etiket doğru); beklenen
+    cevabın ikinci yarısı (süre dolunca KILL) "Termination of Pods" bölümünde → alternatif.
+  - `k8s-002`: prob'ların ayrı sayfası (`workloads/pods/probes.md`) aynı bilgiyi taşıyor; beklenen
+    cevaptaki EndpointSlice cümlesi orada birebir geçiyor → her iki kaynağa alternatif.
+  - Etkisi küçük: vektör recall@3 0,826 → 0,848, MRR 0,821 → 0,824; hibrit recall@5 0,783 → 0,826.
+    `k8s-002`'nin readiness kaynağı hiçbir yöntemde ilk 10'a girmiyor: bu bir etiket değil,
+    gerçek bir retrieval hatası.

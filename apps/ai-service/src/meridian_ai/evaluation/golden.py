@@ -11,6 +11,11 @@ from pathlib import Path
 class SourceRef:
     doc: str
     section: str
+    # Aynı bilgiyi taşıyan başka bölümler (v1): herhangi biri bulunursa kaynak bulunmuş sayılır.
+    alternatives: tuple["SourceRef", ...] = ()
+
+    def candidates(self) -> tuple["SourceRef", ...]:
+        return (self, *self.alternatives)
 
 
 @dataclass(frozen=True)
@@ -39,10 +44,15 @@ def load_golden(path: Path) -> list[Question]:
                     lang=item["lang"],
                     type=item["type"],
                     corpus=item["corpus"],
-                    sources=tuple(SourceRef(s["doc"], s["section"]) for s in item["sources"]),
+                    sources=tuple(_source(s) for s in item["sources"]),
                 )
             )
     return questions
+
+
+def _source(raw: dict) -> SourceRef:
+    alternatives = tuple(SourceRef(a["doc"], a["section"]) for a in raw.get("alternatives", []))
+    return SourceRef(raw["doc"], raw["section"], alternatives)
 
 
 _PUNCTUATION = re.compile(r"[^\w\s]")
@@ -62,6 +72,10 @@ def matches(ref: SourceRef, doc_path: str, section: str) -> bool:
     olarak eşleşir: "Madde 13" → "Madde 13 – Veri sorumlusuna başvuru" (ama "Madde 130" değil);
     "type: ClusterIP" → "`type: ClusterIP`".
     """
+    return any(_matches_one(candidate, doc_path, section) for candidate in ref.candidates())
+
+
+def _matches_one(ref: SourceRef, doc_path: str, section: str) -> bool:
     if doc_path != ref.doc:
         return False
     path = [normalize(part) for part in section.split(" > ")]
