@@ -24,6 +24,13 @@ spring:
         jwt:
           issuer-uri: http://localhost:8180/realms/meridian
           audiences: meridian-api
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: ${RABBITMQ_USER}
+    password: ${RABBITMQ_PASSWORD}
+    # Aktarıcı her partiden sonra broker'ın diske yazdığını bekler (ADR-0004).
+    publisher-confirm-type: simple
   mvc:
     problemdetails:
       enabled: true
@@ -44,3 +51,11 @@ management:
     health:
       probes:
         enabled: true
+
+meridian:
+  outbox:
+    relay:
+      url: ${spring.datasource.url}
+      username: meridian_relay
+      password: ${DB_RELAY_PASSWORD}
+      poll-interval: 500ms

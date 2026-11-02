@@ -4,6 +4,14 @@ Bu proje [Semantic Versioning](https://semver.org) kullanır.
 Biçim: [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/).
 
 ## [Unreleased]
+### Added
+- Koleksiyon ve kaynak uçları (`/v1/tenants/{tenantId}/collections`, `/sources`): idempotent oluşturma, rol denetimi (viewer → 403), cursor sayfalaması, asenkron silme.
+- Transactional outbox ve RabbitMQ aktarıcısı (ADR-0004): olay kayıtla aynı işlemde yazılır, broker onayından sonra silinir; ayrı `meridian_relay` veritabanı rolü.
+- RabbitMQ topolojisi: `meridian.events` → `ai.indexing` (quorum, teslim sınırı 5) → `ai.indexing.dlq`.
+- Bileşik yabancı anahtarlar: kaynak başka kiracının koleksiyonuna bağlanamaz (tehdit T13).
+
+### Changed
+- Yeni ortam değişkeni `DB_RELAY_PASSWORD`. Mevcut yerel veritabanında rol yoksa `make reset && make up`.
 
 ## [0.2.0] - 2026-11-02
 Faz 2 (çekirdek backend) kapısı geçildi: sözleşmedeki her kiracıya bağlı uç nokta için

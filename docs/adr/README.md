@@ -10,7 +10,7 @@ Kabul edilmiş bir ADR değiştirilmez; yerine yeni bir ADR yazılır ve eskisin
 | [0001](0001-modular-monolith-and-ai-service.md) | Modüler monolit çekirdek ve ayrı AI servisi | Kabul edildi |
 | [0002](0002-tenant-isolation-rls.md) | Kiracı izolasyonu: paylaşımlı şema + RLS | Kabul edildi |
 | [0003](0003-pgvector.md) | Vektör araması için PostgreSQL + pgvector | Kabul edildi |
-| 0004 | RabbitMQ ve transactional outbox | Planlandı |
+| [0004](0004-rabbitmq-outbox.md) | RabbitMQ ve transactional outbox | Kabul edildi |
 | 0005 | Kimlik: OIDC ve API anahtarları | Planlandı |
 | 0006 | Streaming: SSE ve WebSocket | Planlandı |
 | 0007 | Hibrit retrieval ve reranking seçimi (ablasyon verisiyle) | Planlandı |

@@ -1,10 +1,10 @@
 openapi: 3.1.0
 info:
   title: Meridian API
-  version: 0.1.0
+  version: 0.2.0
   summary: Çok kiracılı kurumsal bilgi ve ajan platformu
   description: |
-    Meridian çekirdek API sözleşmesi (v0: kimlik, kiracı, kaynak).
+    Meridian çekirdek API sözleşmesi (v0: kimlik, kiracı, koleksiyon, kaynak).
     Hatalar RFC 9457 `application/problem+json` biçimindedir.
     Başka bir kiracıya ait kaynaklar her zaman `404` döner (varlık bilgisi sızdırılmaz).
   license:
@@ -21,6 +21,8 @@ tags:
     description: Oturum sahibi kullanıcı
   - name: tenants
     description: Kiracı yönetimi
+  - name: collections
+    description: Kaynakların gruplandığı ve erişimin yönetildiği koleksiyonlar
   - name: sources
     description: Bilgi kaynakları ve indeksleme
 
@@ -98,6 +100,58 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
+  /v1/tenants/{tenantId}/collections:
+    parameters:
+      - $ref: '#/components/parameters/TenantId'
+    get:
+      tags: [collections]
+      operationId: listCollections
+      summary: Koleksiyonları listele
+      responses:
+        '200':
+          description: Koleksiyonlar (ada göre sıralı)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Collection'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      tags: [collections]
+      operationId: createCollection
+      summary: Koleksiyon oluştur
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCollectionRequest'
+      responses:
+        '201':
+          description: Koleksiyon oluşturuldu
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Collection'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/IdempotencyKeyReused'
+
   /v1/tenants/{tenantId}/sources:
     parameters:
       - $ref: '#/components/parameters/TenantId'
@@ -153,7 +207,11 @@ paths:
         '403':
           $ref: '#/components/responses/Forbidden'
         '404':
-          $ref: '#/components/responses/NotFound'
+          description: Kiracı veya `collectionId` bulunamadı (erişim yoksa da aynı cevap)
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
         '422':
           $ref: '#/components/responses/IdempotencyKeyReused'
         '429':
@@ -383,6 +441,29 @@ components:
         plan:
           type: string
           enum: [free, team, enterprise]
+        createdAt:
+          type: string
+          format: date-time
+
+    CreateCollectionRequest:
+      type: object
+      required: [name]
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+
+    Collection:
+      type: object
+      required: [id, name, createdAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
         createdAt:
           type: string
           format: date-time
