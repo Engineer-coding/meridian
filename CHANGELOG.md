@@ -4,12 +4,18 @@ Bu proje [Semantic Versioning](https://semver.org) kullanır.
 Biçim: [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/).
 
 ## [Unreleased]
+
+## [0.2.0] - 2026-11-02
+Faz 2 (çekirdek backend) kapısı geçildi: sözleşmedeki her kiracıya bağlı uç nokta için
+"A kiracısı B'nin verisine erişemez" testi CI'da yeşil.
+
 ### Added
 - Spring Boot 4.1 çekirdek API: Flyway şeması, sahip/uygulama rolleri, zorunlu RLS ve kiracı bağlamının her işleme aktarılması.
 - Keycloak 26.8 ile OIDC kimlik doğrulama; adresteki kiracı yalnızca üyelik doğrulandıktan sonra kabul edilir.
 - OpenAPI sözleşmesinden üretilen sunucu arayüzleri; sözleşmeye uymayan kod derlenmez.
 - `POST /v1/tenants`: `Idempotency-Key` ile tekrarlanabilir kiracı oluşturma (aynı anahtar + farklı gövde → 422).
 - Kiracı sızıntı paketi: sözleşmedeki her `{tenantId}` uç noktası için otomatik üretilen erişim testi.
+- Spring Modulith modül sınırları ve ArchUnit mimari kuralları (`docs/architecture/modules.md`).
 
 ### Fixed
 - Sözleşmede kaynak türü alanlarına `type: string` eklendi; kod üretici discriminator'ı doğru kuruyor.
@@ -26,5 +32,6 @@ Biçim: [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/).
 - MinIO yerine RustFS: MinIO topluluk Docker imajları yayından kalktı.
 - gitleaks-action yerine sürümü sabitlenmiş gitleaks imajı: action ilk commit'te aralığı çözemiyordu.
 
-[Unreleased]: https://github.com/Engineer-coding/meridian/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/Engineer-coding/meridian/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/Engineer-coding/meridian/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/Engineer-coding/meridian/releases/tag/v0.1.0
