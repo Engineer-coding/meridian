@@ -10,10 +10,14 @@ Biçim: [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/).
 - RabbitMQ topolojisi: `meridian.events` → `ai.indexing` (quorum, teslim sınırı 5) → `ai.indexing.dlq`.
 - Bileşik yabancı anahtarlar: kaynak başka kiracının koleksiyonuna bağlanamaz (tehdit T13).
 - Python AI servisi iskeleti (`apps/ai-service`, FastAPI + uv): `/health/live`, `/health/ready`, `make ai-test`, `make ai-run`, CI işi.
+- İndeksleme hattı (ADR-0012): GitHub kaynakları tek commit'e sabitlenerek çekilir, Markdown başlıklarına göre bölünür, `multilingual-e5-large` ile yerelde gömülür ve `documents`/`chunks` (pgvector + `tsvector`) tablolarına tek işlemde yazılır; `source.deleted` kaynağı indeksiyle birlikte siler.
+- `meridian_ai` veritabanı rolü ve `processed_events` ile idempotent tüketici: aynı olay kaç kez gelirse gelsin indeks bir kez yazılır (tehdit T16).
+- GitHub kaynaklarında `paths` alanı: büyük depolarda yalnızca seçilen dizinler indekslenir.
 - `ai.indexing` tüketicisi (ADR-0011): geçici hatada üstel bekleme + jitter ile `ai.indexing.retry.N` kuyrukları, kalıcı hata ve tükenen denemelerde DLQ; başlık/gövde uyuşmayan mesajlar işlenmez (tehdit T15).
 
 ### Changed
-- Yeni ortam değişkeni `DB_RELAY_PASSWORD`. Mevcut yerel veritabanında rol yoksa `make reset && make up`.
+- Yeni ortam değişkenleri `DB_RELAY_PASSWORD` ve `DB_AI_PASSWORD`. Mevcut yerel veritabanında roller yoksa `make reset && make up`.
+- `web` ve `upload` kaynakları henüz indekslenmez; `failed` durumuna geçer ve nedeni `lastError`'da yazar.
 
 ## [0.2.0] - 2026-11-02
 Faz 2 (çekirdek backend) kapısı geçildi: sözleşmedeki her kiracıya bağlı uç nokta için

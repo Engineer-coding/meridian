@@ -157,7 +157,8 @@ class OutboxRelayTest extends PostgresIntegrationTest {
 
     @Test
     void relayRoleSeesOnlyTheOutbox() {
-        for (String table : List.of("sources", "collections", "tenants", "users", "memberships", "idempotency_keys")) {
+        for (String table : List.of("sources", "collections", "tenants", "users", "memberships", "idempotency_keys",
+                "documents", "chunks", "processed_events")) {
             assertThatThrownBy(() -> queryAs("meridian_relay", RELAY_PASSWORD, "SELECT count(*) FROM core." + table))
                 .as(table)
                 .isInstanceOf(SQLException.class)

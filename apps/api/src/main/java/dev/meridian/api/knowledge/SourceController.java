@@ -88,6 +88,7 @@ class SourceController implements SourcesApi {
                 map.put("type", "github");
                 map.put("repository", github.getRepository());
                 map.put("branch", github.getBranch() == null ? "main" : github.getBranch());
+                map.put("paths", github.getPaths() == null ? List.of() : List.copyOf(github.getPaths()));
             }
             default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bilinmeyen kaynak türü");
         }

@@ -26,12 +26,14 @@ public abstract class PostgresIntegrationTest {
 
     protected static final String APP_PASSWORD = "app_test";
     protected static final String RELAY_PASSWORD = "relay_test";
+    protected static final String AI_PASSWORD = "ai_test";
 
     protected static final PostgreSQLContainer POSTGRES = new PostgreSQLContainer(
             DockerImageName.parse("pgvector/pgvector:pg17").asCompatibleSubstituteFor("postgres"))
         .withEnv("DB_OWNER_PASSWORD", "owner_test")
         .withEnv("DB_APP_PASSWORD", APP_PASSWORD)
         .withEnv("DB_RELAY_PASSWORD", RELAY_PASSWORD)
+        .withEnv("DB_AI_PASSWORD", AI_PASSWORD)
         .withCopyFileToContainer(MountableFile.forHostPath(INIT + "01-extensions.sql"),
             "/docker-entrypoint-initdb.d/01-extensions.sql")
         .withCopyFileToContainer(MountableFile.forHostPath(INIT + "02-roles.sh", 0755),

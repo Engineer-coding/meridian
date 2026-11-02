@@ -18,3 +18,4 @@ Kabul edilmiş bir ADR değiştirilmez; yerine yeni bir ADR yazılır ve eskisin
 | 0009 | GitOps ile dağıtım | Planlandı |
 | 0010 | Değerlendirme kapısının CI'daki yeri | Planlandı |
 | [0011](0011-consumer-retry-dlq.md) | Kuyruk tüketicisi: yeniden deneme, DLQ ve teslim garantisi | Kabul edildi |
+| [0012](0012-indexing-pipeline.md) | İndeksleme hattı ve embedding modeli (v0) | Kabul edildi |

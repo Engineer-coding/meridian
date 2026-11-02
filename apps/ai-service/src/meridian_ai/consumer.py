@@ -10,7 +10,7 @@ from aio_pika.abc import AbstractChannel, AbstractIncomingMessage, AbstractRobus
 from aio_pika.connection import make_url
 
 from meridian_ai import topology
-from meridian_ai.events import InvalidMessage, parse_event
+from meridian_ai.events import Event, InvalidMessage, parse_event
 from meridian_ai.handlers import Handler, PermanentError
 from meridian_ai.retry import backoff
 from meridian_ai.settings import Settings
@@ -91,17 +91,30 @@ class IndexingConsumer:
         headers = dict(message.headers or {})
         try:
             event = parse_event(message.body, message.message_id, headers)
-            await self._handler(event)
-        except (InvalidMessage, PermanentError) as e:
-            log.warning("kalıcı hata, DLQ'ya gönderiliyor message_id=%s: %s", message.message_id, e)
+        except InvalidMessage as e:
+            log.warning("okunamayan mesaj, DLQ'ya gönderiliyor message_id=%s: %s", message.message_id, e)
             await message.reject(requeue=False)
+            return
+        try:
+            await self._handler.handle(event)
+        except PermanentError as e:
+            log.warning("kalıcı hata, DLQ'ya gönderiliyor message_id=%s: %s", message.message_id, e)
+            await self._dead_letter(message, event, e)
         except Exception as e:
-            await self._retry_later(message, headers, e)
+            await self._retry_later(message, event, headers, e)
         else:
             await message.ack()
 
+    async def _dead_letter(self, message: AbstractIncomingMessage, event: Event, error: Exception) -> None:
+        try:
+            await self._handler.failed(event, error)
+        except Exception:
+            # Sonuç kaydedilemedi (ör. veritabanı kapalı); mesaj yine de DLQ'da incelenebilir.
+            log.exception("başarısızlık kaydedilemedi message_id=%s", message.message_id)
+        await message.reject(requeue=False)
+
     async def _retry_later(
-        self, message: AbstractIncomingMessage, headers: dict[str, Any], error: Exception
+        self, message: AbstractIncomingMessage, event: Event, headers: dict[str, Any], error: Exception
     ) -> None:
         attempt = int(headers.get(topology.RETRY_HEADER, 0)) + 1
         if attempt > self._settings.max_retries:
@@ -111,7 +124,7 @@ class IndexingConsumer:
                 message.message_id,
                 error,
             )
-            await message.reject(requeue=False)
+            await self._dead_letter(message, event, error)
             return
 
         delay = backoff(attempt, self._settings.retry_base_ms, self._settings.retry_factor)

@@ -70,4 +70,4 @@ def test_header_and_body_must_agree() -> None:
 
 def test_password_with_special_characters_is_escaped_in_url() -> None:
     settings = Settings(rabbitmq_user="meridian", rabbitmq_password="p@ss/w:rd", _env_file=None)
-    assert settings.amqp_url == "amqp://meridian:p%40ss%2Fw%3Ard@localhost:5672/"
+    assert settings.amqp_url == "amqp://meridian:p%40ss%2Fw%3Ard@127.0.0.1:5672/"

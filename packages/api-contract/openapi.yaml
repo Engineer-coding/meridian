@@ -517,6 +517,18 @@ components:
         branch:
           type: string
           default: main
+        paths:
+          type: array
+          description: >-
+            Yalnızca bu dizinlerdeki dosyalar indekslenir (ör. büyük bir depoda dokümantasyon
+            klasörü). Boşsa tüm depo. Markdown ve düz metin dosyaları alınır.
+          maxItems: 20
+          items:
+            type: string
+            minLength: 1
+            maxLength: 300
+            pattern: '^[A-Za-z0-9_-][A-Za-z0-9_./-]*$'
+          examples: [['content/en/docs/concepts']]
 
     SourceConfig:
       oneOf:

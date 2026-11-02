@@ -40,4 +40,4 @@ ai-test:
 	cd apps/ai-service && uv sync --locked && uv run ruff check && uv run ruff format --check && uv run pytest
 
 ai-run:
-	cd apps/ai-service && PYTHONUTF8=1 uv run uvicorn meridian_ai.app:create_app --factory --port 8090
+	cd apps/ai-service && PYTHONUTF8=1 uv run python -m meridian_ai

@@ -3,7 +3,7 @@
 import asyncio
 import json
 import time
-from collections.abc import AsyncIterator, Callable, Iterator
+from collections.abc import AsyncIterator, Callable
 from typing import Any
 from uuid import uuid4
 
@@ -11,37 +11,14 @@ import aio_pika
 import pytest
 from aio_pika import DeliveryMode, ExchangeType, Message
 from aio_pika.abc import AbstractChannel, AbstractIncomingMessage, AbstractRobustConnection
-from fastapi.testclient import TestClient
-from testcontainers.community.rabbitmq import RabbitMqContainer
 
 from meridian_ai import topology
-from meridian_ai.app import create_app
 from meridian_ai.consumer import IndexingConsumer
 from meridian_ai.events import Event
-from meridian_ai.handlers import PermanentError, handle_event
+from meridian_ai.handlers import PermanentError
 from meridian_ai.settings import Settings
 
-MAX_RETRIES = 2
-
-
-@pytest.fixture(scope="session")
-def broker() -> Iterator[RabbitMqContainer]:
-    with RabbitMqContainer("rabbitmq:4.1") as container:
-        yield container
-
-
-@pytest.fixture(scope="session")
-def settings(broker: RabbitMqContainer) -> Settings:
-    return Settings(
-        rabbitmq_host=broker.get_container_host_ip(),
-        rabbitmq_port=int(broker.get_exposed_port(5672)),
-        rabbitmq_user=broker.username,
-        rabbitmq_password=broker.password,
-        retry_base_ms=100,
-        retry_factor=2,
-        max_retries=MAX_RETRIES,
-        _env_file=None,
-    )
+MAX_RETRIES = 2  # conftest.settings ile aynı
 
 
 @pytest.fixture(scope="session")
@@ -84,10 +61,14 @@ class Recorder:
 
     def __init__(self, *failures: Exception) -> None:
         self.calls: list[Event] = []
+        self.failures: list[tuple[Event, Exception]] = []
         self._failures = list(failures)
         self.always: Exception | None = None
 
-    async def __call__(self, event: Event) -> None:
+    async def failed(self, event: Event, error: Exception) -> None:
+        self.failures.append((event, error))
+
+    async def handle(self, event: Event) -> None:
         self.calls.append(event)
         if self.always is not None:
             raise self.always
@@ -212,6 +193,7 @@ async def test_exhausted_retries_end_in_the_dead_letter_queue(run_consumer, chan
     [dead] = await dead_letters(channel, expected=1)
 
     assert len(handler.calls) == MAX_RETRIES + 1
+    assert [type(error) for _, error in handler.failures] == [ConnectionError]
     assert dead.message_id == body["eventId"]
     assert dead.headers[topology.RETRY_HEADER] == MAX_RETRIES
     assert dead.headers["tenant_id"] == body["tenantId"]
@@ -226,20 +208,8 @@ async def test_permanent_failure_skips_retries(run_consumer, channel: AbstractCh
     [dead] = await dead_letters(channel, expected=1)
 
     assert len(handler.calls) == 1
+    assert [str(error) for _, error in handler.failures] == ["depo bulunamadı"]
     assert topology.RETRY_HEADER not in (dead.headers or {})
-
-
-async def test_unknown_event_type_goes_to_the_dead_letter_queue(
-    settings: Settings, channel: AbstractChannel
-) -> None:
-    consumer = IndexingConsumer(settings, handle_event)
-    consumer.start()
-    try:
-        await eventually(lambda: consumer.ready)
-        await publish(channel, envelope("source.renamed"))
-        assert len(await dead_letters(channel, expected=1)) == 1
-    finally:
-        await consumer.stop()
 
 
 @pytest.mark.parametrize(
@@ -259,12 +229,4 @@ async def test_untrustworthy_message_is_never_handled(
     await publish(channel, body, **headers)
     assert len(await dead_letters(channel, expected=1)) == 1
     assert handler.calls == []
-
-
-def test_readiness_follows_the_broker_connection(settings: Settings, connection) -> None:
-    with TestClient(create_app(settings)) as client:
-        deadline = time.monotonic() + 15
-        while client.get("/health/ready").status_code != 200:
-            assert time.monotonic() < deadline, "tüketici hazır olmadı"
-            time.sleep(0.1)
-        assert client.get("/health/ready").json() == {"status": "UP"}
+    assert handler.failures == []

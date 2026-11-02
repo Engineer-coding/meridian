@@ -1,31 +1,21 @@
-"""Olay işleyicileri. Asıl indeksleme (ayrıştırma, parçalama, embedding) Adım 16'da gelir."""
+"""Olay işleyicisi sözleşmesi ve hata sınıflandırması."""
 
-import logging
-from collections.abc import Awaitable, Callable
+from typing import Protocol
 
 from meridian_ai.events import Event
-
-log = logging.getLogger(__name__)
-
-Handler = Callable[[Event], Awaitable[None]]
 
 
 class PermanentError(Exception):
     """Yeniden denemek sonucu değiştirmez (ör. erişilemeyen depo, desteklenmeyen tür): doğrudan DLQ.
 
+    Mesajı kiracıya (kaynağın ``last_error`` alanı) gösterilir; iç ayrıntı içermemelidir.
     Bunun dışındaki her hata geçici sayılır ve beklemeli olarak yeniden denenir.
     """
 
 
-async def handle_event(event: Event) -> None:
-    match event.type:
-        case "source.created" | "source.deleted":
-            log.info(
-                "olay alındı type=%s tenant=%s source=%s event=%s",
-                event.type,
-                event.tenant_id,
-                event.aggregate_id,
-                event.event_id,
-            )
-        case _:
-            raise PermanentError(f"bilinmeyen olay türü: {event.type}")
+class Handler(Protocol):
+    async def handle(self, event: Event) -> None:
+        """Olayı işler. Aynı olay birden çok kez gelebilir; etkisi bir kez oluşmalıdır."""
+
+    async def failed(self, event: Event, error: Exception) -> None:
+        """Olay DLQ'ya gönderilmeden hemen önce çağrılır: sonucu kalıcı olarak kaydetmek için."""

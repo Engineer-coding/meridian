@@ -131,8 +131,25 @@ class SourceApiTest extends PostgresIntegrationTest {
     }
 
     @Test
+    void githubPathsAndDefaultsReachTheEvent() throws Exception {
+        String body = mvc.perform(createSource(owner, "key-" + UUID.randomUUID(),
+                "{\"type\":\"github\",\"repository\":\"kubernetes/website\",\"paths\":[\"content/en/docs/concepts\"]}"))
+            .andExpect(status().isAccepted())
+            .andReturn().getResponse().getContentAsString();
+        String sourceId = JsonPath.read(body, "$.id");
+
+        assertThat(queryAsSuperuser("""
+                SELECT concat_ws('|', payload->'config'->>'branch', payload->'config'->'paths'->>0)
+                FROM core.outbox WHERE aggregate_id = '%s'""".formatted(sourceId)))
+            .containsExactly("main|content/en/docs/concepts");
+    }
+
+    @Test
     void invalidConfigIsBadRequest() throws Exception {
         mvc.perform(createSource(owner, "key-" + UUID.randomUUID(), "{\"type\":\"github\",\"repository\":\"not a repo\"}"))
+            .andExpect(status().isBadRequest());
+        mvc.perform(createSource(owner, "key-" + UUID.randomUUID(),
+                "{\"type\":\"github\",\"repository\":\"org/repo\",\"paths\":[\"/etc\"]}"))
             .andExpect(status().isBadRequest());
         mvc.perform(createSource(owner, "key-" + UUID.randomUUID(), "{\"type\":\"ftp\"}"))
             .andExpect(status().isBadRequest());
