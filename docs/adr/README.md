@@ -14,7 +14,7 @@ Kabul edilmiş bir ADR değiştirilmez; yerine yeni bir ADR yazılır ve eskisin
 | 0005 | Kimlik: OIDC ve API anahtarları | Planlandı |
 | 0006 | Streaming: SSE ve WebSocket | Planlandı |
 | 0007 | Hibrit retrieval ve reranking seçimi (ablasyon verisiyle) | Planlandı |
-| 0008 | LLM sağlayıcı soyutlaması ve fallback | Planlandı |
+| [0008](0008-llm-provider-and-fallback.md) | LLM sağlayıcı soyutlaması, yedek zinciri ve doğrulanmış kanıtla cevap | Kabul edildi |
 | 0009 | GitOps ile dağıtım | Planlandı |
 | 0010 | Değerlendirme kapısının CI'daki yeri | Planlandı |
 | [0011](0011-consumer-retry-dlq.md) | Kuyruk tüketicisi: yeniden deneme, DLQ ve teslim garantisi | Kabul edildi |

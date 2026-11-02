@@ -39,6 +39,13 @@ class Settings(BaseSettings):
     embedding_cache_dir: Path = Path.home() / ".cache" / "meridian" / "fastembed"
     embedding_batch_size: int = Field(default=16, ge=1)
 
+    # Cevap üretimi (ADR-0008): virgülle ayrılmış sağlayıcı zinciri, ilk token'dan önce düşen
+    # sağlayıcının yerine sıradaki denenir. CPU'da her parça ~30 sn ekler; bağlam küçük tutulur.
+    llm_chain: str = "ollama/llama3.2:3b"
+    ollama_url: str = "http://127.0.0.1:11434"
+    answer_sources: int = Field(default=3, ge=1, le=10)
+    answer_max_tokens: int = Field(default=300, ge=16)
+
     # GitHub: token olmadan saatte 60 API isteği; dosya içerikleri bu sınıra dahil değildir.
     github_token: SecretStr | None = None
     max_files_per_source: int = Field(default=2_000, ge=1)

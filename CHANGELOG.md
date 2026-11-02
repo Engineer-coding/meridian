@@ -4,6 +4,12 @@ Bu proje [Semantic Versioning](https://semver.org) kullanır.
 Biçim: [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/).
 
 ## [Unreleased]
+### Added
+- Kaynaklı cevap (ADR-0008): model önce cevabı veren cümleyi kaynaklardan alıntılar, kod alıntının kaynakta gerçekten geçtiğini doğrular; doğrulanamazsa "bilmiyorum", doğrulanırsa `[n]` atıflı kısa cevap akışla üretilir. Var olmayan kaynak numaraları işaretlenir.
+- LLM sağlayıcı zinciri (`LLM_CHAIN`, varsayılan `ollama/llama3.2:3b`): ilk token'dan önce düşen sağlayıcının yerine sıradaki denenir; hepsi düşerse yalnızca kaynaklar dönülür.
+- Cevap değerlendirmesi (`make eval-answers`): "bilmiyorum" doğruluğu, atıf isabeti, var olmayan atıf oranı ve süreler; LLM cevapları diskte önbelleklenir.
+- Tehdit T18 (belge içeriğiyle istem enjeksiyonu): ilk önlemler.
+
 ### Changed
 - Altın set v1: `k8s-002` ve `k8s-005` kaynaklarına aynı bilgiyi taşıyan alternatif bölümler eklendi (`alternatives`); değerlendirme ve doğrulayıcı v1'i kullanır, baseline yeniden üretildi. v0 değiştirilmeden saklanır.
 

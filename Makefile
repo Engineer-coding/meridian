@@ -4,7 +4,7 @@ COMPOSE = docker compose -f infra/compose/compose.yaml --env-file .env
 
 PYTHON ?= python
 
-.PHONY: up down ps logs psql reset smoke contract-lint eval-validate api-test ai-test ai-run eval eval-smoke
+.PHONY: up down ps logs psql reset smoke contract-lint eval-validate api-test ai-test ai-run eval eval-smoke eval-answers
 
 up:
 	$(COMPOSE) up -d --wait
@@ -52,3 +52,8 @@ eval:
 # Modelsiz duman testi: korpus + altın set + indeksleme + arama hattını doğrular, kaliteyi ölçmez.
 eval-smoke:
 	cd apps/ai-service && PYTHONUTF8=1 uv run python -m meridian_ai.evaluation --embedder hash --name smoke
+
+# Kaynaklı cevap değerlendirmesi (Ollama, ADR-0008). Bu donanımda soru başına ~1,5 dk;
+# cevaplar ~/.cache/meridian/eval altında önbelleklenir.
+eval-answers:
+	cd apps/ai-service && PYTHONUTF8=1 uv run python -m meridian_ai.evaluation --answers --name $(NAME)

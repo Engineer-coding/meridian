@@ -28,3 +28,5 @@ node_modules/
 packages/eval/reports/*
 !packages/eval/reports/baseline.json
 !packages/eval/reports/baseline.md
+!packages/eval/reports/answers.json
+!packages/eval/reports/answers.md

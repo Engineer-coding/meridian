@@ -2,10 +2,12 @@
 
 import hashlib
 import json
+import re
 from uuid import uuid4
 
 import pytest
 
+from meridian_ai.answering import EVIDENCE_PROMPTS
 from meridian_ai.db import create_pool
 from meridian_ai.embedding import HashEmbedder
 from meridian_ai.evaluation import metrics, runner
@@ -212,3 +214,56 @@ def test_committed_baseline_matches_the_current_golden_set() -> None:
     for mode in Mode:
         assert {row["id"] for row in report["per_question"][mode]} >= answerable
         assert {f"recall@{k}" for k in report["ks"]} <= set(report["summary"][mode]["overall"])
+
+
+# --- cevap değerlendirmesi --------------------------------------------------------------------
+
+
+class ScriptedLLM:
+    name = "scripted"
+
+    def __init__(self) -> None:
+        self.calls = 0
+
+    async def stream(self, messages, *, max_tokens):
+        """Kanıt aşamasında ilk kaynağın ilk cümlesini alıntılar; "saat" sorusunda alıntı yoktur."""
+        self.calls += 1
+        context = messages[1].content
+        if messages[-1].content in EVIDENCE_PROMPTS.values():
+            yield "YOK" if "saat" in context else re.search(r"\[1\] [^\n]*\n([^.\n]+)", context).group(1)
+        else:
+            yield "Cevap kaynakta [1]."
+
+
+async def test_answers_are_scored_against_golden_sources(database: Database) -> None:
+    corpora = [Corpus("k8s", "github", "v", DOCS[:1]), Corpus("kvkk", "upload", "v", DOCS[1:])]
+
+    report = await runner.run(
+        database, corpora, QUESTIONS, HashEmbedder(), answer_llm=ScriptedLLM(), answer_sources=2
+    )
+
+    summary = report["answers"]["summary"]
+    assert summary["n"] == 4
+    assert summary["abstain_when_unanswerable"] == 1.0
+    assert summary["abstain_when_answerable"] == 0.0
+    assert summary["invalid_citation_rate"] == 0.0
+    by_id = {row["id"]: row for row in report["answers"]["per_question"]}
+    assert by_id["q4"]["abstained"] and not by_id["q2"]["abstained"]
+    assert by_id["q2"]["cited"] == [1]
+
+
+async def test_cached_completion_is_replayed_without_calling_the_model(tmp_path) -> None:
+    from meridian_ai.evaluation.cache import CachingLLM
+    from meridian_ai.llm import Message
+
+    inner = ScriptedLLM()
+    cached = CachingLLM(inner, tmp_path / "c.sqlite")
+    messages = [Message("system", "s"), Message("user", "soru")]
+    first = "".join([t async for t in cached.stream(messages, max_tokens=10)])
+    second = "".join([t async for t in cached.stream(messages, max_tokens=10)])
+    other = "".join([t async for t in cached.stream(messages, max_tokens=11)])
+
+    assert first == second == other == "Cevap kaynakta [1]."
+    assert inner.calls == 2, "farklı ayar yeni bir anahtar"
+    assert cached.last_timing is not None
+    cached.close()

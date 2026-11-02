@@ -11,6 +11,7 @@ from uuid import UUID, uuid4
 
 import psycopg
 
+from meridian_ai.answering import Answerer, Done, Source, SourcesFound
 from meridian_ai.db import create_pool
 from meridian_ai.embedding import Embedder
 from meridian_ai.evaluation import metrics
@@ -19,6 +20,7 @@ from meridian_ai.evaluation.database import SUPERUSER, Database
 from meridian_ai.evaluation.golden import Question, matches
 from meridian_ai.events import Event
 from meridian_ai.indexer import Indexer
+from meridian_ai.llm import LLM
 from meridian_ai.retrieval import Hit, Mode, Retriever
 
 DEFAULT_KS = (1, 3, 5, 10)
@@ -35,6 +37,8 @@ async def run(
     embedder: Embedder,
     modes: Sequence[Mode] = tuple(Mode),
     ks: Sequence[int] = DEFAULT_KS,
+    answer_llm: LLM | None = None,
+    answer_sources: int = 3,
 ) -> dict[str, Any]:
     tenant = _seed_tenant(database)
     pool = create_pool(database.conninfo("meridian_ai"))
@@ -63,18 +67,96 @@ async def run(
         runs: dict[str, list[dict[str, Any]]] = {}
         for mode in modes:
             runs[mode] = [await _ask(retriever, tenant, q, mode, depth) for q in questions]
+        answers = None
+        if answer_llm is not None:
+            answerer = Answerer(retriever, answer_llm, k=answer_sources)
+            answers = []
+            for i, q in enumerate(questions, start=1):
+                answers.append(await _respond(answerer, answer_llm, tenant, q))
+                print(f"cevap {i}/{len(questions)} {q.id}", flush=True)
         chunk_count = _scalar(database, "SELECT count(*) FROM core.chunks")
         document_count = _scalar(database, "SELECT count(*) FROM core.documents")
     finally:
         await pool.close()
 
-    return {
+    report = {
         "corpora": [{"id": c.id, "version": c.version, "documents": len(c.documents)} for c in corpora],
         "index": {"documents": document_count, "chunks": chunk_count, "seconds": round(indexing_seconds, 1)},
         "questions": {"total": len(questions), "answerable": sum(q.answerable for q in questions)},
         "ks": list(ks),
         "summary": {mode: _summarize(results, questions, ks) for mode, results in runs.items()},
         "per_question": runs,
+    }
+    if answers is not None:
+        report["answers"] = {
+            "model": answer_llm.name,
+            "sources": answer_sources,
+            "summary": _summarize_answers(answers, questions),
+            "per_question": answers,
+        }
+    return report
+
+
+async def _respond(answerer: Answerer, llm: LLM, tenant: UUID, question: Question) -> dict[str, Any]:
+    sources: list[Source] = []
+    done: Done | None = None
+    async for event in answerer.answer(tenant, question.question):
+        if isinstance(event, SourcesFound):
+            sources = event.sources
+        elif isinstance(event, Done):
+            done = event
+    assert done is not None  # noqa: S101 - Answerer her zaman Done ile biter
+    timing = getattr(llm, "last_timing", None) or (done.first_token_seconds, done.total_seconds)
+
+    def supports(numbers: Iterable[int]) -> bool:
+        cited = [s for s in sources if s.number in numbers]
+        return any(
+            matches(ref, s.hit.document_path, s.hit.section) for ref in question.sources for s in cited
+        )
+
+    return {
+        "id": question.id,
+        "answer": done.answer[:600],
+        "abstained": done.abstained,
+        "degraded": done.degraded,
+        "cited": done.cited,
+        "invalid_citations": done.invalid_citations,
+        # Altın kaynaklardan biri bağlama girdi mi (üst sınır) ve model onu mu kaynak gösterdi?
+        "gold_in_context": supports(s.number for s in sources),
+        "gold_cited": supports(done.cited),
+        "sources": [_brief(s.hit) for s in sources],
+        "first_token_seconds": None if timing[0] is None else round(timing[0], 1),
+        "total_seconds": round(timing[1], 1),
+    }
+
+
+def _summarize_answers(rows: list[dict[str, Any]], questions: Sequence[Question]) -> dict[str, Any]:
+    by_id = {q.id: q for q in questions}
+    answerable = [r for r in rows if by_id[r["id"]].answerable]
+    unanswerable = [r for r in rows if not by_id[r["id"]].answerable]
+    responded = [r for r in answerable if not r["abstained"] and not r["degraded"]]
+
+    def share(items: list[dict[str, Any]], predicate) -> float | None:
+        return round(sum(1 for r in items if predicate(r)) / len(items), 3) if items else None
+
+    fresh = [r for r in rows if r["first_token_seconds"] is not None]
+    return {
+        # Cevabı olmayan soruda "bilmiyorum" demek doğru davranıştır.
+        "abstain_when_unanswerable": share(unanswerable, lambda r: r["abstained"]),
+        # Cevabı olan soruda "bilmiyorum" demek gereksiz çekimserliktir.
+        "abstain_when_answerable": share(answerable, lambda r: r["abstained"]),
+        "gold_in_context": share(answerable, lambda r: r["gold_in_context"]),
+        "cites_something": share(responded, lambda r: bool(r["cited"])),
+        "gold_cited": share(responded, lambda r: r["gold_cited"]),
+        "invalid_citation_rate": share(rows, lambda r: bool(r["invalid_citations"])),
+        "degraded": sum(1 for r in rows if r["degraded"]),
+        "median_first_token_seconds": (
+            round(statistics.median(r["first_token_seconds"] for r in fresh), 1) if fresh else None
+        ),
+        "median_total_seconds": round(statistics.median(r["total_seconds"] for r in rows), 1)
+        if rows
+        else None,
+        "n": len(rows),
     }
 
 

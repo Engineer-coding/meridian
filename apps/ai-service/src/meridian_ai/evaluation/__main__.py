@@ -15,11 +15,14 @@ import sys
 from datetime import UTC, datetime
 from pathlib import Path
 
+import httpx
+
 from meridian_ai.chunking import MAX_CHARS, OVERLAP_CHARS
 from meridian_ai.embedding import DEFAULT_MODEL, E5Embedder, HashEmbedder
 from meridian_ai.evaluation import corpus, database, runner
-from meridian_ai.evaluation.cache import CachingEmbedder
+from meridian_ai.evaluation.cache import CachingEmbedder, CachingLLM
 from meridian_ai.evaluation.golden import load_golden
+from meridian_ai.llm import build_chain
 
 CACHE = Path.home() / ".cache" / "meridian"
 
@@ -93,7 +96,42 @@ def markdown(report: dict) -> str:
         if None in row["source_ranks"]:
             first = row["top"][0] if row["top"] else "—"
             lines.append(f"- `{row['id']}` sıralar {row['source_ranks']} — ilk sonuç: {first}")
+    if answers := report.get("answers"):
+        lines += _answers_markdown(answers)
     return "\n".join(lines) + "\n"
+
+
+def _answers_markdown(answers: dict) -> list[str]:
+    s = answers["summary"]
+
+    def pct(value: float | None) -> str:
+        return "—" if value is None else f"%{value * 100:.0f}"
+
+    lines = [
+        "",
+        f"## Kaynaklı cevap (`{answers['model']}`, {answers['sources']} kaynak)",
+        "",
+        "| Ölçüt | Değer |",
+        "|---|---|",
+        f'| Cevapsız soruda "bilmiyorum" (yüksek iyi) | {pct(s["abstain_when_unanswerable"])} |',
+        f'| Cevaplı soruda gereksiz "bilmiyorum" (düşük iyi) | {pct(s["abstain_when_answerable"])} |',
+        f"| Altın kaynak bağlamda (üst sınır) | {pct(s['gold_in_context'])} |",
+        f"| Cevap en az bir kaynak gösteriyor | {pct(s['cites_something'])} |",
+        f"| Gösterilen kaynak altın kaynak | {pct(s['gold_cited'])} |",
+        f"| Var olmayan kaynak numarası | {pct(s['invalid_citation_rate'])} |",
+        f"| Ortanca ilk token / toplam süre | {s['median_first_token_seconds']} sn / "
+        f"{s['median_total_seconds']} sn |",
+        "",
+        "| Soru | Bilmiyorum | Kaynak | Altın kaynak gösterildi | Cevap |",
+        "|---|---|---|---|---|",
+    ]
+    for row in answers["per_question"]:
+        text = " ".join(row["answer"].split())[:140].replace("|", "/")
+        lines.append(
+            f"| `{row['id']}` | {'evet' if row['abstained'] else ''} | {row['cited']} | "
+            f"{'✓' if row['gold_cited'] else ''} | {text} |"
+        )
+    return lines
 
 
 async def main(argv: list[str]) -> int:
@@ -101,7 +139,15 @@ async def main(argv: list[str]) -> int:
     parser.add_argument("--name", default="latest", help="rapor adı (packages/eval/reports/<ad>.json)")
     parser.add_argument("--embedder", choices=["e5", "hash"], default="e5")
     parser.add_argument("--golden", type=Path, default=corpus.EVAL_DIR / "golden" / "v1.jsonl")
+    parser.add_argument(
+        "--answers",
+        action="store_true",
+        help="kaynaklı cevapları da üret ve ölç (CPU'da soru başına 1-3 dk; sonuçlar önbelleğe alınır)",
+    )
+    parser.add_argument("--llm", default=os.environ.get("LLM_CHAIN", "ollama/llama3.2:3b"))
+    parser.add_argument("--answer-sources", type=int, default=3)
     args = parser.parse_args(argv)
+    args.golden = args.golden.resolve()
 
     if args.embedder == "e5":
         model = os.environ.get("EMBEDDING_MODEL", DEFAULT_MODEL)
@@ -114,8 +160,26 @@ async def main(argv: list[str]) -> int:
     corpora = await corpus.load(CACHE / "eval", github_token=os.environ.get("GITHUB_TOKEN"))
     questions = load_golden(args.golden)
     print(f"korpus: {[(c.id, len(c.documents)) for c in corpora]} · {len(questions)} soru", flush=True)
+    llm, http = None, None
+    if args.answers:
+        http = httpx.AsyncClient(timeout=httpx.Timeout(900.0))
+        chain = build_chain(args.llm, http, os.environ.get("OLLAMA_URL", "http://127.0.0.1:11434"))
+        llm = CachingLLM(chain, CACHE / "eval" / "completions.sqlite")
     with database.ephemeral() as db:
-        report = runner.public(await runner.run(db, corpora, questions, embedder or HashEmbedder()))
+        report = runner.public(
+            await runner.run(
+                db,
+                corpora,
+                questions,
+                embedder or HashEmbedder(),
+                answer_llm=llm,
+                answer_sources=args.answer_sources,
+            )
+        )
+    if llm is not None and http is not None:
+        print(f"LLM önbelleği: {llm.hits} isabet, {llm.misses} yeni", flush=True)
+        llm.close()
+        await http.aclose()
     if embedder is not None:
         print(f"embedding önbelleği: {embedder.hits} isabet, {embedder.misses} yeni", flush=True)
         embedder.close()

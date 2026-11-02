@@ -62,3 +62,17 @@ kaynağın ikinci parçası yeni bilgi getirmediği için her kaynak en fazla bi
   - Etkisi küçük: vektör recall@3 0,826 → 0,848, MRR 0,821 → 0,824; hibrit recall@5 0,783 → 0,826.
     `k8s-002`'nin readiness kaynağı hiçbir yöntemde ilk 10'a girmiyor: bu bir etiket değil,
     gerçek bir retrieval hatası.
+
+## Kaynaklı cevap (Adım 18)
+`make eval-answers NAME=answers` → [reports/answers.md](reports/answers.md). Retrieval
+ölçümüne ek olarak her soru için gerçek cevap üretilir (ADR-0008):
+
+- **"Bilmiyorum" doğruluğu:** cevapsız sorularda çekimserlik (yüksek iyi), cevaplı sorularda
+  gereksiz çekimserlik (düşük iyi).
+- **Atıf:** cevap kaynak gösteriyor mu, gösterilen kaynak altın kaynak mı, var olmayan kaynak
+  numarası var mı.
+- **Süre:** ilk token ve toplam (ortanca).
+
+Cevabın içeriğinin doğruluğu (hakem model) Adım 21'de eklenecek. İlk ölçüm (`llama3.2:3b`,
+3 kaynak): cevapsız sorularda %86 "bilmiyorum", cevaplı sorularda %39 gereksiz "bilmiyorum",
+cevapların %100'ü kaynak gösteriyor, %86'sı altın kaynağı gösteriyor, ortanca toplam süre 41 sn.
