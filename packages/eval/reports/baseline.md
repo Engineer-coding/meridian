@@ -1,6 +1,6 @@
 # Retrieval değerlendirmesi — baseline
 
-- Tarih: 2026-11-02 · commit `9ce23f6`
+- Tarih: 2026-11-02 · commit `32e4877`
 - Model: `intfloat/multilingual-e5-large` · parça ≤ 1200 karakter, örtüşme 150
 - Korpus: k8s@ef4f9c6cb538 (187 belge), kvkk@5f9e7fa79319 (1 belge) → 3093 parça
 - Altın set: 23 cevaplı / 30 soru (`packages/eval/golden/v0.jsonl`, sha256 `d785ef51a1d4`)

@@ -1,7 +1,7 @@
 {
   "name": "baseline",
   "created_at": "2026-11-02",
-  "git_commit": "9ce23f6",
+  "git_commit": "32e4877",
   "embedding": {
     "model": "intfloat/multilingual-e5-large"
   },
@@ -29,7 +29,7 @@
   "index": {
     "documents": 187,
     "chunks": 3093,
-    "seconds": 25.8
+    "seconds": 14.2
   },
   "questions": {
     "total": 30,
@@ -332,7 +332,7 @@
       "top_score": {
         "answerable": {
           "mean": 0.0322,
-          "min": 0.0299,
+          "min": 0.0301,
           "max": 0.0328
         },
         "unanswerable": {
@@ -1335,7 +1335,7 @@
           null,
           null
         ],
-        "top_score": 0.0299,
+        "top_score": 0.0301,
         "top": [
           "content/en/docs/concepts/workloads/controllers/statefulset.md § StatefulSets > Pod Identity > Pod Name Label",
           "content/en/docs/concepts/services-networking/service.md § Service > Defining a Service",
