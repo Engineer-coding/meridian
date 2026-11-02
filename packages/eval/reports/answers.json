@@ -1,7 +1,7 @@
 {
   "name": "answers",
   "created_at": "2026-11-02",
-  "git_commit": "f8a47ff-dirty",
+  "git_commit": "f5ce9ea",
   "embedding": {
     "model": "intfloat/multilingual-e5-large"
   },
@@ -29,7 +29,7 @@
   "index": {
     "documents": 187,
     "chunks": 3093,
-    "seconds": 17.5
+    "seconds": 17.6
   },
   "questions": {
     "total": 30,
