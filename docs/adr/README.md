@@ -17,3 +17,4 @@ Kabul edilmiş bir ADR değiştirilmez; yerine yeni bir ADR yazılır ve eskisin
 | 0008 | LLM sağlayıcı soyutlaması ve fallback | Planlandı |
 | 0009 | GitOps ile dağıtım | Planlandı |
 | 0010 | Değerlendirme kapısının CI'daki yeri | Planlandı |
+| [0011](0011-consumer-retry-dlq.md) | Kuyruk tüketicisi: yeniden deneme, DLQ ve teslim garantisi | Kabul edildi |

@@ -4,7 +4,7 @@ COMPOSE = docker compose -f infra/compose/compose.yaml --env-file .env
 
 PYTHON ?= python
 
-.PHONY: up down ps logs psql reset smoke contract-lint eval-validate api-test
+.PHONY: up down ps logs psql reset smoke contract-lint eval-validate api-test ai-test ai-run
 
 up:
 	$(COMPOSE) up -d --wait
@@ -35,3 +35,9 @@ eval-validate:
 
 api-test:
 	cd apps/api && ./mvnw -B verify
+
+ai-test:
+	cd apps/ai-service && uv sync --locked && uv run ruff check && uv run ruff format --check && uv run pytest
+
+ai-run:
+	cd apps/ai-service && PYTHONUTF8=1 uv run uvicorn meridian_ai.app:create_app --factory --port 8090

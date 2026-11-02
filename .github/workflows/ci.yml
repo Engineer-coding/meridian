@@ -57,3 +57,14 @@ jobs:
           java-version: '25'
           cache: maven
       - run: make api-test
+  ai-service:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: '0.9.4'
+          enable-cache: true
+          cache-dependency-glob: apps/ai-service/uv.lock
+      - run: make ai-test

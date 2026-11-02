@@ -9,6 +9,8 @@ Biçim: [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/).
 - Transactional outbox ve RabbitMQ aktarıcısı (ADR-0004): olay kayıtla aynı işlemde yazılır, broker onayından sonra silinir; ayrı `meridian_relay` veritabanı rolü.
 - RabbitMQ topolojisi: `meridian.events` → `ai.indexing` (quorum, teslim sınırı 5) → `ai.indexing.dlq`.
 - Bileşik yabancı anahtarlar: kaynak başka kiracının koleksiyonuna bağlanamaz (tehdit T13).
+- Python AI servisi iskeleti (`apps/ai-service`, FastAPI + uv): `/health/live`, `/health/ready`, `make ai-test`, `make ai-run`, CI işi.
+- `ai.indexing` tüketicisi (ADR-0011): geçici hatada üstel bekleme + jitter ile `ai.indexing.retry.N` kuyrukları, kalıcı hata ve tükenen denemelerde DLQ; başlık/gövde uyuşmayan mesajlar işlenmez (tehdit T15).
 
 ### Changed
 - Yeni ortam değişkeni `DB_RELAY_PASSWORD`. Mevcut yerel veritabanında rol yoksa `make reset && make up`.

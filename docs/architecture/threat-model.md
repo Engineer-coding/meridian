@@ -41,6 +41,7 @@
 | T11 | Yerel geliştirme servislerinin ağa açılması | I | 1 | Compose portları yalnızca `127.0.0.1`'e bağlı | Compose dosyası incelemesi | **Uygulandı** |
 | T13 | Yabancı anahtar üzerinden kiracılar arası referans: FK denetimi RLS'e tabi değildir; başka kiracının koleksiyon kimliğini bilen biri ona kaynak bağlayabilir | T, I | 1, 2 | Kiracıya ait tablolar arasında bileşik FK (`tenant_id`, `id`); uygulama katmanında da RLS altında varlık kontrolü | Uygulama rolüyle doğrudan SQL denemesi (`KnowledgeSchemaTest`) | **Uygulandı** |
 | T14 | Olay kanalından sızıntı veya olay uydurma | I, T | 1, 2 | Uygulama rolü outbox'a yalnızca kendi kiracısı adına ekleyebilir, okuyamaz; aktarıcı rolü yalnızca outbox'ı görür, olay ekleyemez ([ADR-0004](../adr/0004-rabbitmq-outbox.md)) | Rol yetki testleri (`OutboxRelayTest`) | **Uygulandı** |
+| T15 | Zehirli veya sahte mesajla AI servisini kilitlemek ya da başka kiracı adına iş yaptırmak | T, D | 2 | Zarf doğrulanır; `message_id`/`tenant_id` başlıkları gövdeyle uyuşmazsa mesaj işlenmeden DLQ'ya gider. Geçici hatalar sınırlı ve beklemeli denenir, çöken tüketicide teslim sınırı 5 ([ADR-0011](../adr/0011-consumer-retry-dlq.md)) | `test_consumer.py` | **Uygulandı** |
 | T12 | Slug numaralandırma: 409 cevabı başka kiracının slug'ını kullandığını açığa çıkarır | I | 1 | Slug'lar adreste görünen, gizli olmayan tanımlayıcılardır; kiracı verisi sızmaz | — | **Kabul edilen risk** |
 
 STRIDE: **S**poofing, **T**ampering, **R**epudiation, **I**nformation disclosure, **D**enial of service, **E**levation of privilege.
