@@ -4,7 +4,7 @@ import json
 import statistics
 import time
 from collections import defaultdict
-from collections.abc import Iterable, Sequence
+from collections.abc import Iterable, Mapping, Sequence
 from datetime import UTC, datetime
 from typing import Any
 from uuid import UUID, uuid4
@@ -21,6 +21,7 @@ from meridian_ai.evaluation.golden import Question, matches
 from meridian_ai.events import Event
 from meridian_ai.indexer import Indexer
 from meridian_ai.llm import LLM
+from meridian_ai.reranking import Reranker
 from meridian_ai.retrieval import Hit, Mode, Retriever
 
 DEFAULT_KS = (1, 3, 5, 10)
@@ -39,7 +40,14 @@ async def run(
     ks: Sequence[int] = DEFAULT_KS,
     answer_llm: LLM | None = None,
     answer_sources: int = 3,
+    rerankers: Mapping[str, Reranker] | None = None,
+    answer_config: str = Mode.VECTOR,
 ) -> dict[str, Any]:
+    """Her yapılandırma = ilk aşama (``modes``) ya da ilk aşama + reranker (ablasyon, ADR-0007).
+
+    ``rerankers``: kısa ad → reranker; her biri vektör ve hibrit ilk aşamanın üstünde denenir.
+    ``answer_config``: cevap değerlendirmesinin kullanacağı yapılandırma, ör. ``vector+bge-m3``.
+    """
     tenant = _seed_tenant(database)
     pool = create_pool(database.conninfo("meridian_ai"))
     await pool.open(wait=True)
@@ -62,14 +70,23 @@ async def run(
         indexing_seconds = time.monotonic() - started
         _check_golden(database, questions)
 
-        retriever = Retriever(pool, embedder)
+        configs: dict[str, tuple[Retriever, Mode, Reranker | None]] = {
+            str(mode): (Retriever(pool, embedder), mode, None) for mode in modes
+        }
+        for short, reranker in (rerankers or {}).items():
+            for mode in (Mode.VECTOR, Mode.HYBRID):
+                configs[f"{mode}+{short}"] = (Retriever(pool, embedder, reranker=reranker), mode, reranker)
         depth = max(ks)
         runs: dict[str, list[dict[str, Any]]] = {}
-        for mode in modes:
-            runs[mode] = [await _ask(retriever, tenant, q, mode, depth) for q in questions]
+        for name, (retriever, mode, reranker) in configs.items():
+            runs[name] = [await _ask(retriever, tenant, q, mode, depth, reranker) for q in questions]
+            print(f"arama: {name}", flush=True)
         answers = None
         if answer_llm is not None:
-            answerer = Answerer(retriever, answer_llm, k=answer_sources)
+            retriever, mode, reranker = configs[answer_config]
+            answerer = Answerer(
+                retriever, answer_llm, k=answer_sources, mode=mode, rerank=reranker is not None
+            )
             answers = []
             for i, q in enumerate(questions, start=1):
                 answers.append(await _respond(answerer, answer_llm, tenant, q))
@@ -90,6 +107,7 @@ async def run(
     if answers is not None:
         report["answers"] = {
             "model": answer_llm.name,
+            "retrieval": answer_config,
             "sources": answer_sources,
             "summary": _summarize_answers(answers, questions),
             "per_question": answers,
@@ -161,9 +179,18 @@ def _summarize_answers(rows: list[dict[str, Any]], questions: Sequence[Question]
 
 
 async def _ask(
-    retriever: Retriever, tenant: UUID, question: Question, mode: Mode, depth: int
+    retriever: Retriever,
+    tenant: UUID,
+    question: Question,
+    mode: Mode,
+    depth: int,
+    reranker: Reranker | None = None,
 ) -> dict[str, Any]:
-    hits = await retriever.search(tenant, question.question, k=depth, mode=mode)
+    started = time.monotonic()
+    hits = await retriever.search(tenant, question.question, k=depth, mode=mode, rerank=reranker is not None)
+    elapsed = time.monotonic() - started
+    # Önbellekten gelen yeniden sıralamanın gerçek (ilk ölçülen) süresi eklenir.
+    rerank_seconds = getattr(reranker, "last_seconds", 0.0) if reranker else 0.0
     judged = metrics.judge(
         hits, question.sources, lambda ref, hit: matches(ref, hit.document_path, hit.section)
     )
@@ -172,6 +199,8 @@ async def _ask(
         "source_ranks": [judged.first_ranks().get(i) for i in range(len(question.sources))],
         "top_score": round(hits[0].score, 4) if hits else None,
         "top": [_brief(hit) for hit in hits[:3]],
+        "rerank_seconds": round(rerank_seconds, 2),
+        "search_seconds": round(elapsed, 3),
         "_judged": judged,
     }
 
@@ -210,6 +239,10 @@ def _summarize(
     }
     return {
         "overall": scores(answerable),
+        # Yeniden sıralamanın soru başına ölçülmüş süresi (ilk aşama milisaniyeler sürer).
+        "rerank_seconds": round(statistics.median(r["rerank_seconds"] for r in results), 1)
+        if results
+        else 0.0,
         "groups": {key: scores(rows) for key, rows in sorted(groups.items())},
         # Cevapsız sorularda en iyi skorun cevaplı sorulardan ayrışıp ayrışmadığı: Faz 4'teki
         # "bilmiyorum" eşiği için ilk veri (yalnızca vektör skorunda anlamlıdır).

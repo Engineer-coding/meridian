@@ -10,6 +10,7 @@ from pathlib import Path
 
 from meridian_ai.embedding import Embedder
 from meridian_ai.llm import LLM, Message
+from meridian_ai.reranking import Reranker
 
 
 class CachingEmbedder:
@@ -119,6 +120,43 @@ class CachingLLM:
             (key, self.last_used, "".join(parts), first, total),
         )
         self._db.commit()
+
+    def close(self) -> None:
+        self._db.close()
+
+
+class CachingReranker:
+    """Soru-parça skorlarını ve ölçülen süreyi saklar; ablasyon yeniden çalıştırılınca model
+    yalnızca yeni çiftler için çağrılır. ``last_seconds``: son sorgunun (ölçülmüş) yeniden
+    sıralama süresi, önbellekten gelse bile."""
+
+    def __init__(self, inner: Reranker, path: Path) -> None:
+        self.name = inner.name
+        self._inner = inner
+        path.parent.mkdir(parents=True, exist_ok=True)
+        self._db = sqlite3.connect(path)
+        self._db.execute("CREATE TABLE IF NOT EXISTS rerank (key TEXT PRIMARY KEY, score REAL, seconds REAL)")
+        self.last_seconds = 0.0
+
+    def _key(self, query: str, text: str) -> str:
+        return hashlib.sha256(f"{self.name}\0{query}\0{text}".encode()).hexdigest()
+
+    async def scores(self, query: str, texts: Sequence[str]) -> list[float]:
+        keys = [self._key(query, t) for t in texts]
+        rows = [
+            self._db.execute("SELECT score, seconds FROM rerank WHERE key = ?", (k,)).fetchone() for k in keys
+        ]
+        missing = [i for i, row in enumerate(rows) if row is None]
+        if missing:
+            started = time.monotonic()
+            computed = await self._inner.scores(query, [texts[i] for i in missing])
+            per_pair = (time.monotonic() - started) / len(missing)
+            for i, score in zip(missing, computed, strict=True):
+                rows[i] = (score, per_pair)
+                self._db.execute("INSERT OR REPLACE INTO rerank VALUES (?, ?, ?)", (keys[i], score, per_pair))
+            self._db.commit()
+        self.last_seconds = sum(row[1] for row in rows)
+        return [row[0] for row in rows]
 
     def close(self) -> None:
         self._db.close()

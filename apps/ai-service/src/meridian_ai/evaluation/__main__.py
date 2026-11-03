@@ -20,9 +20,10 @@ import httpx
 from meridian_ai.chunking import MAX_CHARS, OVERLAP_CHARS
 from meridian_ai.embedding import DEFAULT_MODEL, E5Embedder, HashEmbedder
 from meridian_ai.evaluation import corpus, database, runner
-from meridian_ai.evaluation.cache import CachingEmbedder, CachingLLM
+from meridian_ai.evaluation.cache import CachingEmbedder, CachingLLM, CachingReranker
 from meridian_ai.evaluation.golden import load_golden
 from meridian_ai.llm import build_chain
+from meridian_ai.reranking import MODELS, CrossEncoderReranker
 
 CACHE = Path.home() / ".cache" / "meridian"
 
@@ -67,11 +68,12 @@ def markdown(report: dict) -> str:
         "",
         "## Genel (cevaplı sorular)",
         "",
-        "| Yöntem | " + " | ".join(columns) + " |",
-        "|---|" + "---|" * len(columns),
+        "| Yöntem | " + " | ".join(columns) + " | yeniden sıralama (sn/soru) |",
+        "|---|" + "---|" * (len(columns) + 1),
     ]
     for mode, summary in report["summary"].items():
-        lines.append(f"| {mode} | " + " | ".join(f"{summary['overall'][c]:.3f}" for c in columns) + " |")
+        cells = " | ".join(f"{summary['overall'][c]:.3f}" for c in columns)
+        lines.append(f"| {mode} | {cells} | {summary.get('rerank_seconds', 0.0):.1f} |")
     lines += ["", "## Kırılımlar (recall@5 / MRR)", ""]
     modes = list(report["summary"])
     lines += ["| Grup | n | " + " | ".join(modes) + " |", "|---|---|" + "---|" * len(modes)]
@@ -146,6 +148,14 @@ async def main(argv: list[str]) -> int:
     )
     parser.add_argument("--llm", default=os.environ.get("LLM_CHAIN", "ollama/llama3.2:3b"))
     parser.add_argument("--answer-sources", type=int, default=3)
+    parser.add_argument(
+        "--rerank",
+        default="",
+        help=f"ablasyona eklenecek reranker'lar, virgülle: {', '.join(MODELS)}",
+    )
+    parser.add_argument(
+        "--answer-retrieval", default="vector", help="cevaplar için yapılandırma, ör. vector+bge-m3"
+    )
     args = parser.parse_args(argv)
     args.golden = args.golden.resolve()
 
@@ -165,6 +175,12 @@ async def main(argv: list[str]) -> int:
         http = httpx.AsyncClient(timeout=httpx.Timeout(900.0))
         chain = build_chain(args.llm, http, os.environ.get("OLLAMA_URL", "http://127.0.0.1:11434"))
         llm = CachingLLM(chain, CACHE / "eval" / "completions.sqlite")
+    rerankers = {
+        short: CachingReranker(
+            CrossEncoderReranker(MODELS[short], CACHE / "fastembed"), CACHE / "eval" / "rerank.sqlite"
+        )
+        for short in filter(None, (s.strip() for s in args.rerank.split(",")))
+    }
     with database.ephemeral() as db:
         report = runner.public(
             await runner.run(
@@ -174,8 +190,12 @@ async def main(argv: list[str]) -> int:
                 embedder or HashEmbedder(),
                 answer_llm=llm,
                 answer_sources=args.answer_sources,
+                rerankers=rerankers,
+                answer_config=args.answer_retrieval,
             )
         )
+    for reranker in rerankers.values():
+        reranker.close()
     if llm is not None and http is not None:
         print(f"LLM önbelleği: {llm.hits} isabet, {llm.misses} yeni", flush=True)
         llm.close()

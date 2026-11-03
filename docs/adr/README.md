@@ -13,7 +13,7 @@ Kabul edilmiş bir ADR değiştirilmez; yerine yeni bir ADR yazılır ve eskisin
 | [0004](0004-rabbitmq-outbox.md) | RabbitMQ ve transactional outbox | Kabul edildi |
 | 0005 | Kimlik: OIDC ve API anahtarları | Planlandı |
 | 0006 | Streaming: SSE ve WebSocket | Planlandı |
-| 0007 | Hibrit retrieval ve reranking seçimi (ablasyon verisiyle) | Planlandı |
+| [0007](0007-hybrid-retrieval-and-reranking.md) | Hibrit retrieval ve reranking seçimi (ablasyon verisiyle) | Kabul edildi |
 | [0008](0008-llm-provider-and-fallback.md) | LLM sağlayıcı soyutlaması, yedek zinciri ve doğrulanmış kanıtla cevap | Kabul edildi |
 | 0009 | GitOps ile dağıtım | Planlandı |
 | 0010 | Değerlendirme kapısının CI'daki yeri | Planlandı |

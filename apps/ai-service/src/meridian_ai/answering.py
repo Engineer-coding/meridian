@@ -171,6 +171,7 @@ class Answerer:
         *,
         k: int = 3,
         mode: Mode = Mode.VECTOR,
+        rerank: bool = False,
         max_tokens: int = 300,
         evidence_tokens: int = 120,
     ) -> None:
@@ -178,6 +179,7 @@ class Answerer:
         self._llm = llm
         self._k = k
         self._mode = mode
+        self._rerank = rerank
         self._max_tokens = max_tokens
         self._evidence_tokens = evidence_tokens
 
@@ -186,7 +188,12 @@ class Answerer:
     ) -> AsyncIterator[Event]:
         started = time.monotonic()
         hits = await self._retriever.search(
-            tenant_id, question, k=self._k, mode=self._mode, collection_ids=collection_ids
+            tenant_id,
+            question,
+            k=self._k,
+            mode=self._mode,
+            collection_ids=collection_ids,
+            rerank=self._rerank,
         )
         sources = [Source(i, hit) for i, hit in enumerate(hits, start=1)]
         yield SourcesFound(sources)

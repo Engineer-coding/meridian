@@ -8,6 +8,8 @@ Biçim: [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/).
 - Kaynaklı cevap (ADR-0008): model önce cevabı veren cümleyi kaynaklardan alıntılar, kod alıntının kaynakta gerçekten geçtiğini doğrular; doğrulanamazsa "bilmiyorum", doğrulanırsa `[n]` atıflı kısa cevap akışla üretilir. Var olmayan kaynak numaraları işaretlenir.
 - LLM sağlayıcı zinciri (`LLM_CHAIN`, varsayılan `ollama/llama3.2:3b`): ilk token'dan önce düşen sağlayıcının yerine sıradaki denenir; hepsi düşerse yalnızca kaynaklar dönülür.
 - Cevap değerlendirmesi (`make eval-answers`): "bilmiyorum" doğruluğu, atıf isabeti, var olmayan atıf oranı ve süreler; LLM cevapları diskte önbelleklenir.
+- İkinci aşama sıralama (ADR-0007): çok dilli çapraz kodlayıcılar (`bge-reranker-v2-m3` int8, `jina-reranker-v2`); `RERANKER` ayarıyla açılır, varsayılan kapalı.
+- Ablasyon tablosu: vektör / sözcüksel / hibrit ilk aşama ve iki reranker için recall@k, MRR, nDCG ve soru başına ek süre; reranker skorları önbellekli. Bulgu: 3 kaynaklı bağlamda reranking recall@3'ü artırmıyor (0,848), recall@5'i 0,870 → 0,913 yapıyor (+14 sn).
 - Tehdit T18 (belge içeriğiyle istem enjeksiyonu): ilk önlemler.
 
 ### Changed

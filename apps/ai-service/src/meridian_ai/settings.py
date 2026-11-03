@@ -45,6 +45,9 @@ class Settings(BaseSettings):
     ollama_url: str = "http://127.0.0.1:11434"
     answer_sources: int = Field(default=3, ge=1, le=10)
     answer_max_tokens: int = Field(default=300, ge=16)
+    # İkinci aşama sıralama (ADR-0007): varsayılan kapalı; ablasyonda 3 kaynakla kazanç yok.
+    reranker: str = ""
+    rerank_candidates: int = Field(default=20, ge=1, le=100)
 
     # GitHub: token olmadan saatte 60 API isteği; dosya içerikleri bu sınıra dahil değildir.
     github_token: SecretStr | None = None

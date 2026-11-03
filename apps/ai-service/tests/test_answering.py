@@ -140,7 +140,7 @@ class FakeRetriever:
         self.hits = hits
         self.calls: list[tuple] = []
 
-    async def search(self, tenant_id, query, k=10, mode=None, collection_ids=None) -> list[Hit]:
+    async def search(self, tenant_id, query, k=10, mode=None, collection_ids=None, rerank=False) -> list[Hit]:
         self.calls.append((tenant_id, query, k, mode, collection_ids))
         return self.hits[:k]
 

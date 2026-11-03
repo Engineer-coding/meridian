@@ -8,6 +8,7 @@ import re
 from collections.abc import Sequence
 from dataclasses import dataclass
 from enum import StrEnum
+from typing import TYPE_CHECKING
 from uuid import UUID
 
 from psycopg import AsyncConnection
@@ -15,6 +16,9 @@ from psycopg_pool import AsyncConnectionPool
 
 from meridian_ai.db import tenant_transaction
 from meridian_ai.embedding import Embedder
+
+if TYPE_CHECKING:
+    from meridian_ai.reranking import Reranker
 
 
 class Mode(StrEnum):
@@ -70,12 +74,20 @@ _LEXICAL = """
 
 class Retriever:
     def __init__(
-        self, pool: AsyncConnectionPool, embedder: Embedder, candidates: int = 50, rrf_k: int = 60
+        self,
+        pool: AsyncConnectionPool,
+        embedder: Embedder,
+        candidates: int = 50,
+        rrf_k: int = 60,
+        reranker: "Reranker | None" = None,
+        rerank_candidates: int = 20,
     ) -> None:
         self._pool = pool
         self._embedder = embedder
         self._candidates = candidates
         self._rrf_k = rrf_k
+        self._reranker = reranker
+        self._rerank_candidates = rerank_candidates
 
     async def search(
         self,
@@ -87,18 +99,25 @@ class Retriever:
         # nihai seçim reranking ile birlikte ADR-0007'de.
         mode: Mode = Mode.VECTOR,
         collection_ids: Sequence[UUID] | None = None,
+        rerank: bool = False,
     ) -> list[Hit]:
+        """``rerank``: ilk aşamanın ilk ``rerank_candidates`` adayı çapraz kodlayıcıyla yeniden sıralanır."""
+        if rerank and self._reranker is None:
+            raise ValueError("reranker yapılandırılmamış")
+        depth = max(k, self._rerank_candidates) if rerank else k
         vector = await self._embedder.embed_query(query) if mode != Mode.LEXICAL else None
         async with tenant_transaction(self._pool, tenant_id) as conn:
             match mode:
                 case Mode.VECTOR:
-                    return await self._vector(conn, vector, k, collection_ids)
+                    hits = await self._vector(conn, vector, depth, collection_ids)
                 case Mode.LEXICAL:
-                    return await self._lexical(conn, query, k, collection_ids)
+                    hits = await self._lexical(conn, query, depth, collection_ids)
                 case Mode.HYBRID:
                     dense = await self._vector(conn, vector, self._candidates, collection_ids)
                     sparse = await self._lexical(conn, query, self._candidates, collection_ids)
-                    return self._fuse([dense, sparse], k)
+                    hits = self._fuse([dense, sparse], depth)
+        # Yeniden sıralama işlem dışında: model saniyeler sürer, bağlantı tutulmaz.
+        return await rerank_hits(self._reranker, query, hits, k) if rerank else hits
 
     async def _vector(
         self,
@@ -144,3 +163,9 @@ class Retriever:
 
 def _ids(collections: Sequence[UUID] | None) -> list[UUID] | None:
     return list(collections) if collections else None
+
+
+async def rerank_hits(reranker: "Reranker", query: str, hits: Sequence[Hit], k: int) -> list[Hit]:
+    from meridian_ai.reranking import rerank
+
+    return await rerank(reranker, query, hits, k)

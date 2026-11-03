@@ -42,12 +42,13 @@ ai-test:
 ai-run:
 	cd apps/ai-service && PYTHONUTF8=1 uv run python -m meridian_ai
 
-# Retrieval değerlendirmesi (Faz 3 kapısı). İlk çalıştırma korpusu gömer (CPU'da ~1,5 saat);
+# Retrieval değerlendirmesi ve ablasyon tablosu (ADR-0007). İlk çalıştırma korpusu gömer
+# (CPU'da ~1,5 saat) ve iki reranker'ı indirir;
 # embedding'ler ~/.cache/meridian/eval altında saklanır, sonraki çalıştırmalar dakikalar sürer.
 # Kayıtlı baseline'ı güncellemek için: make eval NAME=baseline
 NAME ?= latest
 eval:
-	cd apps/ai-service && PYTHONUTF8=1 uv run python -m meridian_ai.evaluation --name $(NAME)
+	cd apps/ai-service && PYTHONUTF8=1 uv run python -m meridian_ai.evaluation --rerank bge-m3,jina-v2 --name $(NAME)
 
 # Modelsiz duman testi: korpus + altın set + indeksleme + arama hattını doğrular, kaliteyi ölçmez.
 eval-smoke:

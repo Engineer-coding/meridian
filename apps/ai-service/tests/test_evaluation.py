@@ -267,3 +267,76 @@ async def test_cached_completion_is_replayed_without_calling_the_model(tmp_path)
     assert inner.calls == 2, "farklı ayar yeni bir anahtar"
     assert cached.last_timing is not None
     cached.close()
+
+
+# --- yeniden sıralama (ADR-0007) ------------------------------------------------------------
+
+
+class KeywordReranker:
+    """Sahte çapraz kodlayıcı: sorudaki kelimelerden kaçının parçada geçtiğini sayar."""
+
+    name = "keyword"
+
+    def __init__(self) -> None:
+        self.calls = 0
+
+    async def scores(self, query: str, texts):
+        self.calls += 1
+        words = set(re.findall(r"\w+", query.lower()))
+        return [float(len(words & set(re.findall(r"\w+", t.lower())))) for t in texts]
+
+
+async def test_rerank_orders_by_score_and_keeps_k() -> None:
+    from meridian_ai.reranking import rerank
+    from meridian_ai.retrieval import Hit
+
+    hits = [
+        Hit(uuid4(), "d", "t", None, s, c, 0.5)
+        for s, c in [("a", "x"), ("b", "readiness probe"), ("c", "probe")]
+    ]
+    ranked = await rerank(KeywordReranker(), "readiness probe", hits, k=2)
+
+    assert [h.section for h in ranked] == ["b", "c"]
+    assert [h.score for h in ranked] == [2.0, 1.0]
+
+
+async def test_ablation_adds_reranked_configurations_and_answers_can_use_them(database: Database) -> None:
+    corpora = [Corpus("k8s", "github", "v", DOCS[:1]), Corpus("kvkk", "upload", "v", DOCS[1:])]
+    reranker = KeywordReranker()
+
+    report = await runner.run(
+        database,
+        corpora,
+        QUESTIONS,
+        HashEmbedder(),
+        rerankers={"kw": reranker},
+        answer_llm=ScriptedLLM(),
+        answer_config="hybrid+kw",
+    )
+
+    assert set(report["summary"]) == {"vector", "lexical", "hybrid", "vector+kw", "hybrid+kw"}
+    assert report["answers"]["retrieval"] == "hybrid+kw"
+    assert reranker.calls == 2 * len(QUESTIONS) + len(QUESTIONS), "iki ilk aşama + cevaplar"
+
+
+async def test_cached_reranker_scores_only_new_pairs(tmp_path) -> None:
+    from meridian_ai.evaluation.cache import CachingReranker
+
+    inner = KeywordReranker()
+    cached = CachingReranker(inner, tmp_path / "r.sqlite")
+    first = await cached.scores("probe", ["probe a", "b"])
+    second = await cached.scores("probe", ["b", "probe a", "probe c"])
+
+    assert first == [1.0, 0.0] and second == [0.0, 1.0, 1.0]
+    assert inner.calls == 2
+    cached.close()
+
+
+async def test_search_refuses_rerank_without_a_reranker(database: Database) -> None:
+    pool = create_pool(database.conninfo("meridian_ai"))
+    await pool.open(wait=True)
+    try:
+        with pytest.raises(ValueError, match="reranker"):
+            await Retriever(pool, HashEmbedder()).search(uuid4(), "soru", rerank=True)
+    finally:
+        await pool.close()

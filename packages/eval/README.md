@@ -76,3 +76,12 @@ kaynağın ikinci parçası yeni bilgi getirmediği için her kaynak en fazla bi
 Cevabın içeriğinin doğruluğu (hakem model) Adım 21'de eklenecek. İlk ölçüm (`llama3.2:3b`,
 3 kaynak): cevapsız sorularda %86 "bilmiyorum", cevaplı sorularda %39 gereksiz "bilmiyorum",
 cevapların %100'ü kaynak gösteriyor, %86'sı altın kaynağı gösteriyor, ortanca toplam süre 41 sn.
+
+## Ablasyon (Adım 19, ADR-0007)
+`make eval NAME=baseline` artık 7 yapılandırmayı ölçer: vektör, sözcüksel, hibrit ve
+iki reranker'ın (`bge-m3`, `jina-v2`) vektör ve hibrit üstünde yeniden sıralaması (ilk 20 aday).
+
+- 3 kaynaklı bağlam için ölçüt recall@3. Bunu hiçbir yapılandırma vektörün (0,848) üstüne
+  çıkaramadı; `bge-m3` recall@5'i 0,870 → 0,913, recall@10'u 0,913 → 0,935 yaptı (soru başına +14 sn).
+- Hibrit en iyi ilk sonucu veriyor (recall@1 0,696, MRR 0,877).
+- Gereksiz "bilmiyorum" oranının kaynağı arama değil; altın kaynak soruların %96'sında zaten bağlamda.
