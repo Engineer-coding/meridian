@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Altın Set v2 Doğrulama</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Plan: mizanpaj = üstte sabit ilerleme ve filtre şeridi, altta soru kartlarından oluşan tek sütun iş listesi. */
+:root {
+  color-scheme: light;
+  --paper: #f4f6f5; --card: #ffffff; --ink: #18211e; --muted: #5a6a64; --line: #d5dddA;
+  --accent: #0b6e5f; --accent-ink: #ffffff; --mark: #fdeeb5;
+  --good: #1a7f4b; --warn: #a76200; --bad: #b3362b;
+  --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --paper: #121816; --card: #1b2320; --ink: #e6ecea; --muted: #9db0a9; --line: #33403b;
+    --accent: #4cc2ad; --accent-ink: #08201b; --mark: #5c4d12;
+    --good: #5fcf94; --warn: #e6a94a; --bad: #f08a7e;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #121816; --card: #1b2320; --ink: #e6ecea; --muted: #9db0a9; --line: #33403b;
+  --accent: #4cc2ad; --accent-ink: #08201b; --mark: #5c4d12;
+  --good: #5fcf94; --warn: #e6a94a; --bad: #f08a7e;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--paper); color: var(--ink); font: 15px/1.5 var(--body); }
+header { position: sticky; top: 0; z-index: 2; background: var(--paper); border-bottom: 1px solid var(--line); padding: 12px 16px; }
+.bar { max-width: 860px; margin: 0 auto; display: grid; gap: 8px; }
+h1 { font-size: 17px; font-weight: 600; margin: 0; }
+.progress { height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; }
+.progress i { display: block; height: 100%; background: var(--accent); width: 0; }
+.counts { color: var(--muted); font-variant-numeric: tabular-nums; font-size: 13.5px; }
+.filters { display: flex; flex-wrap: wrap; gap: 6px; }
+.filters button { font: inherit; font-size: 13px; padding: 3px 10px; border: 1px solid var(--line); border-radius: 999px; background: var(--card); color: var(--ink); cursor: pointer; }
+.filters button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.notice { max-width: 860px; margin: 12px auto 0; padding: 0 16px; color: var(--muted); font-size: 14px; }
+.notice.err { color: var(--bad); font-weight: 500; }
+main { max-width: 860px; margin: 0 auto; padding: 12px 16px 64px; display: grid; gap: 12px; }
+article { background: var(--card); border: 1px solid var(--line); border-left: 4px solid var(--line); border-radius: 6px; padding: 14px 16px; display: grid; gap: 10px; }
+article[data-state="approve"] { border-left-color: var(--good); }
+article[data-state="edit"] { border-left-color: var(--warn); }
+article[data-state="reject"] { border-left-color: var(--bad); }
+.meta { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 12.5px; color: var(--muted); }
+.meta code { font-family: var(--mono); color: var(--ink); }
+.chip { border: 1px solid var(--line); border-radius: 4px; padding: 0 6px; }
+.chip.none { border-color: var(--warn); color: var(--warn); }
+.state { margin-left: auto; font-weight: 600; }
+.q { font-size: 16px; font-weight: 500; margin: 0; }
+.label { font-size: 12.5px; color: var(--muted); font-weight: 500; }
+.answer { margin: 0; }
+.kw { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+.kw span { font-family: var(--mono); font-size: 12.5px; background: var(--paper); border-radius: 3px; padding: 0 5px; }
+details { border-top: 1px dashed var(--line); padding-top: 8px; }
+details[open] summary { margin-bottom: 6px; }
+summary { cursor: pointer; font-size: 13.5px; }
+.src { font-family: var(--mono); font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
+.text { font-size: 13.5px; white-space: pre-wrap; overflow-wrap: anywhere; margin: 4px 0 10px; }
+mark { background: var(--mark); color: inherit; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.actions button, .editor button { font: inherit; font-size: 14px; padding: 5px 14px; border-radius: 5px; border: 1px solid var(--line); background: var(--card); color: var(--ink); cursor: pointer; }
+.actions .ok { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 500; }
+.editor { display: grid; gap: 8px; }
+.editor label { display: grid; gap: 2px; font-size: 13px; color: var(--muted); }
+.editor textarea { font: 14px/1.4 var(--body); padding: 6px 8px; border: 1px solid var(--line); border-radius: 4px; background: var(--paper); color: var(--ink); width: 100%; resize: vertical; }
+button:focus-visible, summary:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.empty { color: var(--muted); padding: 24px 0; text-align: center; }
+</style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <h1>Altın set v2: soru adaylarını doğrula</h1>
+    <div class="progress"><i id="bar"></i></div>
+    <div class="counts" id="counts">Yükleniyor</div>
+    <div class="filters" id="filters"></div>
+  </div>
+</header>
+<p class="notice" id="notice">Kanıt cümlesi kaynakta birebir geçiyor; kod bunu denetledi. Sana düşen anlam denetimi: soru açık mı, cevap doğru mu, anahtar kelimeler cevabı ayırt ediyor mu? Cevapsız sorularda cevabın korpusta gerçekten olmadığına kanaat getirmen yeterli.</p>
+<main id="list"></main>
+<script id="data" type="application/json">__DATA__</script>
+<script>
+const ITEMS = JSON.parse(document.getElementById("data").textContent);
+const LABELS = {approve: "Onaylandı", edit: "Düzeltildi", reject: "Reddedildi"};
+const TYPES = {single_hop: "tek kaynak", multi_hop: "çok kaynak", unanswerable: "cevapsız"};
+const FILTERS = [
+  ["pending", "Bekleyen"], ["all", "Tümü"], ["approve", "Onaylı"], ["edit", "Düzeltilen"], ["reject", "Reddedilen"],
+  ["unanswerable", "Cevapsız"], ["multi_hop", "Çok kaynak"], ["kvkk", "KVKK"], ["k8s", "Kubernetes"], ["existing", "Mevcut 23"],
+];
+const decisions = new Map();
+let filter = "pending";
+let db = null;
+
+const el = (tag, props = {}, ...kids) => {
+  const node = Object.assign(document.createElement(tag), props);
+  node.append(...kids.filter(k => k !== null && k !== undefined));
+  return node;
+};
+
+function highlight(text, evidence) {
+  const box = el("div", {className: "text"});
+  const at = evidence ? text.toLowerCase().indexOf(evidence.toLowerCase()) : -1;
+  if (at < 0) { box.textContent = text; return box; }
+  box.append(text.slice(0, at), el("mark", {textContent: text.slice(at, at + evidence.length)}), text.slice(at + evidence.length));
+  return box;
+}
+
+function keywords(groups) {
+  const row = el("div", {className: "kw"}, el("span", {className: "label", style: "background:none;font-family:inherit;padding:0", textContent: "Cevapta geçmeli:"}));
+  groups.forEach(group => row.append(el("span", {textContent: group.join(" | ")})));
+  return row;
+}
+
+async function save(item, value) {
+  const previous = decisions.get(item.id);
+  decisions.set(item.id, value);
+  render();
+  try {
+    await db.doc("decisions/" + item.id).set(value);
+  } catch (error) {
+    if (previous) decisions.set(item.id, previous); else decisions.delete(item.id);
+    render();
+    const notice = document.getElementById("notice");
+    notice.className = "notice err";
+    notice.textContent = "Karar kaydedilemedi (" + item.id + "). Bağlantını kontrol edip yeniden dene.";
+  }
+}
+
+function editor(item, card) {
+  const current = decisions.get(item.id) || {};
+  const question = el("textarea", {id: "q-" + item.id, rows: 2, value: current.question ?? item.question});
+  const answer = el("textarea", {id: "a-" + item.id, rows: 3, value: current.answer ?? item.expected_answer ?? ""});
+  const kw = el("textarea", {id: "k-" + item.id, rows: 2, value: (current.keywords ?? item.keywords ?? []).map(g => g.join(" | ")).join("\n")});
+  const note = el("textarea", {id: "n-" + item.id, rows: 2, value: current.note ?? ""});
+  const form = el("div", {className: "editor"},
+    el("label", {}, "Soru", question),
+    el("label", {}, "Beklenen cevap", answer),
+    el("label", {}, "Anahtar kelimeler (her satır bir grup, grup içinde | ile alternatif)", kw),
+    el("label", {}, "Not", note),
+    el("div", {className: "actions"},
+      el("button", {className: "ok", textContent: "Düzeltmeyi kaydet", onclick: () => save(item, {
+        decision: "edit",
+        question: question.value.trim(),
+        answer: answer.value.trim(),
+        keywords: kw.value.split("\n").map(l => l.split("|").map(w => w.trim()).filter(Boolean)).filter(g => g.length),
+        note: note.value.trim(),
+      })}),
+      el("button", {textContent: "Vazgeç", onclick: () => render()})));
+  card.replaceChildren(form);
+  question.focus();
+}
+
+function card(item) {
+  const decision = decisions.get(item.id);
+  const state = decision?.decision;
+  const node = el("article", {id: item.id});
+  if (state) node.dataset.state = state;
+  node.append(el("div", {className: "meta"},
+    el("code", {textContent: item.id}),
+    el("span", {className: "chip" + (item.type === "unanswerable" ? " none" : ""), textContent: TYPES[item.type]}),
+    el("span", {className: "chip", textContent: item.corpus + " · " + item.lang}),
+    item.existing ? el("span", {className: "chip", textContent: "mevcut soru: yalnızca anahtar kelimeler yeni"}) : null,
+    state ? el("span", {className: "state", textContent: LABELS[state]}) : null));
+  node.append(el("p", {className: "q", textContent: decision?.question || item.question}));
+  if (item.type === "unanswerable") {
+    node.append(el("p", {className: "answer"}, el("span", {className: "label", textContent: "Neden cevapsız: "}), item.notes));
+  } else {
+    node.append(el("p", {className: "answer"}, el("span", {className: "label", textContent: "Cevap: "}), decision?.answer || item.expected_answer));
+    node.append(keywords(decision?.keywords || item.keywords));
+  }
+  if (decision?.note) node.append(el("p", {className: "answer"}, el("span", {className: "label", textContent: "Not: "}), decision.note));
+  if (item.sources.length) {
+    const details = el("details", {open: !state}, el("summary", {textContent: "Kaynak ve kanıt"}));
+    item.sources.forEach(source => details.append(
+      el("div", {className: "src", textContent: source.doc + " § " + source.section}),
+      highlight(source.excerpt, source.evidence)));
+    node.append(details);
+  }
+  node.append(el("div", {className: "actions"},
+    el("button", {className: "ok", textContent: "Onayla", onclick: () => save(item, {decision: "approve"})}),
+    el("button", {textContent: "Düzelt", onclick: () => editor(item, node)}),
+    el("button", {textContent: "Reddet", onclick: () => save(item, {decision: "reject"})})));
+  return node;
+}
+
+function visible(item) {
+  const state = decisions.get(item.id)?.decision;
+  switch (filter) {
+    case "pending": return !state;
+    case "all": return true;
+    case "approve": case "edit": case "reject": return state === filter;
+    case "unanswerable": case "multi_hop": return item.type === filter;
+    case "kvkk": case "k8s": return item.corpus === filter;
+    case "existing": return !!item.existing;
+  }
+}
+
+function render() {
+  const done = ITEMS.filter(i => decisions.has(i.id)).length;
+  const tally = s => [...decisions.values()].filter(d => d.decision === s).length;
+  document.getElementById("bar").style.width = (done / ITEMS.length * 100) + "%";
+  document.getElementById("counts").textContent =
+    `${done} / ${ITEMS.length} karar · ${tally("approve")} onay · ${tally("edit")} düzeltme · ${tally("reject")} red`;
+  const filters = document.getElementById("filters");
+  filters.replaceChildren(...FILTERS.map(([key, label]) => el("button", {
+    textContent: label,
+    ariaPressed: String(filter === key),
+    onclick: () => { filter = key; render(); window.scrollTo(0, 0); },
+  })));
+  const rows = ITEMS.filter(visible);
+  document.getElementById("list").replaceChildren(
+    ...(rows.length ? rows.map(card) : [el("p", {className: "empty", textContent: filter === "pending" ? "Bekleyen aday kalmadı. Bitti: bana haber verebilirsin." : "Bu filtrede aday yok."})]));
+}
+
+render();
+(async () => {
+  const notice = document.getElementById("notice");
+  const timer = setTimeout(() => {
+    if (!db) { notice.className = "notice err"; notice.textContent = "Kayıt bağlantısı kurulamadı: kararlar kaydedilmez. Sayfayı claude.ai üzerinde, oturum açmış olarak aç."; }
+  }, 10000);
+  db = window.claude ? await window.claude.use("db") : null;
+  if (!db) return;
+  db.collection("decisions").limit(1000).onSnapshot(snapshot => {
+    if (!snapshot.metadata.fromCache) clearTimeout(timer);
+    decisions.clear();
+    snapshot.docs.forEach(doc => decisions.set(doc.id, doc.data()));
+    render();
+  }, () => {
+    clearTimeout(timer);
+    notice.className = "notice err";
+    notice.textContent = "Kayıtlı kararlara ulaşılamadı. Sayfayı yeniden aç; kaydedilen kararlar kaybolmaz.";
+  });
+})();
+</script>
+</body>
+</html>

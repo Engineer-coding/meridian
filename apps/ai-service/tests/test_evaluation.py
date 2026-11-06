@@ -1,6 +1,6 @@
 """Değerlendirme hattı: metrikler, alaka eşleştirmesi, arama ve rapor kapısı."""
 
-import hashlib
+import importlib.util
 import json
 import re
 from uuid import uuid4
@@ -10,10 +10,18 @@ import pytest
 from meridian_ai.answering import EVIDENCE_PROMPTS
 from meridian_ai.db import create_pool
 from meridian_ai.embedding import HashEmbedder
-from meridian_ai.evaluation import metrics, runner
+from meridian_ai.evaluation import gate, metrics, runner
+from meridian_ai.evaluation.candidates import check as check_candidates
 from meridian_ai.evaluation.corpus import EVAL_DIR, REPO_ROOT, Corpus
 from meridian_ai.evaluation.database import Database
-from meridian_ai.evaluation.golden import Question, SourceRef, load_golden, matches
+from meridian_ai.evaluation.golden import (
+    Question,
+    SourceRef,
+    answer_correct,
+    keyword_hit,
+    load_golden,
+    matches,
+)
 from meridian_ai.fetchers import RawDocument
 from meridian_ai.retrieval import Mode, Retriever
 
@@ -195,25 +203,56 @@ async def test_search_is_scoped_to_the_tenant_and_collection(database: Database)
         await pool.close()
 
 
-# --- rapor kapısı ----------------------------------------------------------------------------
+# --- rapor kapısı (ADR-0010) ----------------------------------------------------------------
 
 
-def test_committed_baseline_matches_the_current_golden_set() -> None:
-    """Altın set değişip değerlendirme yeniden çalıştırılmadıysa CI bunu yakalar (Faz 3 kapısı)."""
-    report = json.loads((EVAL_DIR / "reports" / "baseline.json").read_text(encoding="utf-8"))
+def _report(name: str) -> dict:
+    return json.loads((EVAL_DIR / "reports" / f"{name}.json").read_text(encoding="utf-8"))
+
+
+def test_committed_retrieval_report_is_current_and_meets_thresholds() -> None:
+    """Sonucu etkileyen kod, altın set ya da korpus değişip ölçüm yenilenmediyse CI kırılır."""
+    report = _report("baseline")
     golden = REPO_ROOT / report["golden"]["file"]
 
-    assert report["golden"]["sha256"] == hashlib.sha256(golden.read_bytes()).hexdigest(), (
-        "altın set değişti: make eval ile baseline'ı yeniden üretin"
-    )
-    assert (
-        report["manifest_sha256"]
-        == hashlib.sha256((EVAL_DIR / "corpus" / "manifest.json").read_bytes()).hexdigest()
+    assert golden.name == "v2.jsonl"
+    assert report["fingerprint"] == gate.fingerprint(golden, gate.RETRIEVAL_CODE), (
+        "arama kodu, altın set ya da manifest değişti: make eval NAME=baseline ile yeniden ölçün"
     )
     answerable = {q.id for q in load_golden(golden) if q.answerable}
     for mode in Mode:
         assert {row["id"] for row in report["per_question"][mode]} >= answerable
-        assert {f"recall@{k}" for k in report["ks"]} <= set(report["summary"][mode]["overall"])
+    floors = gate.thresholds()["retrieval"]
+    assert gate.violations(report["summary"][floors["config"]]["overall"], floors["min"]) == []
+
+
+def test_committed_answer_report_is_current_and_meets_thresholds() -> None:
+    report = _report("answers")
+    golden = REPO_ROOT / report["golden"]["file"]
+
+    assert report["fingerprint"] == gate.fingerprint(golden, gate.ANSWER_CODE), (
+        "cevap kodu, altın set ya da manifest değişti: make eval-answers NAME=answers ile yeniden ölçün"
+    )
+    limits = gate.thresholds()["answers"]
+    assert gate.violations(report["answers"]["summary"], limits["min"], limits["max"]) == []
+
+
+def test_gate_reports_low_missing_and_too_high_metrics() -> None:
+    found = gate.violations({"a": 0.5, "c": 0.9}, {"a": 0.6, "b": 0.1}, {"c": 0.8})
+    assert len(found) == 3
+    assert gate.violations({"a": 0.6, "c": 0.8}, {"a": 0.6}, {"c": 0.8}) == []
+
+
+def test_fingerprint_changes_with_the_golden_set(tmp_path) -> None:
+    first, second = tmp_path / "a.jsonl", tmp_path / "b.jsonl"
+    first.write_bytes(b"x\n")
+    second.write_bytes(b"x\r\n")
+    third = tmp_path / "c.jsonl"
+    third.write_bytes(b"y\n")
+
+    assert gate.fingerprint(first, gate.RETRIEVAL_CODE) == gate.fingerprint(second, gate.RETRIEVAL_CODE)
+    assert gate.fingerprint(first, gate.RETRIEVAL_CODE) != gate.fingerprint(third, gate.RETRIEVAL_CODE)
+    assert gate.fingerprint(first, gate.RETRIEVAL_CODE) != gate.fingerprint(first, gate.ANSWER_CODE)
 
 
 # --- cevap değerlendirmesi --------------------------------------------------------------------
@@ -340,3 +379,118 @@ async def test_search_refuses_rerank_without_a_reranker(database: Database) -> N
             await Retriever(pool, HashEmbedder()).search(uuid4(), "soru", rerank=True)
     finally:
         await pool.close()
+
+
+# --- cevap doğruluğu --------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    ("answer", "keyword", "expected"),
+    [
+        ("Kurula şikâyet edilir", "kurul", True),
+        ("KURUL karar verir", "kurul", True),
+        ("Görev süresi DÖRT yıldır", "dört", True),
+        ("the none value", "one", False),
+        ("backoff is 16", "6", False),
+        ("backoff is 6.", "6", True),
+        ("15.000 TL", "5.000", False),
+        ("5.000 TL ceza", "5.000", True),
+        ("1.000.000 TL", "1.000", False),
+        ("in status.recommendation field", "status.recommendation", True),
+        ("Hayır, kullanamaz", "hayır", True),
+        ("No, it is not", "no,", True),
+    ],
+)
+def test_keyword_matching(answer: str, keyword: str, expected: bool) -> None:
+    assert keyword_hit(answer, keyword) is expected
+
+
+def test_answer_needs_every_keyword_group() -> None:
+    groups = (("otuz", "30"), ("altmış", "60"))
+    assert answer_correct("otuz gün, en geç 60 gün", groups)
+    assert not answer_correct("otuz gün", groups)
+    assert not answer_correct("otuz gün", ()), "anahtar kelimesiz soru doğru sayılmaz"
+
+
+def _builder():
+    spec = importlib.util.spec_from_file_location(
+        "build_golden_v2", EVAL_DIR / "scripts" / "build_golden_v2.py"
+    )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_golden_v2_contains_only_human_decided_candidates() -> None:
+    def candidate(identifier: str) -> dict:
+        return {
+            "id": identifier,
+            "question": "q",
+            "type": "single_hop",
+            "expected_answer": "a",
+            "keywords": [["a"]],
+            "verified": False,
+            "forbidden": ["x"],
+        }
+
+    v1 = [
+        {"id": "old-1", "question": "eski", "type": "single_hop", "expected_answer": "a"},
+        {"id": "old-2", "question": "eski", "type": "single_hop", "expected_answer": "a"},
+    ]
+    decisions = {
+        "old-1": {"decision": "approve"},
+        "new-ok": {"decision": "approve"},
+        "new-edit": {"decision": "edit", "question": "düzeltilmiş", "keywords": [["b"]]},
+        "new-no": {"decision": "reject"},
+    }
+    items, tally = _builder().build(
+        decisions,
+        v1,
+        [candidate("new-ok"), candidate("new-edit"), candidate("new-no"), candidate("new-open")],
+        {"old-1": [["k"]], "old-2": [["k"]]},
+    )
+
+    by_id = {i["id"]: i for i in items}
+    assert set(by_id) == {"old-1", "old-2", "new-ok", "new-edit"}
+    assert by_id["old-1"]["keywords"] == [["k"]]
+    assert "keywords" not in by_id["old-2"], "onaylanmamış anahtar kelime eklenmez"
+    assert by_id["new-ok"]["verified"] is True and "forbidden" not in by_id["new-ok"]
+    assert (by_id["new-edit"]["question"], by_id["new-edit"]["keywords"]) == ("düzeltilmiş", [["b"]])
+    assert tally["undecided"] == 1 and tally["reject"] == 1
+
+
+def test_candidate_checks_catch_missing_evidence_and_leaked_terms() -> None:
+    document = RawDocument("d.md", "u", "v", "# T\n\n## Bölüm\n\nVeri otuz gün saklanır.")
+
+    def answerable(identifier, section, evidence):
+        source = {"doc": "d.md", "section": section, "evidence": evidence}
+        return {
+            "id": identifier,
+            "question": identifier,
+            "type": "single_hop",
+            "lang": "tr",
+            "sources": [source],
+        }
+
+    def trap(identifier, question, forbidden):
+        return {
+            "id": identifier,
+            "question": question,
+            "type": "unanswerable",
+            "lang": "tr",
+            "sources": [],
+            "forbidden": forbidden,
+        }
+
+    items = [
+        answerable("a", "Bölüm", "otuz gün saklanır"),
+        answerable("b", "Bölüm", "yetmiş gün saklanır"),
+        answerable("c", "Yok", "x"),
+        trap("d", "d", ["otuz gün"]),
+        trap("e", "e", ["gü"]),
+        trap("f", "a", []),
+    ]
+
+    errors = check_candidates(items, [document]).errors
+
+    assert [e.split(":")[0] for e in errors] == ["b", "c", "d", "f"]

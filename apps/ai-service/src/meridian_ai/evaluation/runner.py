@@ -17,7 +17,7 @@ from meridian_ai.embedding import Embedder
 from meridian_ai.evaluation import metrics
 from meridian_ai.evaluation.corpus import Corpus, StaticFetcher
 from meridian_ai.evaluation.database import SUPERUSER, Database
-from meridian_ai.evaluation.golden import Question, matches
+from meridian_ai.evaluation.golden import Question, answer_correct, matches
 from meridian_ai.events import Event
 from meridian_ai.indexer import Indexer
 from meridian_ai.llm import LLM
@@ -142,6 +142,7 @@ async def _respond(answerer: Answerer, llm: LLM, tenant: UUID, question: Questio
         # Altın kaynaklardan biri bağlama girdi mi (üst sınır) ve model onu mu kaynak gösterdi?
         "gold_in_context": supports(s.number for s in sources),
         "gold_cited": supports(done.cited),
+        "correct": answer_correct(done.answer, question.keywords) if not done.abstained else False,
         "sources": [_brief(s.hit) for s in sources],
         "first_token_seconds": None if timing[0] is None else round(timing[0], 1),
         "total_seconds": round(timing[1], 1),
@@ -153,6 +154,7 @@ def _summarize_answers(rows: list[dict[str, Any]], questions: Sequence[Question]
     answerable = [r for r in rows if by_id[r["id"]].answerable]
     unanswerable = [r for r in rows if not by_id[r["id"]].answerable]
     responded = [r for r in answerable if not r["abstained"] and not r["degraded"]]
+    graded = [r for r in answerable if by_id[r["id"]].keywords]
 
     def share(items: list[dict[str, Any]], predicate) -> float | None:
         return round(sum(1 for r in items if predicate(r)) / len(items), 3) if items else None
@@ -166,6 +168,11 @@ def _summarize_answers(rows: list[dict[str, Any]], questions: Sequence[Question]
         "gold_in_context": share(answerable, lambda r: r["gold_in_context"]),
         "cites_something": share(responded, lambda r: bool(r["cited"])),
         "gold_cited": share(responded, lambda r: r["gold_cited"]),
+        # Yalnızca anahtar kelimesi tanımlı sorular: "bilmiyorum" da doğru sayılmaz.
+        "correct": share(graded, lambda r: r["correct"]),
+        "correct_when_answered": share(
+            [r for r in graded if not r["abstained"] and not r["degraded"]], lambda r: r["correct"]
+        ),
         "invalid_citation_rate": share(rows, lambda r: bool(r["invalid_citations"])),
         "degraded": sum(1 for r in rows if r["degraded"]),
         "median_first_token_seconds": (

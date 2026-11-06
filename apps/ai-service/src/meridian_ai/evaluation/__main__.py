@@ -19,7 +19,7 @@ import httpx
 
 from meridian_ai.chunking import MAX_CHARS, OVERLAP_CHARS
 from meridian_ai.embedding import DEFAULT_MODEL, E5Embedder, HashEmbedder
-from meridian_ai.evaluation import corpus, database, runner
+from meridian_ai.evaluation import corpus, database, gate, runner
 from meridian_ai.evaluation.cache import CachingEmbedder, CachingLLM, CachingReranker
 from meridian_ai.evaluation.golden import load_golden
 from meridian_ai.llm import build_chain
@@ -120,6 +120,8 @@ def _answers_markdown(answers: dict) -> list[str]:
         f"| Altın kaynak bağlamda (üst sınır) | {pct(s['gold_in_context'])} |",
         f"| Cevap en az bir kaynak gösteriyor | {pct(s['cites_something'])} |",
         f"| Gösterilen kaynak altın kaynak | {pct(s['gold_cited'])} |",
+        f"| Cevap doğru (anahtar kelime, tüm cevaplı sorular) | {pct(s['correct'])} |",
+        f"| Cevap doğru (model cevap verdiğinde) | {pct(s['correct_when_answered'])} |",
         f"| Var olmayan kaynak numarası | {pct(s['invalid_citation_rate'])} |",
         f"| Ortanca ilk token / toplam süre | {s['median_first_token_seconds']} sn / "
         f"{s['median_total_seconds']} sn |",
@@ -140,7 +142,7 @@ async def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(prog="python -m meridian_ai.evaluation")
     parser.add_argument("--name", default="latest", help="rapor adı (packages/eval/reports/<ad>.json)")
     parser.add_argument("--embedder", choices=["e5", "hash"], default="e5")
-    parser.add_argument("--golden", type=Path, default=corpus.EVAL_DIR / "golden" / "v1.jsonl")
+    parser.add_argument("--golden", type=Path, default=corpus.EVAL_DIR / "golden" / "v2.jsonl")
     parser.add_argument(
         "--answers",
         action="store_true",
@@ -215,6 +217,9 @@ async def main(argv: list[str]) -> int:
             "sha256": _sha256(args.golden),
         },
         "manifest_sha256": _sha256(corpus.EVAL_DIR / "corpus" / "manifest.json"),
+        "fingerprint": gate.fingerprint(
+            args.golden, gate.ANSWER_CODE if args.answers else gate.RETRIEVAL_CODE
+        ),
     } | report
 
     out = corpus.EVAL_DIR / "reports"

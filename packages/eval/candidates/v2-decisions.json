@@ -1,0 +1,520 @@
+{
+ "_review": {
+  "reviewed_at": "2026-11-06",
+  "first_decision": "08:14:52Z",
+  "last_decision": "08:18:02Z",
+  "seconds_per_card": 1.1,
+  "note": "Tümü tek kişi tarafından onaylandı; düzeltme ve red yok."
+ },
+ "_excluded": {
+  "reason": "Onaylı ama anahtar kelimesi cevabı ayırt etmiyor (ör. 'no', 'not'); çok kaynaklı soru oranı için çıkarıldı.",
+  "ids": [
+   "k8s-124",
+   "k8s-128",
+   "k8s-130",
+   "k8s-141",
+   "k8s-143",
+   "k8s-144",
+   "k8s-147",
+   "kvkk-102"
+  ]
+ },
+ "k8s-001": {
+  "decision": "approve"
+ },
+ "k8s-002": {
+  "decision": "approve"
+ },
+ "k8s-004": {
+  "decision": "approve"
+ },
+ "k8s-005": {
+  "decision": "approve"
+ },
+ "k8s-006": {
+  "decision": "approve"
+ },
+ "k8s-007": {
+  "decision": "approve"
+ },
+ "k8s-008": {
+  "decision": "approve"
+ },
+ "k8s-009": {
+  "decision": "approve"
+ },
+ "k8s-010": {
+  "decision": "approve"
+ },
+ "k8s-011": {
+  "decision": "approve"
+ },
+ "k8s-012": {
+  "decision": "approve"
+ },
+ "k8s-013": {
+  "decision": "approve"
+ },
+ "k8s-014": {
+  "decision": "approve"
+ },
+ "k8s-015": {
+  "decision": "approve"
+ },
+ "k8s-101": {
+  "decision": "approve"
+ },
+ "k8s-102": {
+  "decision": "approve"
+ },
+ "k8s-103": {
+  "decision": "approve"
+ },
+ "k8s-104": {
+  "decision": "approve"
+ },
+ "k8s-105": {
+  "decision": "approve"
+ },
+ "k8s-106": {
+  "decision": "approve"
+ },
+ "k8s-107": {
+  "decision": "approve"
+ },
+ "k8s-108": {
+  "decision": "approve"
+ },
+ "k8s-109": {
+  "decision": "approve"
+ },
+ "k8s-110": {
+  "decision": "approve"
+ },
+ "k8s-111": {
+  "decision": "approve"
+ },
+ "k8s-112": {
+  "decision": "approve"
+ },
+ "k8s-113": {
+  "decision": "approve"
+ },
+ "k8s-114": {
+  "decision": "approve"
+ },
+ "k8s-115": {
+  "decision": "approve"
+ },
+ "k8s-116": {
+  "decision": "approve"
+ },
+ "k8s-117": {
+  "decision": "approve"
+ },
+ "k8s-118": {
+  "decision": "approve"
+ },
+ "k8s-119": {
+  "decision": "approve"
+ },
+ "k8s-120": {
+  "decision": "approve"
+ },
+ "k8s-121": {
+  "decision": "approve"
+ },
+ "k8s-122": {
+  "decision": "approve"
+ },
+ "k8s-123": {
+  "decision": "approve"
+ },
+ "k8s-124": {
+  "decision": "approve"
+ },
+ "k8s-125": {
+  "decision": "approve"
+ },
+ "k8s-126": {
+  "decision": "approve"
+ },
+ "k8s-127": {
+  "decision": "approve"
+ },
+ "k8s-128": {
+  "decision": "approve"
+ },
+ "k8s-129": {
+  "decision": "approve"
+ },
+ "k8s-130": {
+  "decision": "approve"
+ },
+ "k8s-131": {
+  "decision": "approve"
+ },
+ "k8s-132": {
+  "decision": "approve"
+ },
+ "k8s-133": {
+  "decision": "approve"
+ },
+ "k8s-134": {
+  "decision": "approve"
+ },
+ "k8s-135": {
+  "decision": "approve"
+ },
+ "k8s-136": {
+  "decision": "approve"
+ },
+ "k8s-137": {
+  "decision": "approve"
+ },
+ "k8s-138": {
+  "decision": "approve"
+ },
+ "k8s-139": {
+  "decision": "approve"
+ },
+ "k8s-140": {
+  "decision": "approve"
+ },
+ "k8s-141": {
+  "decision": "approve"
+ },
+ "k8s-142": {
+  "decision": "approve"
+ },
+ "k8s-143": {
+  "decision": "approve"
+ },
+ "k8s-144": {
+  "decision": "approve"
+ },
+ "k8s-145": {
+  "decision": "approve"
+ },
+ "k8s-146": {
+  "decision": "approve"
+ },
+ "k8s-147": {
+  "decision": "approve"
+ },
+ "k8s-148": {
+  "decision": "approve"
+ },
+ "k8s-149": {
+  "decision": "approve"
+ },
+ "k8s-150": {
+  "decision": "approve"
+ },
+ "k8s-151": {
+  "decision": "approve"
+ },
+ "k8s-161": {
+  "decision": "approve"
+ },
+ "k8s-162": {
+  "decision": "approve"
+ },
+ "k8s-163": {
+  "decision": "approve"
+ },
+ "k8s-164": {
+  "decision": "approve"
+ },
+ "k8s-165": {
+  "decision": "approve"
+ },
+ "k8s-166": {
+  "decision": "approve"
+ },
+ "k8s-167": {
+  "decision": "approve"
+ },
+ "k8s-168": {
+  "decision": "approve"
+ },
+ "k8s-171": {
+  "decision": "approve"
+ },
+ "k8s-172": {
+  "decision": "approve"
+ },
+ "k8s-173": {
+  "decision": "approve"
+ },
+ "k8s-174": {
+  "decision": "approve"
+ },
+ "k8s-175": {
+  "decision": "approve"
+ },
+ "k8s-176": {
+  "decision": "approve"
+ },
+ "k8s-177": {
+  "decision": "approve"
+ },
+ "k8s-178": {
+  "decision": "approve"
+ },
+ "k8s-179": {
+  "decision": "approve"
+ },
+ "k8s-180": {
+  "decision": "approve"
+ },
+ "k8s-181": {
+  "decision": "approve"
+ },
+ "k8s-182": {
+  "decision": "approve"
+ },
+ "k8s-183": {
+  "decision": "approve"
+ },
+ "k8s-184": {
+  "decision": "approve"
+ },
+ "k8s-185": {
+  "decision": "approve"
+ },
+ "k8s-186": {
+  "decision": "approve"
+ },
+ "k8s-187": {
+  "decision": "approve"
+ },
+ "k8s-191": {
+  "decision": "approve"
+ },
+ "k8s-192": {
+  "decision": "approve"
+ },
+ "k8s-193": {
+  "decision": "approve"
+ },
+ "k8s-194": {
+  "decision": "approve"
+ },
+ "k8s-195": {
+  "decision": "approve"
+ },
+ "k8s-196": {
+  "decision": "approve"
+ },
+ "k8s-197": {
+  "decision": "approve"
+ },
+ "k8s-198": {
+  "decision": "approve"
+ },
+ "k8s-199": {
+  "decision": "approve"
+ },
+ "k8s-200": {
+  "decision": "approve"
+ },
+ "k8s-201": {
+  "decision": "approve"
+ },
+ "k8s-202": {
+  "decision": "approve"
+ },
+ "k8s-203": {
+  "decision": "approve"
+ },
+ "k8s-204": {
+  "decision": "approve"
+ },
+ "kvkk-001": {
+  "decision": "approve"
+ },
+ "kvkk-002": {
+  "decision": "approve"
+ },
+ "kvkk-004": {
+  "decision": "approve"
+ },
+ "kvkk-005": {
+  "decision": "approve"
+ },
+ "kvkk-006": {
+  "decision": "approve"
+ },
+ "kvkk-007": {
+  "decision": "approve"
+ },
+ "kvkk-008": {
+  "decision": "approve"
+ },
+ "kvkk-009": {
+  "decision": "approve"
+ },
+ "kvkk-010": {
+  "decision": "approve"
+ },
+ "kvkk-101": {
+  "decision": "approve"
+ },
+ "kvkk-102": {
+  "decision": "approve"
+ },
+ "kvkk-103": {
+  "decision": "approve"
+ },
+ "kvkk-104": {
+  "decision": "approve"
+ },
+ "kvkk-105": {
+  "decision": "approve"
+ },
+ "kvkk-106": {
+  "decision": "approve"
+ },
+ "kvkk-107": {
+  "decision": "approve"
+ },
+ "kvkk-108": {
+  "decision": "approve"
+ },
+ "kvkk-109": {
+  "decision": "approve"
+ },
+ "kvkk-110": {
+  "decision": "approve"
+ },
+ "kvkk-111": {
+  "decision": "approve"
+ },
+ "kvkk-112": {
+  "decision": "approve"
+ },
+ "kvkk-113": {
+  "decision": "approve"
+ },
+ "kvkk-114": {
+  "decision": "approve"
+ },
+ "kvkk-115": {
+  "decision": "approve"
+ },
+ "kvkk-116": {
+  "decision": "approve"
+ },
+ "kvkk-117": {
+  "decision": "approve"
+ },
+ "kvkk-118": {
+  "decision": "approve"
+ },
+ "kvkk-119": {
+  "decision": "approve"
+ },
+ "kvkk-120": {
+  "decision": "approve"
+ },
+ "kvkk-121": {
+  "decision": "approve"
+ },
+ "kvkk-122": {
+  "decision": "approve"
+ },
+ "kvkk-123": {
+  "decision": "approve"
+ },
+ "kvkk-124": {
+  "decision": "approve"
+ },
+ "kvkk-125": {
+  "decision": "approve"
+ },
+ "kvkk-126": {
+  "decision": "approve"
+ },
+ "kvkk-127": {
+  "decision": "approve"
+ },
+ "kvkk-128": {
+  "decision": "approve"
+ },
+ "kvkk-129": {
+  "decision": "approve"
+ },
+ "kvkk-130": {
+  "decision": "approve"
+ },
+ "kvkk-131": {
+  "decision": "approve"
+ },
+ "kvkk-132": {
+  "decision": "approve"
+ },
+ "kvkk-133": {
+  "decision": "approve"
+ },
+ "kvkk-134": {
+  "decision": "approve"
+ },
+ "kvkk-135": {
+  "decision": "approve"
+ },
+ "kvkk-136": {
+  "decision": "approve"
+ },
+ "kvkk-137": {
+  "decision": "approve"
+ },
+ "kvkk-151": {
+  "decision": "approve"
+ },
+ "kvkk-152": {
+  "decision": "approve"
+ },
+ "kvkk-153": {
+  "decision": "approve"
+ },
+ "kvkk-154": {
+  "decision": "approve"
+ },
+ "kvkk-155": {
+  "decision": "approve"
+ },
+ "kvkk-156": {
+  "decision": "approve"
+ },
+ "kvkk-157": {
+  "decision": "approve"
+ },
+ "kvkk-158": {
+  "decision": "approve"
+ },
+ "kvkk-171": {
+  "decision": "approve"
+ },
+ "kvkk-172": {
+  "decision": "approve"
+ },
+ "kvkk-173": {
+  "decision": "approve"
+ },
+ "kvkk-174": {
+  "decision": "approve"
+ },
+ "kvkk-175": {
+  "decision": "approve"
+ },
+ "kvkk-176": {
+  "decision": "approve"
+ },
+ "kvkk-177": {
+  "decision": "approve"
+ },
+ "kvkk-178": {
+  "decision": "approve"
+ }
+}
