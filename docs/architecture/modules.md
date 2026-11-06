@@ -11,6 +11,7 @@ flowchart LR
     tenancy["Kiracılık<br/><small>kiracılar, üyelikler, RLS bağlamı</small>"]
     idempotency["Idempotency<br/><small>Idempotency-Key kayıtları</small>"]
     knowledge["Bilgi<br/><small>koleksiyonlar, kaynaklar</small>"]
+    chat["Sohbet<br/><small>konuşmalar, akan cevaplar</small>"]
     outbox["Outbox<br/><small>olay yazıcı + RabbitMQ aktarıcısı</small>"]
     web["Web<br/><small>ortak hata biçimi</small>"]
     contract["API sözleşmesi<br/><small>OpenAPI'den üretilir</small>"]
@@ -23,6 +24,9 @@ flowchart LR
     knowledge --> idempotency
     knowledge --> outbox
     knowledge --> contract
+    chat --> tenancy
+    chat --> idempotency
+    chat --> contract
 ```
 
 | Modül | İzin verilen bağımlılıklar | Neden |
@@ -30,6 +34,7 @@ flowchart LR
 | `identity` | `tenancy`, `contract` | Kiracı kapısı üyeliği `tenancy`'den sorar |
 | `tenancy` | `idempotency`, `contract` | Kiracı oluşturma idempotent'tir |
 | `knowledge` | `tenancy`, `idempotency`, `outbox`, `contract` | Rol denetimi, tekrarlanabilir oluşturma, indeksleme olayı |
+| `chat` | `tenancy`, `idempotency`, `contract` | Kiracı bağlamı, tekrarlanabilir konuşma oluşturma; AI servisini HTTP ile çağırır |
 | `outbox` | — | Altyapı parçası; olayın içeriğini bilmez (ADR-0004) |
 | `idempotency` | — | Altyapı parçası; iş modüllerini bilmez |
 | `web` | — | Ortak HTTP davranışı; iş modüllerini bilmez |

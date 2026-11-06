@@ -5,6 +5,9 @@ Biçim: [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/).
 
 ## [Unreleased]
 ### Added
+- Sohbet API'si: `/v1/tenants/{tenantId}/conversations` ve `.../messages`. Cevap SSE ile akar (`sources` → `token` → `done`); mesajlar kaynak ve atıflarıyla kaydedilir. Konuşmalar kiracı içinde de kişiye özeldir (RLS). AI servisine ulaşılamazsa akış `degraded: true` ile biter; istemci yarıda ayrılırsa mesaj `interrupted` kaydedilir.
+- Redis'te kullanıcı başına token-bucket oran sınırı (429 + `Retry-After`); Redis kapalıysa istek geçer.
+- AI servisi iç ucu `POST /internal/v1/answer` (NDJSON), `AI_INTERNAL_TOKEN` ile korunur; anahtar yoksa her isteği reddeder (tehdit T19).
 - Kaynaklı cevap (ADR-0008): model önce cevabı veren cümleyi kaynaklardan alıntılar, kod alıntının kaynakta gerçekten geçtiğini doğrular; doğrulanamazsa "bilmiyorum", doğrulanırsa `[n]` atıflı kısa cevap akışla üretilir. Var olmayan kaynak numaraları işaretlenir.
 - LLM sağlayıcı zinciri (`LLM_CHAIN`, varsayılan `ollama/llama3.2:3b`): ilk token'dan önce düşen sağlayıcının yerine sıradaki denenir; hepsi düşerse yalnızca kaynaklar dönülür.
 - Cevap değerlendirmesi (`make eval-answers`): "bilmiyorum" doğruluğu, atıf isabeti, var olmayan atıf oranı ve süreler; LLM cevapları diskte önbelleklenir.

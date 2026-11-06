@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.rabbitmq.RabbitMQContainer;
 import org.testcontainers.utility.DockerImageName;
@@ -41,9 +42,13 @@ public abstract class PostgresIntegrationTest {
 
     protected static final RabbitMQContainer RABBIT = new RabbitMQContainer(DockerImageName.parse("rabbitmq:4.1-management"));
 
+    protected static final GenericContainer<?> REDIS = new GenericContainer<>(DockerImageName.parse("redis:7.4-alpine"))
+        .withExposedPorts(6379);
+
     static {
         POSTGRES.start();
         RABBIT.start();
+        REDIS.start();
     }
 
     @DynamicPropertySource
@@ -56,6 +61,9 @@ public abstract class PostgresIntegrationTest {
         registry.add("spring.flyway.password", () -> "owner_test");
         registry.add("meridian.outbox.relay.password", () -> RELAY_PASSWORD);
         registry.add("meridian.outbox.relay.enabled", () -> false);
+        registry.add("spring.data.redis.host", REDIS::getHost);
+        registry.add("spring.data.redis.port", () -> REDIS.getMappedPort(6379));
+        registry.add("meridian.ai.internal-token", () -> "test-internal-token");
         registry.add("spring.rabbitmq.host", RABBIT::getHost);
         registry.add("spring.rabbitmq.port", RABBIT::getAmqpPort);
         registry.add("spring.rabbitmq.username", RABBIT::getAdminUsername);

@@ -23,6 +23,7 @@ CPU'da çalışır ve yavaştır: dizüstü bir makinede parça başına ~2 sani
 |---|---|
 | `GET /health/live` | Süreç ayakta |
 | `GET /health/ready` | Kuyruk dinleniyor ve veritabanına ulaşılıyor; değilse 503 |
+| `POST /internal/v1/answer` | Yalnızca çekirdek API için: kaynaklı cevap, satır satır JSON (`X-Internal-Token` gerekir) |
 
 | Ortam değişkeni | Varsayılan |
 |---|---|
@@ -31,6 +32,8 @@ CPU'da çalışır ve yavaştır: dizüstü bir makinede parça başına ~2 sani
 | `EMBEDDING_MODEL`, `EMBEDDING_CACHE_DIR`, `EMBEDDING_BATCH_SIZE` | `intfloat/multilingual-e5-large`, …, `16` |
 | `LLM_CHAIN`, `OLLAMA_URL` | `ollama/llama3.2:3b`, `http://127.0.0.1:11434` |
 | `ANSWER_SOURCES`, `ANSWER_MAX_TOKENS` | `3`, `300` |
+| `RERANKER`, `RERANK_CANDIDATES` | kapalı (`bge-m3`, `jina-v2`), `20` |
+| `AI_INTERNAL_TOKEN` | yok: iç uç her isteği reddeder |
 | `GITHUB_TOKEN` | yok (saatte 60 API isteği) |
 | `MAX_FILES_PER_SOURCE`, `PREFETCH`, `RETRY_BASE_MS`, `RETRY_FACTOR`, `MAX_RETRIES` | `2000`, `2`, `1000`, `4`, `4` |
 | `HTTP_HOST`, `HTTP_PORT` | `127.0.0.1`, `8090` |

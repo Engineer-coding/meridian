@@ -31,6 +31,13 @@ spring:
     password: ${RABBITMQ_PASSWORD}
     # Aktarıcı her partiden sonra broker'ın diske yazdığını bekler (ADR-0004).
     publisher-confirm-type: simple
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      # Oran sınırı Redis kapalıyken isteği bekletmemeli (kapalıysa sınırsız geçer).
+      timeout: 500ms
+      connect-timeout: 500ms
   mvc:
     problemdetails:
       enabled: true
@@ -51,8 +58,21 @@ management:
     health:
       probes:
         enabled: true
+  health:
+    # Redis yalnızca oran sınırı içindir; kapalı olması API'yi hazır-değil yapmaz.
+    redis:
+      enabled: false
 
 meridian:
+  ai:
+    url: http://127.0.0.1:8090
+    internal-token: ${AI_INTERNAL_TOKEN}
+    # CPU'daki yerel modelle bir cevap dakikalar sürebilir (ADR-0008).
+    answer-deadline: 5m
+  chat:
+    rate:
+      capacity: 10
+      refill-per-minute: 10
   outbox:
     relay:
       url: ${spring.datasource.url}

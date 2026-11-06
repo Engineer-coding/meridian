@@ -49,6 +49,9 @@ class Settings(BaseSettings):
     reranker: str = ""
     rerank_candidates: int = Field(default=20, ge=1, le=100)
 
+    # Çekirdek API'nin iç uca gönderdiği paylaşılan anahtar; boşsa iç uç her isteği reddeder.
+    ai_internal_token: SecretStr = SecretStr("")
+
     # GitHub: token olmadan saatte 60 API isteği; dosya içerikleri bu sınıra dahil değildir.
     github_token: SecretStr | None = None
     max_files_per_source: int = Field(default=2_000, ge=1)

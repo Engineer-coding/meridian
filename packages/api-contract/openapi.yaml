@@ -4,7 +4,7 @@ info:
   version: 0.3.0
   summary: Çok kiracılı kurumsal bilgi ve ajan platformu
   description: |
-    Meridian çekirdek API sözleşmesi (v0: kimlik, kiracı, koleksiyon, kaynak).
+    Meridian çekirdek API sözleşmesi (v0: kimlik, kiracı, koleksiyon, kaynak, sohbet).
     Hatalar RFC 9457 `application/problem+json` biçimindedir.
     Başka bir kiracıya ait kaynaklar her zaman `404` döner (varlık bilgisi sızdırılmaz).
   license:
@@ -25,6 +25,8 @@ tags:
     description: Kaynakların gruplandığı ve erişimin yönetildiği koleksiyonlar
   - name: sources
     description: Bilgi kaynakları ve indeksleme
+  - name: chat
+    description: Kaynaklı cevap veren, kişiye özel konuşmalar
 
 paths:
   /v1/me:
@@ -152,6 +154,112 @@ paths:
         '422':
           $ref: '#/components/responses/IdempotencyKeyReused'
 
+  /v1/tenants/{tenantId}/conversations:
+    parameters:
+      - $ref: '#/components/parameters/TenantId'
+    get:
+      tags: [chat]
+      operationId: listConversations
+      summary: Kullanıcının bu kiracıdaki konuşmaları (en yeni 100)
+      description: Konuşmalar kişiye özeldir; aynı kiracının başka bir üyesi göremez.
+      responses:
+        '200':
+          description: Konuşmalar, en yeni önce
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Conversation'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      tags: [chat]
+      operationId: createConversation
+      summary: Konuşma başlat
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateConversationRequest'
+      responses:
+        '201':
+          description: Konuşma oluşturuldu
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Conversation'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/IdempotencyKeyReused'
+
+  /v1/tenants/{tenantId}/conversations/{conversationId}/messages:
+    parameters:
+      - $ref: '#/components/parameters/TenantId'
+      - $ref: '#/components/parameters/ConversationId'
+    get:
+      tags: [chat]
+      operationId: listMessages
+      summary: Konuşmanın mesajları (eskiden yeniye)
+      responses:
+        '200':
+          description: Mesajlar
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ChatMessage'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      tags: [chat]
+      operationId: sendMessage
+      summary: Soru sor; kaynaklı cevap akışla döner
+      description: |
+        Cevap Server-Sent Events olarak akar. Her soru bağımsız cevaplanır; önceki mesajlar
+        modele verilmez. Olaylar sırayla:
+
+        - `sources` (`ChatSourcesEvent`): aranan kaynaklar, model çalışmadan önce gelir
+        - `token` (`ChatTokenEvent`): cevabın bir parçası, sıfır ya da daha çok kez
+        - `done` (`ChatDoneEvent`): son durum; kaydedilen mesajın kimliği, atıflar, `abstained`
+          (kaynaklar yetmedi) ve `degraded` (cevap üretilemedi, yalnızca kaynaklar)
+
+        Model ya da AI servisi kullanılamıyorsa akış yine 200 ve `degraded: true` ile biter.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendMessageRequest'
+      responses:
+        '200':
+          description: Olay akışı
+          content:
+            text/event-stream:
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+
   /v1/tenants/{tenantId}/sources:
     parameters:
       - $ref: '#/components/parameters/TenantId'
@@ -273,6 +381,13 @@ components:
       schema:
         type: string
         format: uuid
+    ConversationId:
+      name: conversationId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
     SourceId:
       name: sourceId
       in: path
@@ -360,6 +475,144 @@ components:
             $ref: '#/components/schemas/Problem'
 
   schemas:
+    CreateConversationRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Verilmezse ilk sorudan türetilir
+
+    Conversation:
+      type: object
+      required: [id, createdAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    SendMessageRequest:
+      type: object
+      required: [content]
+      additionalProperties: false
+      properties:
+        content:
+          type: string
+          minLength: 1
+          maxLength: 4000
+        collectionIds:
+          type: array
+          description: Verilirse arama bu koleksiyonlarla sınırlanır; boşsa kiracının tümü aranır
+          maxItems: 20
+          items:
+            type: string
+            format: uuid
+
+    CitedSource:
+      type: object
+      required: [number, documentPath, title, section, content]
+      properties:
+        number:
+          type: integer
+          description: Cevaptaki `[n]` atfının karşılığı
+        documentPath:
+          type: string
+        title:
+          type: string
+        url:
+          type: string
+        section:
+          type: string
+        content:
+          type: string
+
+    ChatMessage:
+      type: object
+      required: [id, role, content, status, createdAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        role:
+          type: string
+          enum: [user, assistant]
+        content:
+          type: string
+        status:
+          type: string
+          enum: [complete, interrupted]
+          description: "`interrupted`: istemci akış bitmeden ayrıldı, içerik yarımdır"
+        sources:
+          type: array
+          items:
+            $ref: '#/components/schemas/CitedSource'
+        cited:
+          type: array
+          items:
+            type: integer
+        abstained:
+          type: boolean
+        degraded:
+          type: boolean
+        model:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    ChatSourcesEvent:
+      type: object
+      required: [sources]
+      properties:
+        sources:
+          type: array
+          items:
+            $ref: '#/components/schemas/CitedSource'
+
+    ChatTokenEvent:
+      type: object
+      required: [text]
+      properties:
+        text:
+          type: string
+
+    ChatDoneEvent:
+      type: object
+      required: [messageId, answer, cited, abstained, degraded]
+      properties:
+        messageId:
+          type: string
+          format: uuid
+        answer:
+          type: string
+        cited:
+          type: array
+          items:
+            type: integer
+        invalidCitations:
+          type: array
+          description: Modelin uydurduğu, var olmayan kaynak numaraları
+          items:
+            type: integer
+        abstained:
+          type: boolean
+        degraded:
+          type: boolean
+        evidence:
+          type: string
+          description: Kaynakta doğrulanmış kanıt cümlesi
+        evidenceSource:
+          type: integer
+        model:
+          type: string
+
     Problem:
       type: object
       description: RFC 9457 Problem Details
