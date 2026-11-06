@@ -4,6 +4,12 @@ Bu proje [Semantic Versioning](https://semver.org) kullanır.
 Biçim: [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/).
 
 ## [Unreleased]
+### Added
+- Web arayüzü (`apps/web`, Next.js): Keycloak ile giriş, çalışma alanı seçimi ve oluşturma, akışlı sohbet, durdurma, yeniden üretme, konuşma geçmişi, Türkçe/İngilizce, işletim sisteminden gelen açık/koyu tema.
+- Atıf düğmeleri: üzerine gelince kaynak pasajını gösterir, tıklanınca kaynak kartını açar. Var olmayan kaynak numarası bağlantı olmaz; "bilmiyorum" ve üretilemeyen cevap için ayrı uyarılar.
+- Web oturumu (ADR-0013): token'lar yalnızca sunucuda, şifreli `HttpOnly` çerezde; API aynı kökenli akış vekiliyle çağrılır; `Origin` denetimi ve nonce'lu CSP. Tehditler T22, T23.
+- Web testleri CI'da: Vitest, axe (WCAG 2.2 AA, açık ve koyu tema), Playwright (üretim derlemesi, sahte OIDC ve API), ilk JS bütçesi (200 KB gzip; ölçülen 153 KB), üretilen API tiplerinin güncelliği.
+
 ### Changed
 - ADR-0007: reranking'in cevaplara etkisi ölçüldü. `vector+bge-m3` doğru cevabı %61,0'den %64,0'e çıkarıyor (14 kazanç, 10 kayıp; p = 0,54) ve soru başına ~15 sn ekliyor; varsayılan kapalı kalır.
 

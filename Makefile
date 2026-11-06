@@ -4,7 +4,7 @@ COMPOSE = docker compose -f infra/compose/compose.yaml --env-file .env
 
 PYTHON ?= python
 
-.PHONY: up down ps logs psql reset smoke contract-lint eval-validate api-test ai-test ai-run eval eval-smoke eval-answers
+.PHONY: up down ps logs psql reset smoke contract-lint eval-validate api-test ai-test ai-run web-test web-e2e web-run eval eval-smoke eval-answers
 
 up:
 	$(COMPOSE) up -d --wait
@@ -38,6 +38,15 @@ api-test:
 
 ai-test:
 	cd apps/ai-service && uv sync --locked && uv run ruff check && uv run ruff format --check && uv run pytest
+
+web-test:
+	cd apps/web && npm ci && npm run check:api && npm run lint && npm run typecheck && npm test
+
+web-e2e:
+	cd apps/web && npm run test:e2e
+
+web-run:
+	cd apps/web && npm run dev
 
 ai-run:
 	cd apps/ai-service && PYTHONUTF8=1 uv run python -m meridian_ai

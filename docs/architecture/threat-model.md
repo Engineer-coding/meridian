@@ -48,6 +48,8 @@
 | T19 | AI servisi iç ucunu doğrudan çağırıp başka kiracı adına sorgulamak | S, I, E | 2 | Paylaşılan gizli anahtar (sabit zamanlı karşılaştırma, boşsa kapalı), varsayılan yalnızca 127.0.0.1; kiracı kararı çekirdek API'de üyelik doğrulandıktan sonra verilir. Üretimde iç uç ağ politikasıyla ayrılacak (Faz 6) | `test_internal_api.py` | **Kısmen** |
 | T20 | Aynı kiracının başka üyesinin konuşmaları okuması | I | 1 | RLS kiracıyla birlikte kullanıcıyı denetler; bileşik FK başkasının konuşmasına mesaj bağlanmasını önler; mesajlar değiştirilemez | `ChatApiTest` | **Uygulandı** |
 | T21 | Çok sayıda soruyla pahalı modeli meşgul etmek | D | 1, 2 | Kullanıcı başına token-bucket, model çağrılmadan önce 429 | `ChatApiTest` | **Uygulandı** |
+| T22 | Model çıktısı ya da belge içeriğiyle arayüzde XSS, görselle veri sızdırma | T, I, E | 2 | Ham HTML işlenmez, bağlantı yalnızca http(s), görsel gösterilmez; nonce'lu CSP dış isteği engeller; token tarayıcı koduna verilmez ([ADR-0013](../adr/0013-web-session-bff.md)) | `Answer.test.tsx`, `e2e/chat.spec.ts` | **Uygulandı** |
+| T23 | Çerezli API vekiline başka siteden istek (CSRF), vekille `/v1` dışına çıkma | S, T, E | 2 | `SameSite=Lax` + `Origin` denetimi; yol segmentleri doğrulanır; çerez API'ye geçmez | `proxy.test.ts`, `e2e/chat.spec.ts` | **Uygulandı** |
 | T12 | Slug numaralandırma: 409 cevabı başka kiracının slug'ını kullandığını açığa çıkarır | I | 1 | Slug'lar adreste görünen, gizli olmayan tanımlayıcılardır; kiracı verisi sızmaz | — | **Kabul edilen risk** |
 
 STRIDE: **S**poofing, **T**ampering, **R**epudiation, **I**nformation disclosure, **D**enial of service, **E**levation of privilege.

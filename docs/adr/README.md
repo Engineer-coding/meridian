@@ -19,3 +19,4 @@ Kabul edilmiş bir ADR değiştirilmez; yerine yeni bir ADR yazılır ve eskisin
 | [0010](0010-eval-gate-in-ci.md) | Değerlendirme kapısının CI'daki yeri | Kabul edildi |
 | [0011](0011-consumer-retry-dlq.md) | Kuyruk tüketicisi: yeniden deneme, DLQ ve teslim garantisi | Kabul edildi |
 | [0012](0012-indexing-pipeline.md) | İndeksleme hattı ve embedding modeli (v0) | Kabul edildi |
+| [0013](0013-web-session-bff.md) | Web oturumu: token'lar tarayıcıya verilmez (BFF) | Kabul edildi |

@@ -1,0 +1,55 @@
+{
+  "name": "meridian-web",
+  "version": "0.4.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "next dev -p 3000",
+    "build": "next build",
+    "start": "next start -p 3000",
+    "lint": "eslint . --max-warnings=0",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "gen:api": "openapi-typescript ../../packages/api-contract/openapi.yaml -o src/lib/api/schema.d.ts",
+    "check:api": "openapi-typescript ../../packages/api-contract/openapi.yaml -o src/lib/api/schema.d.ts --check"
+  },
+  "dependencies": {
+    "@fontsource/ibm-plex-mono": "5.3.0",
+    "@fontsource/ibm-plex-sans": "5.3.0",
+    "@hookform/resolvers": "7.0.3",
+    "@tanstack/react-query": "5.106.1",
+    "jose": "6.2.15",
+    "next": "16.4.5",
+    "openapi-fetch": "0.17.0",
+    "openid-client": "6.8.9",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "react-hook-form": "7.91.0",
+    "react-markdown": "10.1.0",
+    "remark-gfm": "4.0.1",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.14.0",
+    "@playwright/test": "1.65.0",
+    "@testing-library/jest-dom": "7.0.1",
+    "@testing-library/react": "16.3.3",
+    "@testing-library/user-event": "14.6.8",
+    "@types/mdast": "4.0.4",
+    "@types/node": "22.20.5",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.2.1",
+    "axe-core": "4.14.0",
+    "eslint": "9.39.5",
+    "eslint-config-next": "16.4.5",
+    "jsdom": "29.1.1",
+    "openapi-typescript": "7.13.0",
+    "typescript": "5.9.3",
+    "vitest": "5.1.0"
+  }
+}
