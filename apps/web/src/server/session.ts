@@ -11,7 +11,12 @@ export type Session = {
   expiresAt: number;
 };
 
-export type LoginState = { state: string; verifier: string };
+export type LoginState = { state: string; verifier: string; returnTo?: string };
+
+/** Girişten sonra dönülecek yol. Yalnızca panel sayfaları: dış adrese yönlendirme yapılamaz (open redirect). */
+export function safeReturnTo(value: string | null | undefined): string {
+  return value && /^\/admin(\/[a-z-]+)?$/.test(value) ? value : "/";
+}
 
 export const SESSION_COOKIE = "meridian_session";
 export const LOGIN_COOKIE = "meridian_login";

@@ -16,10 +16,15 @@ const SOURCE = {
   content: "Veri sorumlusu başvuruyu en geç otuz gün içinde sonuçlandırır.",
 };
 
+const MEMBER_TENANT = "44444444-4444-4444-8444-444444444444";
+
 let conversations = {};
 let messages = {};
+let sources = {};
+let collections = {};
+let apiKeys = [];
 let challenge;
-let state = { interrupted: 0, tokenRefreshes: 0, lastAuthorization: null };
+let state = { interrupted: 0, tokenRefreshes: 0, lastAuthorization: null, sourceTenants: [] };
 let seq = 0;
 
 const id = () => `22222222-2222-4222-8222-${String(++seq).padStart(12, "0")}`;
@@ -91,6 +96,139 @@ async function answer(req, res, conversationId, content) {
   res.end();
 }
 
+/** Durum birkaç okumada ilerler: panel kendini yeniliyorsa sonucu sayfa yenilenmeden görür. */
+function advance(source) {
+  source.reads = (source.reads ?? 0) + 1;
+  if (source.status === "pending" && source.reads >= 2) source.status = "indexing";
+  else if (source.status === "indexing" && source.reads >= 3) {
+    if (source.repository === "yok/yok") {
+      source.status = "failed";
+      source.lastError = "depo veya dal bulunamadı";
+    } else {
+      source.status = "ready";
+      source.documentCount = 12;
+      source.lastIndexedAt = new Date().toISOString();
+    }
+  }
+  return source;
+}
+
+function view(source) {
+  const { id, name, collectionId, type, status, documentCount, lastError, lastIndexedAt, createdAt } = source;
+  return { id, name, collectionId, type, status, documentCount, lastError, lastIndexedAt, createdAt };
+}
+
+function auditPage(url) {
+  const all = Array.from({ length: 60 }, (_, index) => ({
+    id: `55555555-5555-4555-8555-${String(index).padStart(12, "0")}`,
+    action: index === 1 ? "source.delete" : "source.create",
+    outcome: index === 1 ? "denied" : "allowed",
+    actorUserId: "33333333-3333-4333-8333-333333333333",
+    actorEmail: "alice@acme.test",
+    apiKeyId: index === 2 ? "66666666-6666-4666-8666-666666666666" : null,
+    targetId: index === 1 ? null : "77777777-7777-4777-8777-777777777777",
+    createdAt: new Date(Date.now() - index * 60000).toISOString(),
+  }));
+  const start = Number(url.searchParams.get("cursor") ?? 0);
+  const limit = Number(url.searchParams.get("limit") ?? 20);
+  const next = start + limit;
+  return { items: all.slice(start, next), nextCursor: next < all.length ? String(next) : null };
+}
+
+function usageSummary() {
+  const today = Date.UTC(2026, 10, 30);
+  const days = Array.from({ length: 30 }, (_, index) => ({
+    date: new Date(today - (29 - index) * 86400000).toISOString().slice(0, 10),
+    tokens: index === 29 ? 170000 : index % 3 === 0 ? 40000 + index * 1000 : 0,
+    answers: index === 29 ? 40 : index % 3 === 0 ? 12 : 0,
+  }));
+  return {
+    plan: "free",
+    dailyTokenLimit: 200000,
+    tokensToday: 170000,
+    resetsAt: new Date(today + 86400000).toISOString(),
+    estimatedTokens: 1200,
+    costUsd: 0,
+    days,
+  };
+}
+
+async function adminApi(req, res, url, [, tenantId, area, itemId, retry]) {
+  const isMemberTenant = tenantId === MEMBER_TENANT;
+  const forbidden = () => json(res, 403, { title: "Forbidden", status: 403 });
+
+  if (area === "usage") return isMemberTenant ? forbidden() : json(res, 200, usageSummary());
+  if (area === "audit-log") return isMemberTenant ? forbidden() : json(res, 200, auditPage(url));
+
+  if (area === "collections") {
+    const list = (collections[tenantId] ??= [{ id: id(), name: "Genel", createdAt: new Date().toISOString() }]);
+    if (req.method === "GET") return json(res, 200, list);
+    const { name } = JSON.parse(await readBody(req));
+    const created = { id: id(), name, createdAt: new Date().toISOString() };
+    list.push(created);
+    return json(res, 201, created);
+  }
+
+  if (area === "api-keys") {
+    if (isMemberTenant) return forbidden();
+    if (req.method === "GET") return json(res, 200, apiKeys);
+    if (req.method === "DELETE") {
+      const key = apiKeys.find((item) => item.id === itemId);
+      if (key) key.revokedAt = new Date().toISOString();
+      res.writeHead(204);
+      return res.end();
+    }
+    const body = JSON.parse(await readBody(req));
+    const key = {
+      id: id(),
+      name: body.name,
+      prefix: "mrd_gizli",
+      scopes: body.scopes,
+      createdAt: new Date().toISOString(),
+      expiresAt: new Date(Date.now() + body.expiresInDays * 86400000).toISOString(),
+      lastUsedAt: null,
+      revokedAt: null,
+    };
+    apiKeys.unshift(key);
+    return json(res, 201, { key, secret: "mrd_gizli-deger" });
+  }
+
+  const list = (sources[tenantId] ??= []);
+  if (!state.sourceTenants.includes(tenantId)) state.sourceTenants.push(tenantId);
+  if (req.method === "GET" && !itemId) {
+    return json(res, 200, { items: list.filter((item) => !item.removed).map(advance).map(view), nextCursor: null });
+  }
+  if (req.method === "POST" && !itemId) {
+    const body = JSON.parse(await readBody(req));
+    const source = {
+      id: id(),
+      name: body.name,
+      collectionId: body.collectionId,
+      type: body.config.type,
+      repository: body.config.repository,
+      status: "pending",
+      documentCount: 0,
+      createdAt: new Date().toISOString(),
+    };
+    list.unshift(source);
+    return json(res, 202, view(source));
+  }
+  const source = list.find((item) => item.id === itemId);
+  if (!source) return json(res, 404, { title: "Not Found", status: 404 });
+  if (retry) {
+    source.status = "pending";
+    source.reads = 0;
+    delete source.lastError;
+    return json(res, 202, view(source));
+  }
+  if (req.method === "DELETE") {
+    source.removed = true;
+    res.writeHead(202);
+    return res.end();
+  }
+  return json(res, 200, view(source));
+}
+
 createServer(async (req, res) => {
   const url = new URL(req.url, `http://localhost:${PORT}`);
   const path = url.pathname;
@@ -100,7 +238,10 @@ createServer(async (req, res) => {
   if (path === "/__reset") {
     conversations = {};
     messages = {};
-    state = { interrupted: 0, tokenRefreshes: 0, lastAuthorization: null };
+    sources = {};
+    collections = {};
+    apiKeys = [];
+    state = { interrupted: 0, tokenRefreshes: 0, lastAuthorization: null, sourceTenants: [] };
     return json(res, 200, {});
   }
 
@@ -163,6 +304,8 @@ createServer(async (req, res) => {
       ],
     });
   }
+  const admin = path.match(/^\/v1\/tenants\/([^/]+)\/(sources|collections|usage|api-keys|audit-log)(?:\/([^/]+))?(\/retry)?$/);
+  if (admin) return adminApi(req, res, url, admin);
   const match = path.match(/^\/v1\/tenants\/([^/]+)\/conversations(?:\/([^/]+)\/messages)?$/);
   if (match) {
     const [, tenantId, conversationId] = match;
@@ -178,6 +321,9 @@ createServer(async (req, res) => {
     const { content } = JSON.parse(await readBody(req));
     const conversation = tenantConversations.find((item) => item.id === conversationId);
     if (conversation && !conversation.title) conversation.title = content.slice(0, 60);
+    if (content.includes("kota dolu")) {
+      return json(res, 429, { type: "https://meridian.dev/problems/quota-exceeded", title: "Too Many Requests", status: 429 }, { "Retry-After": "40000" });
+    }
     if (content.includes("sınır")) return json(res, 429, { title: "Too Many Requests", status: 429 }, { "Retry-After": "7" });
     return answer(req, res, conversationId, content);
   }

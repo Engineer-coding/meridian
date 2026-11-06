@@ -36,7 +36,9 @@ export function TurnView({ turn, onRetry }: { turn: Turn; onRetry: () => void })
           <p>
             {turn.error?.key === "rateLimited"
               ? t("rateLimited", { seconds: turn.error.retryAfterSeconds ?? 60 })
-              : t("failed")}
+              : turn.error?.key === "quotaExceeded"
+                ? t("quotaExceeded")
+                : t("failed")}
           </p>
           <button type="button" className="btn-quiet" onClick={onRetry}>
             {t("retry")}

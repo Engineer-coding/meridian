@@ -1,8 +1,10 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import { useSelectedTenant } from "@/features/shell/tenant";
 import { useT } from "@/i18n/context";
 import { api, unwrap, type ChatMessage, type Me, type Membership } from "@/lib/api/client";
 
@@ -23,30 +25,9 @@ function toView(message: ChatMessage): AssistantView {
   };
 }
 
-const TENANT_KEY = "meridian.tenant";
-
-function storedTenant(): string | null {
-  try {
-    return window.localStorage.getItem(TENANT_KEY);
-  } catch {
-    return null; // gizli pencere ya da engellenmiş depolama
-  }
-}
-
 /** Seçili çalışma alanı; değişince sohbet durumu `key` ile sıfırlanır, kiracılar birbirine karışmaz. */
 export function ChatPage({ me }: { me: Me }) {
-  const [selected, setSelected] = useState(storedTenant);
-  const membership = me.memberships.find((item) => item.tenantId === selected) ?? me.memberships[0]!;
-
-  function select(tenantId: string) {
-    setSelected(tenantId);
-    try {
-      window.localStorage.setItem(TENANT_KEY, tenantId);
-    } catch {
-      // yalnızca kolaylık: kalıcı olmasa da seçim bu sayfada geçerli
-    }
-  }
-
+  const { membership, select } = useSelectedTenant(me);
   return <TenantChat key={membership.tenantId} me={me} membership={membership} onSelectTenant={select} />;
 }
 
@@ -134,6 +115,9 @@ function TenantChat({
         ) : (
           <span className="tenant">{membership.tenantName}</span>
         )}
+        <Link href="/admin" className="admin-back">
+          {t("adminTitle")}
+        </Link>
       </header>
 
       <nav id="conversations" className={navOpen ? "nav nav-open" : "nav"} aria-label={t("conversations")}>

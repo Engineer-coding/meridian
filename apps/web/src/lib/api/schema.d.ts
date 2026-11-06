@@ -177,6 +177,112 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/tenants/{tenantId}/sources/{sourceId}/retry": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tenantId: components["parameters"]["TenantId"];
+                sourceId: components["parameters"]["SourceId"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Başarısız indekslemeyi yeniden başlat
+         * @description Yalnızca `failed` durumundaki kaynak yeniden kuyruğa alınır. Kaynak zaten sıradaysa ya da
+         *     indeksleniyorsa işlem yapılmadan 202 döner, bu yüzden Idempotency-Key gerekmez.
+         */
+        post: operations["retrySource"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/tenants/{tenantId}/usage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tenantId: components["parameters"]["TenantId"];
+            };
+            cookie?: never;
+        };
+        /** Günlük kullanım serisi ve kota (owner, admin) */
+        get: operations["getUsage"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/tenants/{tenantId}/api-keys": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tenantId: components["parameters"]["TenantId"];
+            };
+            cookie?: never;
+        };
+        /** API anahtarlarını listele (owner, admin) */
+        get: operations["listApiKeys"];
+        put?: never;
+        /**
+         * API anahtarı oluştur (owner, admin)
+         * @description Gizli değer yalnızca bu cevapta döner, veritabanında özeti (SHA-256) saklanır. Idempotency-Key
+         *     alınmaz: tekrarlanan istekte gizli değer yeniden üretilemez; fazladan anahtar iptal edilebilir.
+         */
+        post: operations["createApiKey"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/tenants/{tenantId}/api-keys/{apiKeyId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tenantId: components["parameters"]["TenantId"];
+                apiKeyId: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Anahtarı iptal et (owner, admin) */
+        delete: operations["revokeApiKey"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/tenants/{tenantId}/audit-log": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tenantId: components["parameters"]["TenantId"];
+            };
+            cookie?: never;
+        };
+        /** Denetim kayıtları, en yeniden eskiye (owner, admin) */
+        get: operations["listAuditLog"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -364,6 +470,89 @@ export interface components {
         SourcePage: {
             items: components["schemas"]["Source"][];
             /** @description Son sayfada `null` */
+            nextCursor?: string | null;
+        };
+        UsageDay: {
+            /**
+             * Format: date
+             * @description UTC gün
+             */
+            date: string;
+            /** Format: int64 */
+            tokens: number;
+            /** Format: int64 */
+            answers: number;
+        };
+        UsageSummary: {
+            /** @enum {string} */
+            plan: "free" | "team" | "enterprise";
+            /** Format: int64 */
+            dailyTokenLimit: number;
+            /** Format: int64 */
+            tokensToday: number;
+            /** Format: date-time */
+            resetsAt: string;
+            /**
+             * Format: int64
+             * @description Dönemdeki token'lardan model sayacı yerine metin uzunluğundan tahmin edilenler
+             */
+            estimatedTokens: number;
+            /**
+             * Format: double
+             * @description Dönemin maliyeti; yerel modelde 0
+             */
+            costUsd: number;
+            /** @description Eskiden yeniye, boş günler dahil */
+            days: components["schemas"]["UsageDay"][];
+        };
+        /** @enum {string} */
+        ApiKeyScope: "sources:read" | "sources:write" | "chat";
+        CreateApiKeyRequest: {
+            name: string;
+            scopes: components["schemas"]["ApiKeyScope"][];
+            /** @default 90 */
+            expiresInDays: number;
+        };
+        ApiKey: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            /** @description Anahtarı tanımak için ilk karakterler */
+            prefix: string;
+            scopes: components["schemas"]["ApiKeyScope"][];
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            expiresAt: string;
+            /** Format: date-time */
+            lastUsedAt?: string | null;
+            /** Format: date-time */
+            revokedAt?: string | null;
+        };
+        CreatedApiKey: {
+            key: components["schemas"]["ApiKey"];
+            /** @description Yalnızca bir kez gösterilir */
+            secret: string;
+        };
+        AuditEntry: {
+            /** Format: uuid */
+            id: string;
+            /** @example source.delete */
+            action: string;
+            /** @enum {string} */
+            outcome: "allowed" | "denied";
+            /** @description Kullanıcı artık bu kiracının üyesi değilse boş */
+            actorEmail?: string | null;
+            /** Format: uuid */
+            actorUserId?: string | null;
+            /** Format: uuid */
+            apiKeyId?: string | null;
+            targetId?: string | null;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        AuditPage: {
+            items: components["schemas"]["AuditEntry"][];
             nextCursor?: string | null;
         };
     };
@@ -836,6 +1025,170 @@ export interface operations {
                 };
                 content?: never;
             };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+        };
+    };
+    retrySource: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tenantId: components["parameters"]["TenantId"];
+                sourceId: components["parameters"]["SourceId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description İndeksleme kuyruğa alındı */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Source"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+        };
+    };
+    getUsage: {
+        parameters: {
+            query?: {
+                /** @description Bugün dahil kaç gün */
+                days?: number;
+            };
+            header?: never;
+            path: {
+                tenantId: components["parameters"]["TenantId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Kullanım özeti */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UsageSummary"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+        };
+    };
+    listApiKeys: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tenantId: components["parameters"]["TenantId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Anahtarlar; gizli değer asla dönmez */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiKey"][];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+        };
+    };
+    createApiKey: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tenantId: components["parameters"]["TenantId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateApiKeyRequest"];
+            };
+        };
+        responses: {
+            /** @description Anahtar oluşturuldu */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CreatedApiKey"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+        };
+    };
+    revokeApiKey: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tenantId: components["parameters"]["TenantId"];
+                apiKeyId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description İptal edildi; tekrarlanabilir */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+        };
+    };
+    listAuditLog: {
+        parameters: {
+            query?: {
+                /** @description Önceki sayfanın `nextCursor` değeri (opak) */
+                cursor?: components["parameters"]["Cursor"];
+                limit?: components["parameters"]["Limit"];
+            };
+            header?: never;
+            path: {
+                tenantId: components["parameters"]["TenantId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Kayıt sayfası */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuditPage"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
             401: components["responses"]["Unauthorized"];
             403: components["responses"]["Forbidden"];
             404: components["responses"]["NotFound"];

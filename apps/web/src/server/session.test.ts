@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { describe, expect, it } from "vitest";
 
-import { MAX_COOKIE_BYTES, seal, unseal, type Session } from "./session";
+import { MAX_COOKIE_BYTES, safeReturnTo, seal, unseal, type Session } from "./session";
 
 const SECRET = "x".repeat(32);
 const session: Session = { accessToken: "a.b.c", refreshToken: "r", expiresAt: 123 };
@@ -30,5 +30,15 @@ describe("oturum çerezi", () => {
   it("tarayıcının sessizce atacağı büyüklükte çerez üretmez", async () => {
     const big = { ...session, accessToken: "x".repeat(MAX_COOKIE_BYTES) };
     await expect(seal(big, SECRET, 60)).rejects.toThrow(/çok büyük/);
+  });
+});
+
+describe("girişten sonra dönüş", () => {
+  it("yalnızca panel sayfalarına döner, dış adrese yönlendirmez", () => {
+    expect(safeReturnTo("/admin/api-keys")).toBe("/admin/api-keys");
+    expect(safeReturnTo("/admin")).toBe("/admin");
+    for (const bad of ["https://evil.test", "//evil.test", "/\evil.test", "/admin/../x", "/admin/x?y=1", "/", "", null, undefined]) {
+      expect(safeReturnTo(bad)).toBe("/");
+    }
   });
 });

@@ -40,7 +40,7 @@ ai-test:
 	cd apps/ai-service && uv sync --locked && uv run ruff check && uv run ruff format --check && uv run pytest
 
 web-test:
-	cd apps/web && npm ci && npm run check:api && npm run lint && npm run typecheck && npm test
+	cd apps/web && npm ci && npm run check:api && npm run check:eval && npm run lint && npm run typecheck && npm test
 
 web-e2e:
 	cd apps/web && npm run test:e2e

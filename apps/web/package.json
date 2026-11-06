@@ -15,7 +15,9 @@
     "test": "vitest run",
     "test:e2e": "playwright test",
     "gen:api": "openapi-typescript ../../packages/api-contract/openapi.yaml -o src/lib/api/schema.d.ts",
-    "check:api": "openapi-typescript ../../packages/api-contract/openapi.yaml -o src/lib/api/schema.d.ts --check"
+    "check:api": "openapi-typescript ../../packages/api-contract/openapi.yaml -o src/lib/api/schema.d.ts --check",
+    "gen:eval": "node scripts/gen-eval.mjs",
+    "check:eval": "node scripts/gen-eval.mjs --check"
   },
   "dependencies": {
     "@fontsource/ibm-plex-mono": "5.3.0",

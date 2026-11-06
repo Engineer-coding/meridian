@@ -20,6 +20,8 @@ import { startTurn, turnReducer, type Turn, type TurnAction } from "./turn";
 type State = { turn: Turn | null };
 type Action = { type: "start"; turn: Turn } | { type: "clear" } | TurnAction;
 
+const QUOTA_EXCEEDED = "https://meridian.dev/problems/quota-exceeded";
+
 function reducer(state: State, action: Action): State {
   if (action.type === "start") return { turn: action.turn };
   if (action.type === "clear") return { turn: null };
@@ -48,7 +50,8 @@ async function postMessage(
   }
   if (!response.ok || !response.body) {
     const retryAfter = Number(response.headers.get("retry-after"));
-    throw new ApiError(response.status, response.statusText, Number.isFinite(retryAfter) ? retryAfter : undefined);
+    const problem = (await response.json().catch(() => null)) as { type?: string } | null;
+    throw new ApiError(response.status, response.statusText, Number.isFinite(retryAfter) ? retryAfter : undefined, problem?.type);
   }
   return response.body;
 }
@@ -117,9 +120,11 @@ export function useChat(tenantId: string, onConversationCreated: (id: string) =>
         dispatch({
           type: "fail",
           error:
-            status === 429
-              ? { key: "rateLimited", retryAfterSeconds: (error as ApiError).retryAfterSeconds }
-              : { key: "failed" },
+            status === 429 && (error as ApiError).problemType === QUOTA_EXCEEDED
+              ? { key: "quotaExceeded" }
+              : status === 429
+                ? { key: "rateLimited", retryAfterSeconds: (error as ApiError).retryAfterSeconds }
+                : { key: "failed" },
         });
       }
     },

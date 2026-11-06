@@ -37,7 +37,7 @@
 | T7 | API kötüye kullanımı / maliyet saldırısı | D | 1 | Kiracı ve anahtar bazında oran sınırı (Redis token bucket), kapsamlı anahtarlar, günlük token kotası, global bütçe tavanı | Yük ve kötüye kullanım testleri | Planlandı |
 | T8 | Aşırı yetkili ajan | E | 6 | Salt-okunur varsayılan; yazma etkili araçlarda insan onayı; adım, süre ve maliyet tavanı | Ajan senaryo testleri | Planlandı |
 | T9 | Hassas veri (PII) sızıntısı | I | 3 | İndekslemede ve loglarda maskeleme; hassas kiracı için kendi sunucuda model; at-rest şifreleme; her yerde TLS | Log taraması, şifreleme kontrol testleri | Planlandı |
-| T10 | Denetim kaydının değiştirilmesi / inkâr | R, T | 2 | `audit_log` append-only (uygulama rolüne `UPDATE`/`DELETE` yetkisi yok) | Yetki testi | Planlandı |
+| T10 | Denetim kaydının değiştirilmesi / inkâr | R, T | 2 | `audit_log` append-only (uygulama rolüne `UPDATE`/`DELETE` yetkisi yok); değişiklikler ve reddedilen kararlar yazılır ([ADR-0014](../adr/0014-audit-usage-api-keys.md)) | `AdminApiTest` | **Uygulandı** |
 | T11 | Yerel geliştirme servislerinin ağa açılması | I | 1 | Compose portları yalnızca `127.0.0.1`'e bağlı | Compose dosyası incelemesi | **Uygulandı** |
 | T13 | Yabancı anahtar üzerinden kiracılar arası referans: FK denetimi RLS'e tabi değildir; başka kiracının koleksiyon kimliğini bilen biri ona kaynak bağlayabilir | T, I | 1, 2 | Kiracıya ait tablolar arasında bileşik FK (`tenant_id`, `id`); uygulama katmanında da RLS altında varlık kontrolü | Uygulama rolüyle doğrudan SQL denemesi (`KnowledgeSchemaTest`) | **Uygulandı** |
 | T14 | Olay kanalından sızıntı veya olay uydurma | I, T | 1, 2 | Uygulama rolü outbox'a yalnızca kendi kiracısı adına ekleyebilir, okuyamaz; aktarıcı rolü yalnızca outbox'ı görür, olay ekleyemez ([ADR-0004](../adr/0004-rabbitmq-outbox.md)) | Rol yetki testleri (`OutboxRelayTest`) | **Uygulandı** |
@@ -50,6 +50,8 @@
 | T21 | Çok sayıda soruyla pahalı modeli meşgul etmek | D | 1, 2 | Kullanıcı başına token-bucket, model çağrılmadan önce 429 | `ChatApiTest` | **Uygulandı** |
 | T22 | Model çıktısı ya da belge içeriğiyle arayüzde XSS, görselle veri sızdırma | T, I, E | 2 | Ham HTML işlenmez, bağlantı yalnızca http(s), görsel gösterilmez; nonce'lu CSP dış isteği engeller; token tarayıcı koduna verilmez ([ADR-0013](../adr/0013-web-session-bff.md)) | `Answer.test.tsx`, `e2e/chat.spec.ts` | **Uygulandı** |
 | T23 | Çerezli API vekiline başka siteden istek (CSRF), vekille `/v1` dışına çıkma | S, T, E | 2 | `SameSite=Lax` + `Origin` denetimi; yol segmentleri doğrulanır; çerez API'ye geçmez | `proxy.test.ts`, `e2e/chat.spec.ts` | **Uygulandı** |
+| T24 | API anahtarının çalınması ya da yetkisinin aşılması | S, I, E | 2 | Gizli değer yalnızca SHA-256 özetiyle saklanır, bir kez gösterilir; kapsam ve süre zorunlu; listede olmayan uç reddedilir; anahtar oluşturanın rolünü aşamaz, üyelik kalkınca çalışmaz; arama RLS altında, kiracı adresinden | `AdminApiTest` | **Uygulandı** |
+| T25 | Sınırsız kullanımla model kaynağını ya da bütçeyi tüketmek | D | 1, 2 | Kiracı başına günlük token kotası, model çağrılmadan önce 429 (kota yumuşak: eşzamanlı sorular bir cevap kadar aşabilir) | `AdminApiTest` | **Uygulandı** |
 | T12 | Slug numaralandırma: 409 cevabı başka kiracının slug'ını kullandığını açığa çıkarır | I | 1 | Slug'lar adreste görünen, gizli olmayan tanımlayıcılardır; kiracı verisi sızmaz | — | **Kabul edilen risk** |
 
 STRIDE: **S**poofing, **T**ampering, **R**epudiation, **I**nformation disclosure, **D**enial of service, **E**levation of privilege.

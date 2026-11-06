@@ -11,6 +11,9 @@ export type ChatDoneEvent = components["schemas"]["ChatDoneEvent"];
 export type Me = components["schemas"]["Me"];
 export type Membership = components["schemas"]["Membership"];
 export type Problem = components["schemas"]["Problem"];
+export type Source = components["schemas"]["Source"];
+export type UsageDay = components["schemas"]["UsageDay"];
+export type ApiKeyScope = components["schemas"]["ApiKeyScope"];
 
 export function goToLogin(): void {
   // Giriş bir rota işleyicisidir ve dış siteye yönlendirir: istemci içi geçiş olamaz.
@@ -34,6 +37,7 @@ export class ApiError extends Error {
     readonly status: number,
     message: string,
     readonly retryAfterSeconds?: number,
+    readonly problemType?: string,
   ) {
     super(message);
   }

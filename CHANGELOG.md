@@ -5,6 +5,11 @@ Biçim: [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/).
 
 ## [Unreleased]
 ### Added
+- Yönetim paneli (`/admin`): kaynak ekleme, canlı indeksleme durumu, yeniden deneme ve silme; günlük kullanım grafiği ve kota göstergesi; sürümler arası değerlendirme tablosu; API anahtarı yönetimi; denetim kayıtları. Bölümler role göre gösterilir, giriş sonrası istenen panel sayfasına dönülür.
+- `POST .../sources/{id}/retry`, `GET .../usage`, `GET|POST|DELETE .../api-keys`, `GET .../audit-log` (ADR-0014).
+- Denetim kaydı (`audit_log`, append-only): değişiklikler ve reddedilen kararlar; soru metni yazılmaz. Rol denetimi tek yerde (`audit.Policy`). Tehdit T10 uygulandı.
+- API anahtarları (`X-API-Key`): SHA-256 özetiyle saklanır, kapsam ve süre zorunlu, oluşturanın rolünü aşamaz; yönetim uçları anahtarla açılmaz. Tehdit T24.
+- Token muhasebesi ve günlük kota: AI servisi Ollama sayaçlarını iletir, kesilen cevaplar tahmin olarak işaretlenir; kota dolunca model çağrılmadan 429. Tehdit T25.
 - Web arayüzü (`apps/web`, Next.js): Keycloak ile giriş, çalışma alanı seçimi ve oluşturma, akışlı sohbet, durdurma, yeniden üretme, konuşma geçmişi, Türkçe/İngilizce, işletim sisteminden gelen açık/koyu tema.
 - Atıf düğmeleri: üzerine gelince kaynak pasajını gösterir, tıklanınca kaynak kartını açar. Var olmayan kaynak numarası bağlantı olmaz; "bilmiyorum" ve üretilemeyen cevap için ayrı uyarılar.
 - Web oturumu (ADR-0013): token'lar yalnızca sunucuda, şifreli `HttpOnly` çerezde; API aynı kökenli akış vekiliyle çağrılır; `Origin` denetimi ve nonce'lu CSP. Tehditler T22, T23.

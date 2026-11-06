@@ -10,6 +10,10 @@ export function LocaleProvider({ locale, children }: { locale: Locale; children:
   return <LocaleContext.Provider value={locale}>{children}</LocaleContext.Provider>;
 }
 
+export function useLocale(): Locale {
+  return useContext(LocaleContext);
+}
+
 export function useT() {
   const locale = useContext(LocaleContext);
   return useCallback(

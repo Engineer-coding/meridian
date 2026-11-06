@@ -1,0 +1,115 @@
+{
+  "metrics": {
+    "retrieval": [
+      "recall@3",
+      "recall@5",
+      "mrr"
+    ],
+    "answers": [
+      "correct",
+      "correct_when_answered",
+      "abstain_when_unanswerable",
+      "abstain_when_answerable",
+      "gold_in_context",
+      "gold_cited",
+      "invalid_citation_rate",
+      "median_total_seconds"
+    ]
+  },
+  "thresholds": {
+    "min": {
+      "recall@3": 0.87,
+      "recall@5": 0.89,
+      "mrr": 0.79,
+      "abstain_when_unanswerable": 0.85,
+      "gold_in_context": 0.9,
+      "gold_cited": 0.75,
+      "correct": 0.57,
+      "correct_when_answered": 0.82
+    },
+    "max": {
+      "abstain_when_answerable": 0.35,
+      "invalid_citation_rate": 0.02,
+      "degraded": 0
+    }
+  },
+  "releases": [
+    {
+      "version": "v0.3.0",
+      "commit": "32e4877",
+      "date": "2026-11-02",
+      "golden": "v0",
+      "questions": 30,
+      "config": "vector",
+      "retrieval": {
+        "recall@3": 0.8261,
+        "recall@5": 0.8696,
+        "mrr": 0.8207
+      },
+      "answers": null
+    },
+    {
+      "version": "v0.3.0+",
+      "commit": "f5ce9ea",
+      "date": "2026-11-02",
+      "golden": "v1",
+      "questions": 30,
+      "config": "vector",
+      "retrieval": null,
+      "answers": {
+        "abstain_when_unanswerable": 0.857,
+        "abstain_when_answerable": 0.391,
+        "gold_in_context": 0.957,
+        "gold_cited": 0.857,
+        "invalid_citation_rate": 0,
+        "median_total_seconds": 41.2
+      }
+    },
+    {
+      "version": "v0.4.0",
+      "commit": "efa848a-dirty",
+      "date": "2026-11-06",
+      "golden": "v2",
+      "questions": 165,
+      "config": "vector",
+      "retrieval": {
+        "recall@3": 0.8971,
+        "recall@5": 0.9191,
+        "mrr": 0.8157
+      },
+      "answers": {
+        "correct": 0.61,
+        "correct_when_answered": 0.874,
+        "abstain_when_unanswerable": 0.931,
+        "abstain_when_answerable": 0.301,
+        "gold_in_context": 0.934,
+        "gold_cited": 0.8,
+        "invalid_citation_rate": 0.006,
+        "median_total_seconds": 64.9
+      }
+    },
+    {
+      "version": "v0.4.0 + bge-m3",
+      "commit": "8abe52e",
+      "date": "2026-11-06",
+      "golden": "v2",
+      "questions": 165,
+      "config": "vector+bge-m3",
+      "retrieval": {
+        "recall@3": 0.9375,
+        "recall@5": 0.9706,
+        "mrr": 0.9016
+      },
+      "answers": {
+        "correct": 0.64,
+        "correct_when_answered": 0.888,
+        "abstain_when_unanswerable": 0.897,
+        "abstain_when_answerable": 0.279,
+        "gold_in_context": 0.963,
+        "gold_cited": 0.878,
+        "invalid_citation_rate": 0.006,
+        "median_total_seconds": 64.8
+      }
+    }
+  ]
+}

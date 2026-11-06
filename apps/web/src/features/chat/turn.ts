@@ -9,7 +9,7 @@ export type Turn = {
   done?: ChatDoneEvent;
   /** Sunucudaki mesaj sayısı: bu turdan önceki mesajlar ile bu turunkiler buradan ayrılır. */
   baseCount: number;
-  error?: { key: "rateLimited" | "failed"; retryAfterSeconds?: number; detail?: string };
+  error?: { key: "rateLimited" | "quotaExceeded" | "failed"; retryAfterSeconds?: number; detail?: string };
 };
 
 export type TurnAction =
