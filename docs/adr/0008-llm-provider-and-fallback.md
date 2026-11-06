@@ -95,6 +95,24 @@ recall@5 0,87; 2 kaynak daha eklemek CPU'da ~40 sn daha demektir.
 - Alıntı doğrulaması alıntının *ilgili* olduğunu kanıtlamaz, yalnızca *gerçek* olduğunu kanıtlar.
   Model soruyla ilgisiz ama gerçek bir cümle alıntılarsa cevap aşamasına geçilir.
 
+## Yeniden ölçüm (altın set v2, 165 soru, 2026-11-06)
+| Ölçüt | Değer |
+|---|---|
+| Cevapsız soruda "bilmiyorum" | %93,1 (29 sorunun 27'si) |
+| Cevaplı soruda gereksiz "bilmiyorum" | **%30,1** (136 sorunun 41'i) |
+| Cevap doğru, tüm cevaplı sorular / model cevap verdiğinde | %61,0 / %87,4 (bkz. ADR-0010) |
+| Ortanca ilk token / toplam süre | 57,1 sn / 64,9 sn |
+
+- **Aşağıdaki %30 tetikleyicisi aşıldı.** Sistem cevap verdiğinde çoğunlukla doğru ama cevaplanabilir
+  soruların üçte birine yakınında susuyor; 41'in 35'inde altın kaynak bağlamdaydı. Sorun aramada
+  değil, 3B modelin alıntı becerisinde. Model ya da istem değişikliği sıradaki iştir.
+- **Zayıf noktalar:** çok kaynaklı soruların yalnızca 11/33'ü doğru; Türkçe sorular 33/64, İngilizce
+  50/72. Türkçe cevaplarda dil karışması görülüyor ("Bu information…") ve bu ölçülmüyor.
+- **Uydurma tamamen bitmedi.** `kvkk-003` ve `kvkk-177` gerçek bir alıntıya dayanıp soruyla ilgisiz
+  cevap verdi. Bu, aşağıda kabul edilen "alıntı gerçek ama ilgisiz" riskidir.
+- **Süre düzeltmesi.** Önceki raporlar yalnızca son model çağrısını sayıyordu; kanıt çağrısı
+  (~50 sn) eksikti. Eski "41 sn" gerçek süreyi olduğundan az gösteriyordu. İki çağrı artık toplanıyor.
+
 ## Geri dönüş maliyeti ve yeniden değerlendirme tetikleyicisi
 **Düşük.** İki aşamalı akış tek bir sınıftadır (`Answerer`). Güçlü bir sağlayıcıyla tek aşamaya
 dönmek bir ayardır.

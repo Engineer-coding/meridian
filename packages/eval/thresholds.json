@@ -1,0 +1,20 @@
+{
+  "retrieval": {
+    "config": "vector",
+    "min": { "recall@3": 0.87, "recall@5": 0.89, "mrr": 0.79 }
+  },
+  "answers": {
+    "min": {
+      "abstain_when_unanswerable": 0.85,
+      "gold_in_context": 0.90,
+      "gold_cited": 0.75,
+      "correct": 0.57,
+      "correct_when_answered": 0.82
+    },
+    "max": {
+      "abstain_when_answerable": 0.35,
+      "invalid_citation_rate": 0.02,
+      "degraded": 0
+    }
+  }
+}

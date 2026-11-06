@@ -38,6 +38,31 @@ Okuma notları:
   Gereksiz "bilmiyorum" oranı (%39) aramadan değil, 3B modelin alıntı becerisinden kaynaklanıyor.
   Daha iyi sıralama bu sorunu çözmez.
 
+## Yeniden ölçüm (altın set v2, 136 cevaplı soru, 2026-11-06)
+"Altın set ≥ 150 soru" tetikleyicisi çalıştı. Daha büyük örneklem v1'in bir bulgusunu **çürüttü**:
+
+| Yapılandırma | recall@1 | recall@3 | recall@5 | recall@10 | MRR | nDCG@10 | ek süre / soru |
+|---|---|---|---|---|---|---|---|
+| vector | 0,643 | 0,897 | 0,919 | 0,963 | 0,816 | 0,845 | — |
+| lexical | 0,614 | 0,783 | 0,857 | 0,912 | 0,762 | 0,785 | — |
+| hybrid (RRF) | 0,706 | 0,886 | 0,930 | 0,967 | 0,862 | 0,874 | — |
+| vector + bge-m3 | 0,765 | 0,938 | 0,971 | 0,974 | **0,902** | 0,913 | 15 sn |
+| hybrid + bge-m3 | 0,754 | **0,949** | **0,974** | **0,989** | 0,901 | **0,916** | 16 sn |
+| vector + jina-v2 | 0,732 | 0,904 | 0,926 | 0,971 | 0,873 | 0,889 | 13 sn |
+| hybrid + jina-v2 | 0,724 | 0,912 | 0,934 | 0,978 | 0,875 | 0,892 | 13 sn |
+
+- **Reranking recall@3'ü artırıyor:** vektörde 0,897 → 0,938 (~5–6 soru), hibritte 0,949. v1'deki
+  "hiçbir yapılandırma vektörün üstüne çıkamadı" sonucu küçük örneklemden kaynaklanıyordu.
+- `bge-m3`, `jina-v2`'den açıkça iyi. En büyük kazanç çok kaynaklı sorularda (vektör recall@5
+  0,76 → 0,88, hibrit + bge-m3 0,92).
+- Sözcüksel arama tek başına en zayıf yöntem olmaya devam ediyor.
+
+**Varsayılan şimdilik değişmedi, ama gerekçesi zayıfladı.** Gerçek cevap süresi ~65 sn olduğu için
++15 sn v1'de sanıldığı kadar büyük değil (ADR-0008'deki süre düzeltmesi). Öte yandan altın kaynak
+zaten %93 oranında bağlamda ve gereksiz "bilmiyorum" cevaplarının çoğu (41'in 35'i) altın kaynak
+bağlamdayken oluyor. Reranking'in cevap doğruluğuna etkisi **ölçülmedi**. Karar, `vector+bge-m3`
+ile cevap değerlendirmesi yapılınca verilecek.
+
 ## Karar
 - **Varsayılan: vektör arama, reranking kapalı, 3 kaynak.** Bu donanımda en yüksek recall@3'ü
   ek süre olmadan veren yapılandırma budur.
@@ -64,8 +89,7 @@ Okuma notları:
 - Reranker eklemek kod değil, ayar değişikliği.
 
 **Olumsuz / kabul edilen riskler**
-- Örneklem küçük. Kararı değiştirecek farklar, altın set 150+ soruya çıkınca (Adım 21) yeniden
-  ölçülecek.
+- v2 sentetik ve hızlı onaylanmış bir settir (ADR-0010); küçük farklara fazla anlam yüklenmemeli.
 - `k8s-002` (readiness) ve `k8s-012`, `k8s-014` gibi çok kaynaklı soruların ikinci kaynağı
   çoğu yapılandırmada ilk 10'a girmiyor. Soru ayrıştırma (çok adımlı arama) ileride değerlendirilir.
 
@@ -73,6 +97,7 @@ Okuma notları:
 **Düşük.** Yapılandırma iki ayardan ibaret; ölçüm `make eval` ile tekrarlanır.
 
 Tetikleyiciler:
-- Altın set ≥ 150 soruya çıktığında: tablo yeniden üretilir ve karar gözden geçirilir.
+- `vector+bge-m3` cevap değerlendirmesi doğruluğu ya da gereksiz "bilmiyorum" oranını belirgin
+  iyileştirirse: reranker varsayılan olarak açılır.
 - Bağlam 3 kaynaktan fazlasına çıkarsa: reranker açılır (recall@5'te önde).
 - GPU'lu bir ortam olursa: reranking'in ek süresi 1 sn'nin altına iner ve varsayılan olarak açılır.

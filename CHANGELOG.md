@@ -4,7 +4,18 @@ Bu proje [Semantic Versioning](https://semver.org) kullanır.
 Biçim: [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/).
 
 ## [Unreleased]
+
+## [0.4.0] - 2026-11-06
+Kaynaklı cevap, akışlı sohbet API'si ve eşikli değerlendirme kapısı. Altın set v2 (165 soru,
+`llama3.2:3b`, CPU): cevapsız soruda %93 "bilmiyorum", cevaplı soruda %30 gereksiz "bilmiyorum",
+cevaplı soruların %61'i doğru, model cevap verdiğinde %87 doğru (anahtar kelime ölçütü; yukarı
+yanlı, bkz. ADR-0010), ortanca toplam süre 65 sn. Gereksiz "bilmiyorum" oranı ADR-0008'in %30
+tetikleyicisini aştı.
+
 ### Added
+- Altın set v2: 165 soru (103 tek kaynaklı, 33 çok kaynaklı, 29 cevapsız; 79 Türkçe, 86 İngilizce). Sentetik; kanıtı kodla denetlendi, tek kişi tarafından hızlı onaylandı.
+- Anahtar kelimeye dayalı cevap doğruluğu ölçütü (`correct`, `correct_when_answered`).
+- Değerlendirme kapısı (ADR-0010): raporlar kodun, altın setin ve manifestin parmak izini taşır; CI güncelliği ve `packages/eval/thresholds.json` eşiklerini denetler.
 - Sohbet API'si: `/v1/tenants/{tenantId}/conversations` ve `.../messages`. Cevap SSE ile akar (`sources` → `token` → `done`); mesajlar kaynak ve atıflarıyla kaydedilir. Konuşmalar kiracı içinde de kişiye özeldir (RLS). AI servisine ulaşılamazsa akış `degraded: true` ile biter; istemci yarıda ayrılırsa mesaj `interrupted` kaydedilir.
 - Redis'te kullanıcı başına token-bucket oran sınırı (429 + `Retry-After`); Redis kapalıysa istek geçer.
 - AI servisi iç ucu `POST /internal/v1/answer` (NDJSON), `AI_INTERNAL_TOKEN` ile korunur; anahtar yoksa her isteği reddeder (tehdit T19).
@@ -15,7 +26,11 @@ Biçim: [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/).
 - Ablasyon tablosu: vektör / sözcüksel / hibrit ilk aşama ve iki reranker için recall@k, MRR, nDCG ve soru başına ek süre; reranker skorları önbellekli. Bulgu: 3 kaynaklı bağlamda reranking recall@3'ü artırmıyor (0,848), recall@5'i 0,870 → 0,913 yapıyor (+14 sn).
 - Tehdit T18 (belge içeriğiyle istem enjeksiyonu): ilk önlemler.
 
+### Fixed
+- Cevap süresi raporu yalnızca son model çağrısını sayıyordu; kanıt çağrısı eklendi (ortanca toplam 18,6 sn yerine 64,9 sn).
+
 ### Changed
+- ADR-0007 yeniden ölçüldü: 136 cevaplı soruda `bge-m3` vektör recall@3'ü 0,897'den 0,938'e çıkarıyor. v1'in aksine reranking recall@3'ü artırıyor; varsayılan, cevap doğruluğuna etkisi ölçülene kadar kapalı kalır.
 - Altın set v1: `k8s-002` ve `k8s-005` kaynaklarına aynı bilgiyi taşıyan alternatif bölümler eklendi (`alternatives`); değerlendirme ve doğrulayıcı v1'i kullanır, baseline yeniden üretildi. v0 değiştirilmeden saklanır.
 
 ## [0.3.0] - 2026-11-02
@@ -70,6 +85,8 @@ Faz 2 (çekirdek backend) kapısı geçildi: sözleşmedeki her kiracıya bağl�
 - MinIO yerine RustFS: MinIO topluluk Docker imajları yayından kalktı.
 - gitleaks-action yerine sürümü sabitlenmiş gitleaks imajı: action ilk commit'te aralığı çözemiyordu.
 
-[Unreleased]: https://github.com/Engineer-coding/meridian/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/Engineer-coding/meridian/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/Engineer-coding/meridian/compare/v0.3.0...v0.4.0
+[0.3.0]: https://github.com/Engineer-coding/meridian/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/Engineer-coding/meridian/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/Engineer-coding/meridian/releases/tag/v0.1.0

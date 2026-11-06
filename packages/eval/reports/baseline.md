@@ -1,42 +1,46 @@
 # Retrieval değerlendirmesi — baseline
 
-- Tarih: 2026-11-03 · commit `8511792`
+- Tarih: 2026-11-06 · commit `cfd19dc`
 - Model: `intfloat/multilingual-e5-large` · parça ≤ 1200 karakter, örtüşme 150
 - Korpus: k8s@ef4f9c6cb538 (187 belge), kvkk@5f9e7fa79319 (1 belge) → 3093 parça
-- Altın set: 23 cevaplı / 30 soru (`packages/eval/golden/v1.jsonl`, sha256 `cf0d535ee820`)
+- Altın set: 136 cevaplı / 165 soru (`packages/eval/golden/v2.jsonl`, sha256 `84ad10ae48b0`)
 
 ## Genel (cevaplı sorular)
 
 | Yöntem | recall@1 | recall@3 | recall@5 | recall@10 | mrr | ndcg@5 | ndcg@10 | yeniden sıralama (sn/soru) |
 |---|---|---|---|---|---|---|---|---|
-| vector | 0.565 | 0.848 | 0.870 | 0.913 | 0.824 | 0.795 | 0.809 | 0.0 |
-| lexical | 0.500 | 0.674 | 0.739 | 0.891 | 0.673 | 0.651 | 0.702 | 0.0 |
-| hybrid | 0.696 | 0.804 | 0.826 | 0.913 | 0.877 | 0.815 | 0.846 | 0.0 |
-| vector+bge-m3 | 0.609 | 0.848 | 0.913 | 0.935 | 0.824 | 0.826 | 0.834 | 14.0 |
-| hybrid+bge-m3 | 0.609 | 0.848 | 0.891 | 0.957 | 0.821 | 0.819 | 0.842 | 13.9 |
-| vector+jina-v2 | 0.674 | 0.804 | 0.848 | 0.935 | 0.861 | 0.815 | 0.847 | 10.4 |
-| hybrid+jina-v2 | 0.652 | 0.804 | 0.848 | 0.935 | 0.839 | 0.805 | 0.836 | 10.7 |
+| vector | 0.643 | 0.897 | 0.919 | 0.963 | 0.816 | 0.828 | 0.845 | 0.0 |
+| lexical | 0.614 | 0.783 | 0.857 | 0.912 | 0.762 | 0.766 | 0.785 | 0.0 |
+| hybrid | 0.706 | 0.886 | 0.930 | 0.967 | 0.862 | 0.860 | 0.874 | 0.0 |
+| vector+bge-m3 | 0.765 | 0.938 | 0.971 | 0.974 | 0.902 | 0.911 | 0.913 | 15.0 |
+| hybrid+bge-m3 | 0.754 | 0.949 | 0.974 | 0.989 | 0.901 | 0.911 | 0.916 | 15.8 |
+| vector+jina-v2 | 0.732 | 0.904 | 0.926 | 0.971 | 0.873 | 0.873 | 0.889 | 13.4 |
+| hybrid+jina-v2 | 0.724 | 0.912 | 0.934 | 0.978 | 0.875 | 0.875 | 0.892 | 13.2 |
 
 ## Kırılımlar (recall@5 / MRR)
 
 | Grup | n | vector | lexical | hybrid | vector+bge-m3 | hybrid+bge-m3 | vector+jina-v2 | hybrid+jina-v2 |
 |---|---|---|---|---|---|---|---|---|
-| corpus=k8s | 14 | 0.79 / 0.71 | 0.61 / 0.56 | 0.75 / 0.80 | 0.86 / 0.71 | 0.82 / 0.71 | 0.79 / 0.81 | 0.79 / 0.81 |
-| corpus=kvkk | 9 | 1.00 / 1.00 | 0.94 / 0.86 | 0.94 / 1.00 | 1.00 / 1.00 | 1.00 / 1.00 | 0.94 / 0.94 | 0.94 / 0.89 |
-| lang=en | 14 | 0.79 / 0.71 | 0.61 / 0.56 | 0.75 / 0.80 | 0.86 / 0.71 | 0.82 / 0.71 | 0.79 / 0.81 | 0.79 / 0.81 |
-| lang=tr | 9 | 1.00 / 1.00 | 0.94 / 0.86 | 0.94 / 1.00 | 1.00 / 1.00 | 1.00 / 1.00 | 0.94 / 0.94 | 0.94 / 0.89 |
-| type=multi_hop | 8 | 0.75 / 0.85 | 0.62 / 0.57 | 0.62 / 0.81 | 0.75 / 0.72 | 0.81 / 0.72 | 0.69 / 0.78 | 0.69 / 0.71 |
-| type=single_hop | 15 | 0.93 / 0.81 | 0.80 / 0.73 | 0.93 / 0.91 | 1.00 / 0.88 | 0.93 / 0.88 | 0.93 / 0.91 | 0.93 / 0.91 |
+| corpus=k8s | 83 | 0.89 / 0.71 | 0.82 / 0.71 | 0.90 / 0.80 | 0.95 / 0.84 | 0.96 / 0.84 | 0.89 / 0.80 | 0.90 / 0.81 |
+| corpus=kvkk | 53 | 0.97 / 0.97 | 0.92 / 0.85 | 0.98 / 0.96 | 1.00 / 1.00 | 1.00 / 1.00 | 0.99 / 0.98 | 0.99 / 0.97 |
+| lang=en | 72 | 0.91 / 0.74 | 0.82 / 0.74 | 0.90 / 0.82 | 0.96 / 0.87 | 0.96 / 0.86 | 0.89 / 0.84 | 0.90 / 0.84 |
+| lang=tr | 64 | 0.93 / 0.90 | 0.90 / 0.79 | 0.97 / 0.91 | 0.98 / 0.93 | 0.99 / 0.94 | 0.97 / 0.91 | 0.98 / 0.92 |
+| type=multi_hop | 33 | 0.76 / 0.72 | 0.71 / 0.70 | 0.80 / 0.79 | 0.88 / 0.82 | 0.92 / 0.85 | 0.73 / 0.73 | 0.76 / 0.75 |
+| type=single_hop | 103 | 0.97 / 0.84 | 0.90 / 0.78 | 0.97 / 0.88 | 1.00 / 0.93 | 0.99 / 0.92 | 0.99 / 0.92 | 0.99 / 0.92 |
 
 ## En iyi vektör skoru (cevaplı ve cevapsız sorular)
 
 | | ortalama | en düşük | en yüksek |
 |---|---|---|---|
-| answerable | 0.888 | 0.847 | 0.912 |
-| unanswerable | 0.847 | 0.792 | 0.868 |
+| answerable | 0.872 | 0.801 | 0.923 |
+| unanswerable | 0.844 | 0.792 | 0.882 |
 
 ## Kaçırılan kaynaklar (hibrit, ilk 10'da yok)
 
 - `k8s-002` sıralar [2, None] — ilk sonuç: content/en/docs/concepts/workloads/pods/probes.md § Liveness, Readiness, and Startup Probes > Probe results
 - `k8s-012` sıralar [None, None] — ilk sonuç: content/en/docs/concepts/workloads/controllers/statefulset.md § StatefulSets > Pod Identity > Pod Name Label
 - `k8s-014` sıralar [1, None] — ilk sonuç: content/en/docs/concepts/services-networking/network-policies.md § Network Policies > Targeting a Namespace by its name
+- `kvkk-158` sıralar [None, 1] — ilk sonuç: kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Üçüncü Bölüm – Haklar ve Yükümlülükler > Madde 12 – Veri güvenliğine ilişkin yükümlülükler
+- `k8s-116` sıralar [None] — ilk sonuç: content/en/docs/concepts/workloads/workload-api/policies.md § PodGroup Scheduling Policies
+- `k8s-173` sıralar [1, None] — ilk sonuç: content/en/docs/concepts/services-networking/dns-pod-service.md § DNS for Services and Pods > DNS resolution on Windows nodes
+- `k8s-186` sıralar [None, 2] — ilk sonuç: content/en/docs/concepts/policy/limit-range.md § Limit Ranges > LimitRange and admission checks for Pods

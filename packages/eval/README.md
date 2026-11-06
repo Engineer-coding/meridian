@@ -1,15 +1,19 @@
 # Değerlendirme
 
-Retrieval kalitesini sabit bir korpus ve elle doğrulanmış bir altın setle ölçer. Faz 3 kapısı:
-recall@k ölçülür ve raporlanır ([reports/baseline.md](reports/baseline.md)).
+Retrieval ve cevap kalitesini sabit bir korpus ve altın setle ölçer. Raporlar
+([baseline](reports/baseline.md), [cevaplar](reports/answers.md)) depoda tutulur; CI raporların
+güncelliğini ve eşikleri denetler ([ADR-0010](../../docs/adr/0010-eval-gate-in-ci.md)).
 
 | Dosya | İçerik |
 |---|---|
 | `corpus/manifest.json` | Korpus sürümleri: Kubernetes `concepts` (sabit commit) ve KVKK (resmî PDF'in sha256'sı) |
 | `corpus/kvkk/6698.md` | KVKK metni; PDF'ten `scripts/kvkk_to_markdown.py` ile üretilir, her madde bir başlık |
+| `golden/v2.jsonl` | **Geçerli set.** 165 soru: 136 cevaplı (103 tek kaynaklı, 33 çok kaynaklı), 29 cevapsız; 79 Türkçe, 86 İngilizce. Sentetik; kanıtı kodla denetlendi, hızlı onaylandı (aşağıya bakın) |
+| `candidates/` | v2 adayları, onay sayfası ve kararlar (`v2-decisions.json`). `scripts/build_golden_v2.py` seti bunlardan üretir |
+| `thresholds.json` | CI eşikleri: gerileme koruması, kalite hedefi değil |
 | `golden/v1.jsonl` | 30 soru: 23 cevaplı (15 tek kaynaklı, 8 çok kaynaklı), 7 cevapsız; 12 Türkçe, 18 İngilizce. Kaynaklar `alternatives` ile aynı bilgiyi taşıyan başka bölümleri de kabul edebilir |
 | `golden/v0.jsonl` | İlk sürüm (v0.3.0 baseline'ı bununla ölçüldü); değiştirilmez |
-| `reports/baseline.{json,md}` | Kayıtlı ölçüm; altın set ya da manifest değişirse CI yeniden üretilmesini ister |
+| `reports/{baseline,answers}.{json,md}` | Kayıtlı ölçümler; skoru etkileyen kod, altın set ya da manifest değişirse CI yeniden üretilmesini ister |
 
 ```bash
 make eval-validate   # altın setin şeması ve dağılımı
@@ -40,9 +44,24 @@ kaynağın ikinci parçası yeni bilgi getirmediği için her kaynak en fazla bi
   ayrıca raporlanır: Faz 4'te "bilmiyorum" eşiği için ilk veri.
 
 ## Sınırlar
-- 23 cevaplı soru küçük bir örneklemdir: tek bir sorunun değişmesi recall@k'yi ~4 puan oynatır.
-  Yöntemler arası küçük farklar anlamlı değildir.
-- Altın set, korpusun yalnızca bir kısmını kapsar; her soru aynı kişi tarafından yazılmıştır.
+- 136 cevaplı soruda tek sorunun etkisi ~0,7 puandır. 1–2 puanlık farklar anlamlı değildir.
+- **Set sentetiktir.** Adaylar model yardımıyla yazıldı, kanıtın kaynakta geçtiği kodla denetlendi.
+  166 kart tek kişi tarafından ~3 dakikada onaylandı, bu yüzden "ayrıntılı insan doğrulaması" sayılmaz.
+- **Doğruluk ölçütü anahtar kelimeye dayanır,** anlamı görmez ve yukarı yanlıdır: cevapları okuyunca
+  "cevap verdiğinde doğru" oranı %87 değil yaklaşık %84 çıktı (ADR-0010).
+- Korpusun yalnızca bir kısmı kapsanır; sorular aynı kaynaktan üretilmiştir.
+
+## v0.4.0 bulguları (altın set v2)
+- **Arama iyi:** vektör recall@3 0,897, recall@5 0,919. `bge-m3` reranker recall@3'ü 0,938'e çıkarıyor;
+  v1'deki "reranking recall@3'ü artırmıyor" sonucu küçük örneklem kaynaklıydı (ADR-0007).
+- **Asıl darboğaz model:** altın kaynak %93 oranında bağlamda ama cevaplı soruların %30'unda
+  gereksiz "bilmiyorum" var; bunların 41'inin 35'inde kaynak bağlamdaydı (ADR-0008).
+- **Model cevap verdiğinde çoğunlukla doğru:** %87 (okuyarak ~%84). Tüm cevaplı sorularda ise %61.
+- **Zayıf yerler:** çok kaynaklı sorular 11/33; Türkçe 33/64, İngilizce 50/72.
+- **Cevapsız sorular:** %93 "bilmiyorum"; 29 sorunun 2'si gerçek ama ilgisiz alıntıyla cevaplandı.
+- **Gerçek süre:** ortanca ilk token 57 sn, toplam 65 sn (CPU). Önceki raporlar kanıt çağrısını saymıyordu.
+
+Aşağıdaki bölümler, ölçüldükleri dönemin küçük setleriyle (v0, v1) yazılmıştır.
 
 ## v0.3.0 bulguları
 - **Vektör arama tek başına güçlü:** recall@5 0,87, recall@10 0,91; Türkçe KVKK sorularında
@@ -73,7 +92,7 @@ kaynağın ikinci parçası yeni bilgi getirmediği için her kaynak en fazla bi
   numarası var mı.
 - **Süre:** ilk token ve toplam (ortanca).
 
-Cevabın içeriğinin doğruluğu (hakem model) Adım 21'de eklenecek. İlk ölçüm (`llama3.2:3b`,
+Cevap doğruluğu Adım 21'de anahtar kelimeyle eklendi (ADR-0010). İlk ölçüm (`llama3.2:3b`,
 3 kaynak): cevapsız sorularda %86 "bilmiyorum", cevaplı sorularda %39 gereksiz "bilmiyorum",
 cevapların %100'ü kaynak gösteriyor, %86'sı altın kaynağı gösteriyor, ortanca toplam süre 41 sn.
 
