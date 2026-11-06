@@ -124,7 +124,10 @@ async def _respond(answerer: Answerer, llm: LLM, tenant: UUID, question: Questio
         elif isinstance(event, Done):
             done = event
     assert done is not None  # noqa: S101 - Answerer her zaman Done ile biter
-    timing = getattr(llm, "last_timing", None) or (done.first_token_seconds, done.total_seconds)
+    # Önbellekten okununca Done'daki süre sıfıra yakındır; gerçek süre ölçüldüğü anda saklanmıştır.
+    timing = (
+        llm.take_timing() if hasattr(llm, "take_timing") else (done.first_token_seconds, done.total_seconds)
+    )
 
     def supports(numbers: Iterable[int]) -> bool:
         cited = [s for s in sources if s.number in numbers]
@@ -144,7 +147,8 @@ async def _respond(answerer: Answerer, llm: LLM, tenant: UUID, question: Questio
         "gold_cited": supports(done.cited),
         "correct": answer_correct(done.answer, question.keywords) if not done.abstained else False,
         "sources": [_brief(s.hit) for s in sources],
-        "first_token_seconds": None if timing[0] is None else round(timing[0], 1),
+        # "Bilmiyorum" cevabında modelden kullanıcıya akan token yoktur.
+        "first_token_seconds": None if timing[0] is None or done.abstained else round(timing[0], 1),
         "total_seconds": round(timing[1], 1),
     }
 

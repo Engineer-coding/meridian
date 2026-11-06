@@ -83,7 +83,7 @@ class CachingLLM:
             " first_token REAL, total REAL)"
         )
         self.last_used: str | None = None
-        self.last_timing: tuple[float | None, float] | None = None
+        self._timings: list[tuple[float | None, float]] = []
         self.hits = 0
         self.misses = 0
 
@@ -100,7 +100,8 @@ class CachingLLM:
         ).fetchone()
         if row:
             self.hits += 1
-            self.last_used, self.last_timing = row[0], (row[2], row[3])
+            self.last_used = row[0]
+            self._timings.append((row[2], row[3]))
             yield row[1]
             return
 
@@ -114,12 +115,20 @@ class CachingLLM:
             yield token
         total = time.monotonic() - started
         self.last_used = getattr(self._inner, "last_used", None) or self._inner.name
-        self.last_timing = (first, total)
+        self._timings.append((first, total))
         self._db.execute(
             "INSERT OR REPLACE INTO completions VALUES (?, ?, ?, ?, ?)",
             (key, self.last_used, "".join(parts), first, total),
         )
         self._db.commit()
+
+    def take_timing(self) -> tuple[float | None, float]:
+        """Son okumadan beri yapılan tüm çağrıların süresi: bir soru kanıt ve cevap olmak üzere iki
+        çağrı yapar. İlk token, önceki çağrıların toplamı + son çağrının ilk token süresidir."""
+        timings, self._timings = self._timings, []
+        earlier = sum(total for _, total in timings[:-1])
+        first = timings[-1][0] if timings else None
+        return (None if first is None else earlier + first, sum(total for _, total in timings))
 
     def close(self) -> None:
         self._db.close()

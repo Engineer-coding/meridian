@@ -304,7 +304,21 @@ async def test_cached_completion_is_replayed_without_calling_the_model(tmp_path)
 
     assert first == second == other == "Cevap kaynakta [1]."
     assert inner.calls == 2, "farklı ayar yeni bir anahtar"
-    assert cached.last_timing is not None
+    first_token, total = cached.take_timing()
+    assert first_token is not None
+    assert total >= first_token
+    assert cached.take_timing() == (None, 0), "okununca sıfırlanır"
+    cached.close()
+
+
+def test_answer_timing_covers_both_llm_calls(tmp_path) -> None:
+    """Kanıt ve cevap çağrısı toplanır; yalnızca sonuncusunu raporlamak süreyi olduğundan az gösterir."""
+    from meridian_ai.evaluation.cache import CachingLLM
+
+    cached = CachingLLM(ScriptedLLM(), tmp_path / "c.sqlite")
+    cached._timings = [(50.0, 53.0), (3.0, 14.0)]
+
+    assert cached.take_timing() == (56.0, 67.0)
     cached.close()
 
 
