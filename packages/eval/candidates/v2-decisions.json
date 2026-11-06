@@ -4,7 +4,12 @@
   "first_decision": "08:14:52Z",
   "last_decision": "08:18:02Z",
   "seconds_per_card": 1.1,
-  "note": "Tümü tek kişi tarafından onaylandı; düzeltme ve red yok."
+  "note": "Tümü tek kişi tarafından onaylandı; düzeltme ve red yok.",
+  "post_measurement_edits": [
+   "k8s-126",
+   "k8s-163",
+   "kvkk-103"
+  ]
  },
  "_excluded": {
   "reason": "Onaylı ama anahtar kelimesi cevabı ayırt etmiyor (ör. 'no', 'not'); çok kaynaklı soru oranı için çıkarıldı.",
@@ -137,7 +142,16 @@
   "decision": "approve"
  },
  "k8s-126": {
-  "decision": "approve"
+  "decision": "edit",
+  "keywords": [
+   [
+    "not register",
+    "fail to register",
+    "fails to register",
+    "failed to register"
+   ]
+  ],
+  "note": "Ölçüm sonrası denetim (Claude): anahtar kelime cevabı yanlış puanlıyordu; insan onayı değildir."
  },
  "k8s-127": {
   "decision": "approve"
@@ -221,7 +235,18 @@
   "decision": "approve"
  },
  "k8s-163": {
-  "decision": "approve"
+  "decision": "edit",
+  "keywords": [
+   [
+    "1",
+    "one",
+    "bir sonek",
+    "bir dns sonek",
+    "tek sonek",
+    "tek dns sonek"
+   ]
+  ],
+  "note": "Ölçüm sonrası denetim (Claude): anahtar kelime cevabı yanlış puanlıyordu; insan onayı değildir."
  },
  "k8s-164": {
   "decision": "approve"
@@ -365,7 +390,18 @@
   "decision": "approve"
  },
  "kvkk-103": {
-  "decision": "approve"
+  "decision": "edit",
+  "keywords": [
+   [
+    "altı",
+    "6"
+   ],
+   [
+    "salt çoğunluk",
+    "salt çoğunluğ"
+   ]
+  ],
+  "note": "Ölçüm sonrası denetim (Claude): anahtar kelime cevabı yanlış puanlıyordu; insan onayı değildir."
  },
  "kvkk-104": {
   "decision": "approve"

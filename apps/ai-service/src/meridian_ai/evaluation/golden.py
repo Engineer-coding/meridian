@@ -93,15 +93,21 @@ def _fold(text: str) -> str:
     return unicodedata.normalize("NFKC", text).casefold().replace("i̇", "i").replace("ı", "i")
 
 
+_CITATION = re.compile(r"\[\d+\]")
+
+
 def keyword_hit(answer: str, keyword: str) -> bool:
     """Kelime başından eşleşir, ekler serbesttir ("kurul" → "Kurula"); "one" "none" içinde sayılmaz.
-    Sayılar iki yandan sınırlıdır: "6", "16" içinde; "5.000", "15.000" içinde sayılmaz."""
+    Sayılar iki yandan sınırlıdır: "6", "16" içinde; "5.000", "15.000" içinde sayılmaz. Noktadan sonra
+    kelime başlayabilir (".status.x"), sayı başlayamaz. Atıf numarası ("[1]") cevap içeriği değildir."""
     wanted = re.escape(_fold(keyword))
-    if keyword[:1].isalnum():
+    if keyword[:1].isdigit():
         wanted = r"(?<![\w.])" + wanted
+    elif keyword[:1].isalnum():
+        wanted = r"(?<!\w)" + wanted
     if keyword[-1:].isdigit():
         wanted += r"(?![\d.]*\d)"
-    return re.search(wanted, _fold(answer)) is not None
+    return re.search(wanted, _fold(_CITATION.sub(" ", answer))) is not None
 
 
 def answer_correct(answer: str, keywords: tuple[tuple[str, ...], ...]) -> bool:

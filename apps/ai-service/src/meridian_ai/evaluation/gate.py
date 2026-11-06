@@ -14,8 +14,18 @@ from meridian_ai.evaluation.corpus import EVAL_DIR
 
 _PACKAGE = Path(__file__).resolve().parents[1]
 
-# Arama sonucunu etkileyen kod. Süreç, depo ve bağlantı kodu bilerek yok: skoru değiştirmez.
-RETRIEVAL_CODE = ("parsing.py", "chunking.py", "embedding.py", "indexer.py", "retrieval.py", "reranking.py")
+# Skoru etkileyen kod: arama hattı ve puanlama. Süreç, depo ve bağlantı kodu bilerek yok.
+RETRIEVAL_CODE = (
+    "parsing.py",
+    "chunking.py",
+    "embedding.py",
+    "indexer.py",
+    "retrieval.py",
+    "reranking.py",
+    "evaluation/golden.py",
+    "evaluation/metrics.py",
+    "evaluation/runner.py",
+)
 ANSWER_CODE = (*RETRIEVAL_CODE, "answering.py", "llm.py")
 
 
