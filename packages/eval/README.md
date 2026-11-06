@@ -59,6 +59,8 @@ kaynağın ikinci parçası yeni bilgi getirmediği için her kaynak en fazla bi
 - **Model cevap verdiğinde çoğunlukla doğru:** %87 (okuyarak ~%84). Tüm cevaplı sorularda ise %61.
 - **Zayıf yerler:** çok kaynaklı sorular 11/33; Türkçe 33/64, İngilizce 50/72.
 - **Cevapsız sorular:** %93 "bilmiyorum"; 29 sorunun 2'si gerçek ama ilgisiz alıntıyla cevaplandı.
+- **Reranking cevabı belirgin değiştirmiyor:** `vector+bge-m3` doğru cevapta %61,0 → %64,0 (14 kazanç,
+  10 kayıp; p = 0,54), +15 sn ([rapor](reports/answers-bge-m3.md)). Varsayılan kapalı kalır.
 - **Gerçek süre:** ortanca ilk token 57 sn, toplam 65 sn (CPU). Önceki raporlar kanıt çağrısını saymıyordu.
 
 Aşağıdaki bölümler, ölçüldükleri dönemin küçük setleriyle (v0, v1) yazılmıştır.

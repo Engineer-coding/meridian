@@ -4,6 +4,8 @@ Bu proje [Semantic Versioning](https://semver.org) kullanır.
 Biçim: [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/).
 
 ## [Unreleased]
+### Changed
+- ADR-0007: reranking'in cevaplara etkisi ölçüldü. `vector+bge-m3` doğru cevabı %61,0'den %64,0'e çıkarıyor (14 kazanç, 10 kayıp; p = 0,54) ve soru başına ~15 sn ekliyor; varsayılan kapalı kalır.
 
 ## [0.4.0] - 2026-11-06
 Kaynaklı cevap, akışlı sohbet API'si ve eşikli değerlendirme kapısı. Altın set v2 (165 soru,

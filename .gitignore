@@ -30,3 +30,5 @@ packages/eval/reports/*
 !packages/eval/reports/baseline.md
 !packages/eval/reports/answers.json
 !packages/eval/reports/answers.md
+!packages/eval/reports/answers-bge-m3.json
+!packages/eval/reports/answers-bge-m3.md

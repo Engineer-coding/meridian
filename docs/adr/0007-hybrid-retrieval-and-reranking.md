@@ -60,8 +60,30 @@ Okuma notları:
 **Varsayılan şimdilik değişmedi, ama gerekçesi zayıfladı.** Gerçek cevap süresi ~65 sn olduğu için
 +15 sn v1'de sanıldığı kadar büyük değil (ADR-0008'deki süre düzeltmesi). Öte yandan altın kaynak
 zaten %93 oranında bağlamda ve gereksiz "bilmiyorum" cevaplarının çoğu (41'in 35'i) altın kaynak
-bağlamdayken oluyor. Reranking'in cevap doğruluğuna etkisi **ölçülmedi**. Karar, `vector+bge-m3`
-ile cevap değerlendirmesi yapılınca verilecek.
+bağlamdayken oluyor.
+
+### Cevaplara etkisi (`vector` ve `vector+bge-m3`, 165 soru, aynı model)
+| Ölçüt | Reranking yok | `bge-m3` |
+|---|---|---|
+| Altın kaynak bağlamda | %93,4 | %96,3 |
+| Gösterilen kaynak altın kaynak | %80,0 | %87,8 |
+| Cevap doğru, tüm cevaplı sorular | %61,0 (83/136) | %64,0 (87/136) |
+| Cevap doğru, model cevap verdiğinde | %87,4 | %88,8 |
+| Cevaplı soruda gereksiz "bilmiyorum" | %30,1 (41) | %27,9 (38) |
+| Cevapsız soruda "bilmiyorum" | %93,1 (27/29) | %89,7 (26/29) |
+| Ortanca toplam süre | ~65 sn | ~80 sn (64,8 sn cevap + 15 sn sıralama) |
+
+- **Net +4 doğru cevap gürültüden ayrılamıyor.** Reranking 14 soruyu doğruya çevirdi, 10 soruyu
+  yanlışa; işaret testi p = 0,54. Bağlamdaki küçük değişiklikler bu modelin cevabını iki yönde de
+  oynatıyor.
+- **Bir uydurma eklendi:** `k8s-201` cevapsız sorusuna "15 dakika" cevabı verildi. Set küçük olduğu
+  için tek soru kanıt sayılmaz ama beklenen iyileşme burada da yok.
+- Atıf isabetindeki artış (17 kazanç, 7 kayıp; p = 0,06) güçlü bir aday ama kesin değil; cevabın doğruluğunu
+  belirgin biçimde değiştirmedi.
+
+**Sonuç: varsayılan kapalı kalır.** Her soruya ~15 sn eklemek bu kazancı karşılamıyor. Gereksiz
+"bilmiyorum" sorunu aramada değil modelde; önce model ya da istem değişmeli (ADR-0008). Rapor:
+[answers-bge-m3.md](../../packages/eval/reports/answers-bge-m3.md).
 
 ## Karar
 - **Varsayılan: vektör arama, reranking kapalı, 3 kaynak.** Bu donanımda en yüksek recall@3'ü
@@ -97,7 +119,7 @@ ile cevap değerlendirmesi yapılınca verilecek.
 **Düşük.** Yapılandırma iki ayardan ibaret; ölçüm `make eval` ile tekrarlanır.
 
 Tetikleyiciler:
-- `vector+bge-m3` cevap değerlendirmesi doğruluğu ya da gereksiz "bilmiyorum" oranını belirgin
-  iyileştirirse: reranker varsayılan olarak açılır.
+- Model ya da istem değişince `vector` ve `vector+bge-m3` cevap değerlendirmesi birlikte tekrarlanır:
+  daha güçlü bir model iyi bağlamdan daha çok yararlanabilir.
 - Bağlam 3 kaynaktan fazlasına çıkarsa: reranker açılır (recall@5'te önde).
 - GPU'lu bir ortam olursa: reranking'in ek süresi 1 sn'nin altına iner ve varsayılan olarak açılır.
