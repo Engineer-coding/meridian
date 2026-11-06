@@ -10,6 +10,7 @@ import org.springframework.security.oauth2.server.resource.web.authentication.Be
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
+import dev.meridian.api.apikeys.ApiKeyService;
 import dev.meridian.api.tenancy.MembershipRepository;
 
 @Configuration(proxyBeanMethods = false)
@@ -20,11 +21,12 @@ class SecurityConfiguration {
      * çerezle kimlik doğrulamaya karşıdır; çerez olmadığı için kapatılır.
      */
     @Bean
-    SecurityFilterChain apiSecurity(HttpSecurity http, MembershipRepository memberships,
+    SecurityFilterChain apiSecurity(HttpSecurity http, MembershipRepository memberships, ApiKeyService apiKeys,
             @Qualifier("handlerExceptionResolver") HandlerExceptionResolver errors) throws Exception {
         // Filtre bilerek bean değil: bean olsaydı Spring Boot onu güvenlik zincirinin dışında
         // ikinci kez, kimlik doğrulamadan önce de çalıştırırdı.
         var tenantContextFilter = new TenantContextFilter(memberships, errors);
+        var apiKeyFilter = new ApiKeyFilter(apiKeys, errors);
         return http
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/actuator/health/**", "/actuator/info").permitAll()
@@ -32,6 +34,7 @@ class SecurityConfiguration {
             .oauth2ResourceServer(oauth -> oauth.jwt(Customizer.withDefaults()))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .csrf(csrf -> csrf.disable())
+            .addFilterBefore(apiKeyFilter, BearerTokenAuthenticationFilter.class)
             .addFilterAfter(tenantContextFilter, BearerTokenAuthenticationFilter.class)
             .build();
     }

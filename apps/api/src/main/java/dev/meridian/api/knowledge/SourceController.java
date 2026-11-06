@@ -71,6 +71,11 @@ class SourceController implements SourcesApi {
         return ResponseEntity.accepted().build();
     }
 
+    @Override
+    public ResponseEntity<dev.meridian.api.contract.model.Source> retrySource(UUID tenantId, UUID sourceId) {
+        return ResponseEntity.accepted().body(toApi(service.retry(sourceId)));
+    }
+
     /**
      * Yapılandırmanın varsayılanları doldurulmuş, alan sırası sabit hâli. Aynı istek her
      * seferinde aynı JSON'a dönüşür; idempotency parmak izi ve olay içeriği buna dayanır.

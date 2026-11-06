@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import dev.meridian.api.audit.AuditLog;
 import dev.meridian.api.contract.api.ChatApi;
 import dev.meridian.api.contract.model.ChatMessage;
 import dev.meridian.api.contract.model.CitedSource;
@@ -25,6 +26,7 @@ import dev.meridian.api.contract.model.CreateConversationRequest;
 import dev.meridian.api.contract.model.SendMessageRequest;
 import dev.meridian.api.idempotency.IdempotencyStore;
 import dev.meridian.api.tenancy.TenantContext;
+import dev.meridian.api.usage.UsageMeter;
 import jakarta.servlet.http.HttpServletResponse;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.JsonNode;
@@ -38,20 +40,26 @@ class ChatController implements ChatApi {
     private static final Logger log = LoggerFactory.getLogger(ChatController.class);
     private static final int TITLE_CHARS = 80;
     private static final int LIST_LIMIT = 100;
+    /** Sayaç gelmediğinde kaba tahmin: karakter başına token. */
+    private static final int CHARS_PER_TOKEN = 4;
 
     private final ConversationRepository conversations;
     private final IdempotencyStore idempotency;
     private final AiClient ai;
     private final ChatRateLimiter limiter;
+    private final UsageMeter usage;
+    private final AuditLog audit;
     private final JsonMapper json;
     private final HttpServletResponse response;
 
     ChatController(ConversationRepository conversations, IdempotencyStore idempotency, AiClient ai,
-            ChatRateLimiter limiter, JsonMapper json, HttpServletResponse response) {
+            ChatRateLimiter limiter, UsageMeter usage, AuditLog audit, JsonMapper json, HttpServletResponse response) {
         this.conversations = conversations;
         this.idempotency = idempotency;
         this.ai = ai;
         this.limiter = limiter;
+        this.usage = usage;
+        this.audit = audit;
         this.json = json;
         this.response = response;
     }
@@ -94,6 +102,9 @@ class ChatController implements ChatApi {
         // Hatalar akış başlamadan, normal HTTP durumlarıyla döner.
         limiter.acquire(tenantId, identity.userId());
         requireConversation(conversationId);
+        usage.requireQuota();
+        // Soru metni yazılmaz: konuşma kişiye özeldir, denetim kaydını yöneticiler okur.
+        audit.allowed("chat.ask", conversationId);
         String question = request.getContent();
         conversations.insertMessage(UUID.randomUUID(), conversationId, "user", question, "complete", "[]", "[]",
             false, false, null);
@@ -114,14 +125,14 @@ class ChatController implements ChatApi {
                 log.warn("cevap üretilemedi, yalnızca kaynaklar dönülüyor: {}", e.getMessage());
                 turn.degrade();
             }
-            UUID messageId = save(conversationId, turn, "complete");
+            UUID messageId = save(conversationId, question, turn, "complete");
             saved = true;
             send("done", turn.done().put("messageId", messageId.toString()));
         } catch (UncheckedIOException e) {
             // İstemci ayrıldı: akış kapanınca AI servisi de üretimi bırakır; ulaşan kısım kaydedilir.
             log.info("istemci akış bitmeden ayrıldı conversation={}", conversationId);
             if (!saved) {
-                save(conversationId, turn, "interrupted");
+                save(conversationId, question, turn, "interrupted");
             }
         }
         return null;
@@ -154,14 +165,27 @@ class ChatController implements ChatApi {
         }
     }
 
-    private UUID save(UUID conversationId, Turn turn, String status) {
+    private UUID save(UUID conversationId, String question, Turn turn, String status) {
         UUID id = UUID.randomUUID();
         ObjectNode done = turn.done();
+        recordUsage(question, turn, done);
         conversations.insertMessage(id, conversationId, "assistant", done.get("answer").asString(), status,
             json.writeValueAsString(turn.sources()), json.writeValueAsString(done.get("cited")),
             done.get("abstained").asBoolean(), done.get("degraded").asBoolean(),
             done.hasNonNull("model") ? done.get("model").asString() : null);
         return id;
+    }
+
+    /** Sayaç istemciye gitmez. Yoksa (akış kesildi) elde olan metinden tahmin edilir; hiç metin yoksa model çalışmamıştır. */
+    private void recordUsage(String question, Turn turn, ObjectNode done) {
+        JsonNode counts = done.remove("usage");
+        String model = done.hasNonNull("model") ? done.get("model").asString() : null;
+        if (counts != null && counts.hasNonNull("promptTokens")) {
+            usage.record(model, counts.get("promptTokens").asInt(), counts.get("completionTokens").asInt(), false);
+        } else if (!turn.answer.isEmpty()) {
+            int prompt = (question.length() + json.writeValueAsString(turn.sources()).length()) / CHARS_PER_TOKEN;
+            usage.record(model, prompt, turn.answer.length() / CHARS_PER_TOKEN, true);
+        }
     }
 
     private void requireConversation(UUID id) {

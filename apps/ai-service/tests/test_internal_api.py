@@ -111,6 +111,7 @@ def test_answer_is_streamed_as_ordered_events(client: TestClient, tenant: UUID) 
     assert done["abstained"] is False and done["degraded"] is False
     assert done["evidenceSource"] == 1
     assert done["model"] == "test/model"
+    assert done["usage"] is None  # bu sağlayıcı sayaç vermiyor; API metinden tahmin eder
 
 
 def test_another_tenant_finds_nothing_and_the_model_is_not_called(client: TestClient, model: Model) -> None:

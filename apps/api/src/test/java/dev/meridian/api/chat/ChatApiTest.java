@@ -156,6 +156,44 @@ class ChatApiTest extends PostgresIntegrationTest {
     }
 
     @Test
+    void realTokenCountsAreRecordedAndNeverReachTheClient() throws Exception {
+        AI.behave(exchange -> AiServiceStub.ndjson(exchange, AiServiceStub.sources(), AiServiceStub.token("Cevap"),
+            AiServiceStub.doneWithUsage("Cevap", 900, 40)));
+
+        String stream = send(owner, "soru").andExpect(status().isOk())
+            .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        assertThat(stream).doesNotContain("usage").doesNotContain("promptTokens");
+        assertThat(usageRows()).containsExactly("900|40|f|ollama/test");
+        assertThat(queryAsSuperuser("SELECT action FROM core.audit_log WHERE tenant_id = '%s' AND target_id = '%s'"
+            .formatted(tenantId, conversationId))).containsExactly("chat.ask");
+    }
+
+    @Test
+    void cutStreamIsEstimatedAndUnansweredQuestionCostsNothing() throws Exception {
+        AI.behave(exchange -> AiServiceStub.ndjson(exchange, AiServiceStub.sources(), AiServiceStub.token("12345678")));
+        send(owner, "soru").andExpect(status().isOk());
+        assertThat(usageRows()).singleElement().satisfies(row -> assertThat(row).matches("\\d+\\|2\\|t\\|"));
+
+        AI.behave(exchange -> { throw new java.io.IOException("kapalı"); });
+        send(owner, "soru").andExpect(status().isOk());
+        assertThat(usageRows()).hasSize(1);
+    }
+
+    @Test
+    void questionTextIsNotWrittenToTheAuditLog() throws Exception {
+        send(owner, "gizli-soru-metni").andExpect(status().isOk());
+        assertThat(queryAsSuperuser("SELECT concat_ws('|', action, target_id) FROM core.audit_log WHERE tenant_id = '%s'"
+            .formatted(tenantId))).noneMatch(row -> row.contains("gizli-soru-metni"));
+    }
+
+    private List<String> usageRows() throws Exception {
+        return queryAsSuperuser("""
+            SELECT concat_ws('|', prompt_tokens, completion_tokens, estimated, coalesce(model, ''))
+            FROM core.usage_events WHERE tenant_id = '%s' ORDER BY created_at""".formatted(tenantId));
+    }
+
+    @Test
     void abstentionIsRecorded() throws Exception {
         AI.behave(exchange -> AiServiceStub.ndjson(exchange, AiServiceStub.sources(),
             AiServiceStub.done("BİLMİYORUM", true, false)));

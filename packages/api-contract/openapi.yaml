@@ -27,6 +27,12 @@ tags:
     description: Bilgi kaynakları ve indeksleme
   - name: chat
     description: Kaynaklı cevap veren, kişiye özel konuşmalar
+  - name: usage
+    description: Kiracının token kullanımı ve günlük kotası
+  - name: apiKeys
+    description: Kapsamı sınırlı API anahtarları
+  - name: audit
+    description: Yetki kararları ve değişikliklerin değiştirilemez kaydı
 
 paths:
   /v1/me:
@@ -356,6 +362,163 @@ paths:
       responses:
         '202':
           description: Silme kuyruğa alındı
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /v1/tenants/{tenantId}/sources/{sourceId}/retry:
+    parameters:
+      - $ref: '#/components/parameters/TenantId'
+      - $ref: '#/components/parameters/SourceId'
+    post:
+      tags: [sources]
+      operationId: retrySource
+      summary: Başarısız indekslemeyi yeniden başlat
+      description: |
+        Yalnızca `failed` durumundaki kaynak yeniden kuyruğa alınır. Kaynak zaten sıradaysa ya da
+        indeksleniyorsa işlem yapılmadan 202 döner, bu yüzden Idempotency-Key gerekmez.
+      responses:
+        '202':
+          description: İndeksleme kuyruğa alındı
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Source'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /v1/tenants/{tenantId}/usage:
+    parameters:
+      - $ref: '#/components/parameters/TenantId'
+    get:
+      tags: [usage]
+      operationId: getUsage
+      summary: Günlük kullanım serisi ve kota (owner, admin)
+      parameters:
+        - name: days
+          in: query
+          description: Bugün dahil kaç gün
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 90
+            default: 30
+      responses:
+        '200':
+          description: Kullanım özeti
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsageSummary'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /v1/tenants/{tenantId}/api-keys:
+    parameters:
+      - $ref: '#/components/parameters/TenantId'
+    get:
+      tags: [apiKeys]
+      operationId: listApiKeys
+      summary: API anahtarlarını listele (owner, admin)
+      responses:
+        '200':
+          description: Anahtarlar; gizli değer asla dönmez
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ApiKey'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      tags: [apiKeys]
+      operationId: createApiKey
+      summary: API anahtarı oluştur (owner, admin)
+      description: |
+        Gizli değer yalnızca bu cevapta döner, veritabanında özeti (SHA-256) saklanır. Idempotency-Key
+        alınmaz: tekrarlanan istekte gizli değer yeniden üretilemez; fazladan anahtar iptal edilebilir.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateApiKeyRequest'
+      responses:
+        '201':
+          description: Anahtar oluşturuldu
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatedApiKey'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /v1/tenants/{tenantId}/api-keys/{apiKeyId}:
+    parameters:
+      - $ref: '#/components/parameters/TenantId'
+      - name: apiKeyId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    delete:
+      tags: [apiKeys]
+      operationId: revokeApiKey
+      summary: Anahtarı iptal et (owner, admin)
+      responses:
+        '204':
+          description: İptal edildi; tekrarlanabilir
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /v1/tenants/{tenantId}/audit-log:
+    parameters:
+      - $ref: '#/components/parameters/TenantId'
+    get:
+      tags: [audit]
+      operationId: listAuditLog
+      summary: Denetim kayıtları, en yeniden eskiye (owner, admin)
+      parameters:
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Kayıt sayfası
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditPage'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
@@ -848,3 +1011,151 @@ components:
         nextCursor:
           type: [string, 'null']
           description: Son sayfada `null`
+
+    UsageDay:
+      type: object
+      required: [date, tokens, answers]
+      properties:
+        date:
+          type: string
+          format: date
+          description: UTC gün
+        tokens:
+          type: integer
+          format: int64
+        answers:
+          type: integer
+          format: int64
+
+    UsageSummary:
+      type: object
+      required: [plan, dailyTokenLimit, tokensToday, resetsAt, estimatedTokens, costUsd, days]
+      properties:
+        plan:
+          type: string
+          enum: [free, team, enterprise]
+        dailyTokenLimit:
+          type: integer
+          format: int64
+        tokensToday:
+          type: integer
+          format: int64
+        resetsAt:
+          type: string
+          format: date-time
+        estimatedTokens:
+          type: integer
+          format: int64
+          description: Dönemdeki token'lardan model sayacı yerine metin uzunluğundan tahmin edilenler
+        costUsd:
+          type: number
+          format: double
+          description: Dönemin maliyeti; yerel modelde 0
+        days:
+          type: array
+          description: Eskiden yeniye, boş günler dahil
+          items:
+            $ref: '#/components/schemas/UsageDay'
+
+    ApiKeyScope:
+      type: string
+      enum: ['sources:read', 'sources:write', 'chat']
+
+    CreateApiKeyRequest:
+      type: object
+      additionalProperties: false
+      required: [name, scopes]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        scopes:
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/ApiKeyScope'
+        expiresInDays:
+          type: integer
+          minimum: 1
+          maximum: 365
+          default: 90
+
+    ApiKey:
+      type: object
+      required: [id, name, prefix, scopes, createdAt, expiresAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        prefix:
+          type: string
+          description: Anahtarı tanımak için ilk karakterler
+        scopes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ApiKeyScope'
+        createdAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+        lastUsedAt:
+          type: [string, 'null']
+          format: date-time
+        revokedAt:
+          type: [string, 'null']
+          format: date-time
+
+    CreatedApiKey:
+      type: object
+      required: [key, secret]
+      properties:
+        key:
+          $ref: '#/components/schemas/ApiKey'
+        secret:
+          type: string
+          description: Yalnızca bir kez gösterilir
+
+    AuditEntry:
+      type: object
+      required: [id, action, outcome, createdAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        action:
+          type: string
+          examples: ['source.delete']
+        outcome:
+          type: string
+          enum: [allowed, denied]
+        actorEmail:
+          type: [string, 'null']
+          description: Kullanıcı artık bu kiracının üyesi değilse boş
+        actorUserId:
+          type: [string, 'null']
+          format: uuid
+        apiKeyId:
+          type: [string, 'null']
+          format: uuid
+        targetId:
+          type: [string, 'null']
+        createdAt:
+          type: string
+          format: date-time
+
+    AuditPage:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuditEntry'
+        nextCursor:
+          type: [string, 'null']

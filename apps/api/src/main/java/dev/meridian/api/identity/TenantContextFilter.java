@@ -44,17 +44,26 @@ class TenantContextFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
-        if (!(SecurityContextHolder.getContext().getAuthentication() instanceof JwtAuthenticationToken jwt)) {
-            chain.doFilter(request, response);
-            return;
-        }
-
         UUID userId;
-        try {
-            userId = UUID.fromString(jwt.getToken().getSubject());
-        } catch (IllegalArgumentException | NullPointerException e) {
-            reject(request, response, HttpStatus.UNAUTHORIZED);
-            return;
+        UUID apiKeyId = null;
+        switch (SecurityContextHolder.getContext().getAuthentication()) {
+            case JwtAuthenticationToken jwt -> {
+                try {
+                    userId = UUID.fromString(jwt.getToken().getSubject());
+                } catch (IllegalArgumentException | NullPointerException e) {
+                    reject(request, response, HttpStatus.UNAUTHORIZED);
+                    return;
+                }
+            }
+            // Anahtar, oluşturan kullanıcı adına çalışır: üyeliği kalkarsa anahtar da çalışmaz.
+            case ApiKeyAuthentication key -> {
+                userId = key.getPrincipal().userId();
+                apiKeyId = key.getPrincipal().apiKeyId();
+            }
+            case null, default -> {
+                chain.doFilter(request, response);
+                return;
+            }
         }
 
         UUID tenantId = tenantIdFromPath(request.getRequestURI());
@@ -68,7 +77,7 @@ class TenantContextFilter extends OncePerRequestFilter {
         }
 
         try {
-            TenantContext.runChecked(new Identity(userId, tenantId), () -> chain.doFilter(request, response));
+            TenantContext.runChecked(new Identity(userId, tenantId, apiKeyId), () -> chain.doFilter(request, response));
         } catch (IOException | ServletException | RuntimeException e) {
             throw e;
         } catch (Exception e) {
@@ -76,7 +85,7 @@ class TenantContextFilter extends OncePerRequestFilter {
         }
     }
 
-    private static UUID tenantIdFromPath(String path) {
+    static UUID tenantIdFromPath(String path) {
         Matcher m = TENANT_PATH.matcher(path);
         return m.matches() ? UUID.fromString(m.group(1)) : null;
     }

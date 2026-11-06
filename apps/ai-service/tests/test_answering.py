@@ -22,7 +22,15 @@ from meridian_ai.answering import (
     inspect,
     verify_quote,
 )
-from meridian_ai.llm import FallbackLLM, LLMUnavailable, Message, OllamaLLM, build_chain
+from meridian_ai.llm import (
+    FallbackLLM,
+    LLMUnavailable,
+    Message,
+    OllamaLLM,
+    UsageCounter,
+    build_chain,
+    usage_counter,
+)
 from meridian_ai.retrieval import Hit
 
 # --- sağlayıcılar ------------------------------------------------------------------------------
@@ -39,6 +47,38 @@ def ndjson(*chunks: dict) -> httpx.Response:
 
 async def collect(stream: AsyncIterator[str]) -> str:
     return "".join([t async for t in stream])
+
+
+async def test_ollama_token_counts_add_up_across_calls_of_one_answer() -> None:
+    def handle(_: httpx.Request) -> httpx.Response:
+        return ndjson(
+            {"message": {"content": "a"}, "done": False},
+            {"done": True, "prompt_eval_count": 100, "eval_count": 7},
+        )
+
+    counter = UsageCounter()
+    reset = usage_counter.set(counter)
+    try:
+        model = ollama(handle)
+        await collect(model.stream([Message("user", "?")], max_tokens=5))
+        await collect(model.stream([Message("user", "?")], max_tokens=5))
+    finally:
+        usage_counter.reset(reset)
+
+    assert counter == UsageCounter(prompt_tokens=200, completion_tokens=14, counted=True)
+
+
+async def test_ollama_works_without_a_counter_and_tolerates_missing_counts() -> None:
+    model = ollama(lambda _: ndjson({"message": {"content": "a"}, "done": True}))
+    assert await collect(model.stream([Message("user", "?")], max_tokens=5)) == "a"
+
+    counter = UsageCounter()
+    reset = usage_counter.set(counter)
+    try:
+        await collect(model.stream([Message("user", "?")], max_tokens=5))
+    finally:
+        usage_counter.reset(reset)
+    assert counter == UsageCounter(counted=True)
 
 
 async def test_ollama_streams_message_content_until_done() -> None:

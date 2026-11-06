@@ -78,6 +78,12 @@ final class AiServiceStub {
             + "\"evidenceSource\":1,\"model\":\"ollama/test\"}}";
     }
 
+    /** Sağlayıcının gerçek sayaçlarıyla "done". */
+    static String doneWithUsage(String answer, int promptTokens, int completionTokens) {
+        return done(answer, false, false).replace("\"answer\":",
+            "\"usage\":{\"promptTokens\":" + promptTokens + ",\"completionTokens\":" + completionTokens + "},\"answer\":");
+    }
+
     static String[] answer(String text) {
         return new String[] {sources(), token(text), done(text, false, false)};
     }

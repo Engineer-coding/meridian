@@ -17,6 +17,7 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, ConfigDict, Field
 
 from meridian_ai.answering import Answerer, Done, SourcesFound, Token
+from meridian_ai.llm import UsageCounter, usage_counter
 
 log = logging.getLogger(__name__)
 
@@ -33,8 +34,13 @@ def _line(event: str, data: dict[str, Any]) -> bytes:
     return (json.dumps({"event": event, "data": data}, ensure_ascii=False) + "\n").encode()
 
 
-def _done(done: Done) -> dict[str, Any]:
+def _done(done: Done, usage: UsageCounter) -> dict[str, Any]:
     return {
+        "usage": (
+            {"promptTokens": usage.prompt_tokens, "completionTokens": usage.completion_tokens}
+            if usage.counted
+            else None
+        ),
         "answer": done.answer,
         "cited": done.cited,
         "invalidCitations": done.invalid_citations,
@@ -47,6 +53,8 @@ def _done(done: Done) -> dict[str, Any]:
 
 
 async def _stream(answerer: Answerer, request: AnswerRequest) -> AsyncIterator[bytes]:
+    usage = UsageCounter()
+    usage_counter.set(usage)
     try:
         async for event in answerer.answer(request.tenant_id, request.question, request.collection_ids):
             match event:
@@ -66,12 +74,12 @@ async def _stream(answerer: Answerer, request: AnswerRequest) -> AsyncIterator[b
                 case Token(text=text):
                     yield _line("token", {"text": text})
                 case Done() as done:
-                    yield _line("done", _done(done))
+                    yield _line("done", _done(done, usage))
     except Exception:
         # Akış başladı, durum kodu artık değiştirilemez; arama ya da embedding hatası da
         # kullanıcıya yarım bağlantı olarak değil, "cevap üretilemedi" olarak ulaşır.
         log.exception("cevap akışı başarısız tenant=%s", request.tenant_id)
-        yield _line("done", _done(Done("", degraded=True)))
+        yield _line("done", _done(Done("", degraded=True), usage))
 
 
 def create_router(answerer: Answerer, token: str) -> APIRouter:

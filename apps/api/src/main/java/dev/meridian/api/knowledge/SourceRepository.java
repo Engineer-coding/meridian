@@ -66,6 +66,20 @@ class SourceRepository {
         return query.param("limit", limit).query(SOURCE).list();
     }
 
+    Source markPending(UUID id) {
+        return jdbc.sql("""
+                UPDATE sources SET status = 'pending', last_error = NULL WHERE id = :id
+                RETURNING %s""".formatted(COLUMNS))
+            .param("id", id)
+            .query(SOURCE)
+            .single();
+    }
+
+    @Transactional(readOnly = true)
+    String findConfig(UUID id) {
+        return jdbc.sql("SELECT config::text FROM sources WHERE id = :id").param("id", id).query(String.class).single();
+    }
+
     /** @return durum değiştiyse true; kaynak zaten silinmekteyse false */
     boolean markDeleting(UUID id) {
         return jdbc.sql("UPDATE sources SET status = 'deleting' WHERE id = :id AND status <> 'deleting'")

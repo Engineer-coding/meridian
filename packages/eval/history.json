@@ -1,0 +1,29 @@
+[
+  {
+    "version": "v0.3.0",
+    "commit": "32e4877",
+    "date": "2026-11-02",
+    "golden": "v0",
+    "questions": 30,
+    "config": "vector",
+    "retrieval": { "recall@3": 0.8261, "recall@5": 0.8696, "mrr": 0.8207 },
+    "answers": null
+  },
+  {
+    "version": "v0.3.0+",
+    "commit": "f5ce9ea",
+    "date": "2026-11-02",
+    "golden": "v1",
+    "questions": 30,
+    "config": "vector",
+    "retrieval": null,
+    "answers": {
+      "abstain_when_unanswerable": 0.857,
+      "abstain_when_answerable": 0.391,
+      "gold_in_context": 0.957,
+      "gold_cited": 0.857,
+      "invalid_citation_rate": 0.0,
+      "median_total_seconds": 41.2
+    }
+  }
+]

@@ -12,7 +12,10 @@ import java.util.function.Supplier;
 public final class TenantContext {
 
     /** {@code tenantId} boş olabilir: kullanıcı henüz kiracı seçmemiştir (ör. /v1/me). */
-    public record Identity(UUID userId, UUID tenantId) {
+    public record Identity(UUID userId, UUID tenantId, UUID apiKeyId) {
+        public Identity(UUID userId, UUID tenantId) {
+            this(userId, tenantId, null);
+        }
     }
 
     /** Kontrollü istisna fırlatabilen iş (ör. servlet filtre zinciri). */

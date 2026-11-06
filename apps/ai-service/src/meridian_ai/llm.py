@@ -8,6 +8,7 @@ hepsi düşerse çağıran "yalnızca kaynaklar" moduna iner.
 import json
 import logging
 from collections.abc import AsyncIterator, Sequence
+from contextvars import ContextVar
 from dataclasses import dataclass
 from typing import Literal, Protocol
 
@@ -20,6 +21,19 @@ log = logging.getLogger(__name__)
 class Message:
     role: Literal["system", "user", "assistant"]
     content: str
+
+
+@dataclass
+class UsageCounter:
+    """Bir cevabın tüm LLM çağrılarında harcanan token'lar; sağlayıcı sayaç vermezse sıfır kalır."""
+
+    prompt_tokens: int = 0
+    completion_tokens: int = 0
+    counted: bool = False
+
+
+# Her isteğe kendi sayacı: sağlayıcı nesnesi istekler arasında paylaşılır, üzerinde durum tutulamaz.
+usage_counter: ContextVar[UsageCounter | None] = ContextVar("usage_counter", default=None)
 
 
 class LLMUnavailable(Exception):
@@ -73,6 +87,10 @@ class OllamaLLM:
                     if text := chunk.get("message", {}).get("content"):
                         yield text
                     if chunk.get("done"):
+                        if (counter := usage_counter.get()) is not None:
+                            counter.prompt_tokens += chunk.get("prompt_eval_count", 0)
+                            counter.completion_tokens += chunk.get("eval_count", 0)
+                            counter.counted = True
                         return
         except httpx.HTTPError as e:
             raise LLMUnavailable(f"{self.name}: {type(e).__name__}") from e

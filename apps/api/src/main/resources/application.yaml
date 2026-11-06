@@ -73,6 +73,15 @@ meridian:
     rate:
       capacity: 10
       refill-per-minute: 10
+  usage:
+    # Plan başına günlük token (ADR-0014). Yerel modelde bir cevap ~2-8 bin token.
+    daily-tokens:
+      free: 200000
+      team: 2000000
+      enterprise: 20000000
+    # Yerel model ücretsiz; ücretli sağlayıcı eklenince buradan fiyatlanır.
+    prompt-usd-per-million: 0
+    completion-usd-per-million: 0
   outbox:
     relay:
       url: ${spring.datasource.url}

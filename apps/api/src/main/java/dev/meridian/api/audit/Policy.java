@@ -1,4 +1,4 @@
-package dev.meridian.api.knowledge;
+package dev.meridian.api.audit;
 
 import java.util.Set;
 
@@ -12,24 +12,34 @@ import dev.meridian.api.tenancy.TenantContext;
 /**
  * Bağlamdaki kullanıcının aktif kiracıdaki rolünü denetler. Üyelik zaten kiracı kapısında
  * doğrulanmıştır; burada yalnızca rolün bu işlem için yeterli olup olmadığına bakılır.
+ * Reddedilen karar, işlem geri alındıktan sonra {@link DeniedHandler} tarafından kaydedilir.
  */
 @Component
-class Roles {
+public class Policy {
 
-    static final Set<String> CONTRIBUTORS = Set.of("owner", "admin", "member");
-    static final Set<String> ADMINS = Set.of("owner", "admin");
+    public static final Set<String> CONTRIBUTORS = Set.of("owner", "admin", "member");
+    public static final Set<String> ADMINS = Set.of("owner", "admin");
 
     private final MembershipRepository memberships;
 
-    Roles(MembershipRepository memberships) {
+    Policy(MembershipRepository memberships) {
         this.memberships = memberships;
     }
 
-    void require(Set<String> allowed) {
+    public void require(String action, Set<String> allowed) {
         var tenantId = TenantContext.current().orElseThrow().tenantId();
         String role = memberships.findRole(tenantId).orElse("");
         if (!allowed.contains(role)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bu işlem için rolünüz yetkili değil");
+            throw new Denied(action);
+        }
+    }
+
+    static final class Denied extends ResponseStatusException {
+        final String action;
+
+        Denied(String action) {
+            super(HttpStatus.FORBIDDEN, "Bu işlem için rolünüz yetkili değil");
+            this.action = action;
         }
     }
 }

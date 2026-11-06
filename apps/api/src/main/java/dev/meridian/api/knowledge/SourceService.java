@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import dev.meridian.api.audit.AuditLog;
+import dev.meridian.api.audit.Policy;
 import dev.meridian.api.idempotency.IdempotencyStore;
 import dev.meridian.api.outbox.OutboxWriter;
 import dev.meridian.api.tenancy.TenantContext;
@@ -24,16 +26,18 @@ class SourceService {
     private final CollectionRepository collections;
     private final IdempotencyStore idempotency;
     private final OutboxWriter outbox;
-    private final Roles roles;
+    private final Policy policy;
+    private final AuditLog audit;
     private final JsonMapper json;
 
     SourceService(SourceRepository sources, CollectionRepository collections, IdempotencyStore idempotency,
-            OutboxWriter outbox, Roles roles, JsonMapper json) {
+            OutboxWriter outbox, Policy policy, AuditLog audit, JsonMapper json) {
         this.sources = sources;
         this.collections = collections;
         this.idempotency = idempotency;
         this.outbox = outbox;
-        this.roles = roles;
+        this.policy = policy;
+        this.audit = audit;
         this.json = json;
     }
 
@@ -45,7 +49,7 @@ class SourceService {
      */
     @Transactional
     Source create(String idempotencyKey, UUID collectionId, String name, Map<String, Object> config) {
-        roles.require(Roles.CONTRIBUTORS);
+        policy.require("source.create", Policy.CONTRIBUTORS);
         String tenantId = TenantContext.current().orElseThrow().tenantId().toString();
         String configJson = json.writeValueAsString(config);
         var replay = idempotency.claim(idempotencyKey, String.join("\u001F",
@@ -68,17 +72,45 @@ class SourceService {
         outbox.append(SOURCE_CREATED, source.id(), data);
 
         idempotency.complete(idempotencyKey, source.id());
+        audit.allowed("source.create", source.id());
         return source;
     }
 
     /** Kaynağı "silinmekte" durumuna alır; parçaların silinmesini AI servisi üstlenir. Tekrarlanabilir. */
     @Transactional
     void delete(UUID sourceId) {
-        roles.require(Roles.ADMINS);
+        policy.require("source.delete", Policy.ADMINS);
         Source source = sources.findById(sourceId)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         if (sources.markDeleting(sourceId)) {
             outbox.append(SOURCE_DELETED, sourceId, Map.of("sourceId", sourceId, "collectionId", source.collectionId()));
+            audit.allowed("source.delete", sourceId);
         }
+    }
+
+    /**
+     * Başarısız kaynağı yeni bir olayla kuyruğa alır: tüketici olayları kimlikle ayıkladığı için eski
+     * olay yeniden gönderilemez. Zaten sırada ya da işlemdeyse dokunmaz; hazır ya da siliniyorsa 409.
+     */
+    @Transactional
+    Source retry(UUID sourceId) {
+        policy.require("source.retry", Policy.CONTRIBUTORS);
+        Source source = sources.findById(sourceId)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        return switch (source.status()) {
+            case "pending", "indexing" -> source;
+            case "failed" -> {
+                Source queued = sources.markPending(sourceId);
+                var data = new LinkedHashMap<String, Object>();
+                data.put("sourceId", sourceId);
+                data.put("collectionId", source.collectionId());
+                data.put("type", source.type());
+                data.put("config", json.readTree(sources.findConfig(sourceId)));
+                outbox.append(SOURCE_CREATED, sourceId, data);
+                audit.allowed("source.retry", sourceId);
+                yield queued;
+            }
+            default -> throw new ResponseStatusException(HttpStatus.CONFLICT, "Yalnızca başarısız kaynak yeniden denenebilir");
+        };
     }
 }
