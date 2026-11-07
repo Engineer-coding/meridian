@@ -5,6 +5,7 @@ Biçim: [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/).
 
 ## [Unreleased]
 ### Added
+- Tam sistem testi (`make e2e-full`, CI işi `full-stack`): gerçek Keycloak girişi, kaynak indeksleme, akışlı cevap, ajan onayı, denetim, API anahtarı ile MCP, kiracı izolasyonu ve çıkış tek senaryoda; model, embedding ve GitHub sabit parçayla değişir.
 - Kırmızı takım seti: 40 senaryo (`packages/eval/golden/redteam-v1.jsonl`). CI'da tamamen kandırılmış modelle çalışır, canlı rapor `reports/redteam.*` eşikle denetlenir (ADR-0016).
 - Kod korumaları (`guardrails.py`): zararlı ve istem çıkaran istekler modele gitmez, belgedeki talimat paragrafı istemden çıkar, cevapta yalnızca kayıtlı belge adresi kalır. Tehditler T3, T18, T26, T29, T30.
 - PII maskeleme: e-posta, T.C. kimlik, IBAN, kart ve telefon indekse ve loglara girmez. Mevcut kaynaklar yeniden indekslenmelidir. Tehdit T9.

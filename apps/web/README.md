@@ -18,6 +18,7 @@ sayfasındadır; adımları gösterir, yazma işlemlerinde onay ister.
 | `npm run lint`, `npm run typecheck` | ESLint ve TypeScript |
 | `npm test` | Vitest: SSE ayrıştırma, sohbet durumu, atıflar, oturum çerezi, vekil kuralları, axe |
 | `npm run test:e2e` | Playwright: üretim derlemesi + sahte OIDC ve API (`e2e/stub-server.mjs`), sohbet ve panel |
+| `make e2e-full` (kökten) | Tam sistem: gerçek Keycloak girişi, API, AI servisi, RabbitMQ, PostgreSQL; ayrı portlar ve atılabilir veri (`e2e-full/`) |
 | `npm run gen:eval` | `packages/eval` raporları değişince paneldeki değerlendirme özetini üretir (CI denetler) |
 | `npm run gen:api` | `packages/api-contract/openapi.yaml` değişince TypeScript tiplerini üretir (CI denetler) |
 
@@ -28,8 +29,8 @@ sayfasındadır; adımları gösterir, yazma işlemlerinde onay ister.
 - `src/i18n/`: Türkçe ve İngilizce metinler (dil tarayıcıdan seçilir)
 
 ## Sınırlar
-- Uçtan uca testler sahte sunucuyla çalışır. Gerçek Keycloak, API ve modelle akış elle doğrulandı;
-  tam yığınla otomatik senaryo, Faz 4 kapısı için ayrıca eklenecek.
+- `make e2e-full` modeli, embedding'i ve GitHub'ı sabit parçayla değiştirir (`apps/ai-service/tests/e2e_stack.py`):
+  gerçek model kalitesini değil, sistemin birlikte çalışmasını sınar. Akış ve durum ayrıntıları `npm run test:e2e` içindedir.
 - Panel canlı ilerlemeyi 3 saniyede bir sorgulayarak gösterir (yüzde yok, olay akışı yok). Takılı kalan
   `pending` kaynak için yeniden deneme yoktur; yalnızca `failed` yeniden denenir.
 - Kaynak formu yalnızca GitHub sunar: AI servisinde web ve yükleme çekicileri henüz yok.

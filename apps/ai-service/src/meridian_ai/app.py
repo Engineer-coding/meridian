@@ -1,5 +1,5 @@
 import logging
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Mapping
 from contextlib import asynccontextmanager
 from importlib.metadata import version
 
@@ -12,7 +12,7 @@ from meridian_ai.answering import Answerer
 from meridian_ai.consumer import IndexingConsumer
 from meridian_ai.db import create_pool
 from meridian_ai.embedding import DIMENSIONS, E5Embedder, Embedder
-from meridian_ai.fetchers import GitHubFetcher
+from meridian_ai.fetchers import Fetcher, GitHubFetcher
 from meridian_ai.guardrails import install_log_masking
 from meridian_ai.handlers import Handler
 from meridian_ai.indexer import Indexer
@@ -27,7 +27,10 @@ log = logging.getLogger(__name__)
 
 
 def create_app(
-    settings: Settings | None = None, embedder: Embedder | None = None, llm: LLM | None = None
+    settings: Settings | None = None,
+    embedder: Embedder | None = None,
+    llm: LLM | None = None,
+    fetchers: Mapping[str, Fetcher] | None = None,
 ) -> FastAPI:
     """Uygulama fabrikası: testler kendi bileşenlerini verir, üretimde ortamdan okunur."""
     settings = settings or Settings()
@@ -45,7 +48,9 @@ def create_app(
     http = httpx.AsyncClient(timeout=httpx.Timeout(30.0), follow_redirects=True)
     token = settings.github_token.get_secret_value() if settings.github_token else None
     handler: Handler = Indexer(
-        pool, embedder, {"github": GitHubFetcher(http, settings.max_files_per_source, token=token)}
+        pool,
+        embedder,
+        fetchers or {"github": GitHubFetcher(http, settings.max_files_per_source, token=token)},
     )
     consumer = IndexingConsumer(settings, handler)
 

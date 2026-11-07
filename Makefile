@@ -4,7 +4,7 @@ COMPOSE = docker compose -f infra/compose/compose.yaml --env-file .env
 
 PYTHON ?= python
 
-.PHONY: up down ps logs psql reset smoke contract-lint eval-validate api-test ai-test ai-run web-test web-e2e web-run eval eval-smoke eval-answers eval-redteam
+.PHONY: up down ps logs psql reset smoke contract-lint eval-validate api-test ai-test ai-run web-test web-e2e e2e-full web-run eval eval-smoke eval-answers eval-redteam
 
 up:
 	$(COMPOSE) up -d --wait
@@ -44,6 +44,14 @@ web-test:
 
 web-e2e:
 	cd apps/web && npm run test:e2e
+
+# Tam sistem: gerçek Keycloak, API, AI servisi, RabbitMQ, PostgreSQL ve tarayıcı. Atılabilir altyapı, ayrı portlar.
+E2E_COMPOSE = docker compose -f infra/compose/compose.e2e.yaml --env-file .env.example
+e2e-full:
+	$(E2E_COMPOSE) down -v
+	$(E2E_COMPOSE) up -d --wait
+	cd apps/api && ./mvnw -B -q -DskipTests package
+	cd apps/web && npx playwright test --config playwright.full.config.ts; status=$$?; cd ../..; 	$(E2E_COMPOSE) down -v; exit $$status
 
 web-run:
 	cd apps/web && npm run dev

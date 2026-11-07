@@ -1,0 +1,39 @@
+# Tam sistem testi için atılabilir altyapı (make e2e-full). Geliştirme ortamıyla aynı imajlar ve başlangıç
+# scriptleri; ayrı proje adı, ayrı portlar ve kalıcı olmayan disk: geliştirme verisine dokunmaz.
+name: meridian-e2e
+
+services:
+  postgres:
+    extends:
+      file: compose.yaml
+      service: postgres
+    ports: !override
+      - "127.0.0.1:15432:5432"
+    volumes: !override
+      - ./postgres/init:/docker-entrypoint-initdb.d:ro
+    tmpfs:
+      - /var/lib/postgresql/data
+
+  redis:
+    extends:
+      file: compose.yaml
+      service: redis
+    ports: !override
+      - "127.0.0.1:16379:6379"
+
+  rabbitmq:
+    extends:
+      file: compose.yaml
+      service: rabbitmq
+    ports: !override
+      - "127.0.0.1:15673:5672"
+    volumes: !override []
+
+  keycloak:
+    extends:
+      file: compose.yaml
+      service: keycloak
+    environment:
+      KC_HOSTNAME: http://localhost:18180
+    ports: !override
+      - "127.0.0.1:18180:8080"
