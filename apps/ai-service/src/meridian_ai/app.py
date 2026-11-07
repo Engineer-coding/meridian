@@ -13,6 +13,7 @@ from meridian_ai.consumer import IndexingConsumer
 from meridian_ai.db import create_pool
 from meridian_ai.embedding import DIMENSIONS, E5Embedder, Embedder
 from meridian_ai.fetchers import GitHubFetcher
+from meridian_ai.guardrails import install_log_masking
 from meridian_ai.handlers import Handler
 from meridian_ai.indexer import Indexer
 from meridian_ai.internal_api import create_router
@@ -31,6 +32,7 @@ def create_app(
     """Uygulama fabrikası: testler kendi bileşenlerini verir, üretimde ortamdan okunur."""
     settings = settings or Settings()
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
+    install_log_masking()
     # Her GitHub/model indirme isteği INFO seviyesinde loglanırdı.
     logging.getLogger("httpx").setLevel(logging.WARNING)
     embedder = embedder or E5Embedder(

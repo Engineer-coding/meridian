@@ -5,6 +5,9 @@ Biçim: [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/).
 
 ## [Unreleased]
 ### Added
+- Kırmızı takım seti: 40 senaryo (`packages/eval/golden/redteam-v1.jsonl`). CI'da tamamen kandırılmış modelle çalışır, canlı rapor `reports/redteam.*` eşikle denetlenir (ADR-0016).
+- Kod korumaları (`guardrails.py`): zararlı ve istem çıkaran istekler modele gitmez, belgedeki talimat paragrafı istemden çıkar, cevapta yalnızca kayıtlı belge adresi kalır. Tehditler T3, T18, T26, T29, T30.
+- PII maskeleme: e-posta, T.C. kimlik, IBAN, kart ve telefon indekse ve loglara girmez. Mevcut kaynaklar yeniden indekslenmelidir. Tehdit T9.
 - Ajan: açık durum makinesi, `search_knowledge`, `fetch_document`, salt-okunur `query_sql`, onaylı `create_ticket`; adım, token ve süre bütçesi. Arayüz `/agent`: canlı adımlar, onay kartı. Ajan ölçümü `packages/eval/reports/agent-*` (ADR-0015).
 - MCP sunucusu (`POST /mcp/`, AI servisi): `list_collections`, `search_knowledge`, `fetch_document`; yetki kararı çekirdek API'de. Tehdit T28.
 - `POST .../search`, `GET .../documents`, `GET|POST .../agent-runs`, `GET .../agent-runs/{id}`, `POST .../agent-runs/{id}/approval`. Tehditler T26, T27.

@@ -4,7 +4,7 @@ COMPOSE = docker compose -f infra/compose/compose.yaml --env-file .env
 
 PYTHON ?= python
 
-.PHONY: up down ps logs psql reset smoke contract-lint eval-validate api-test ai-test ai-run web-test web-e2e web-run eval eval-smoke eval-answers
+.PHONY: up down ps logs psql reset smoke contract-lint eval-validate api-test ai-test ai-run web-test web-e2e web-run eval eval-smoke eval-answers eval-redteam
 
 up:
 	$(COMPOSE) up -d --wait
@@ -67,3 +67,7 @@ eval-smoke:
 # cevaplar ~/.cache/meridian/eval altında önbelleklenir.
 eval-answers:
 	cd apps/ai-service && PYTHONUTF8=1 uv run python -m meridian_ai.evaluation --answers --name $(NAME)
+
+# Kırmızı takım seti gerçek modelle (ADR-0016). CPU'da saatler sürer; rapor depoya girer, CI kapısı denetler.
+eval-redteam:
+	cd apps/ai-service && PYTHONUTF8=1 uv run python -m meridian_ai.evaluation.redteam --name $(NAME)

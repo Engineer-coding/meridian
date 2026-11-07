@@ -20,6 +20,7 @@ RETRIEVAL_CODE = (
     "chunking.py",
     "embedding.py",
     "indexer.py",
+    "guardrails.py",
     "retrieval.py",
     "reranking.py",
     "evaluation/golden.py",
@@ -27,6 +28,7 @@ RETRIEVAL_CODE = (
     "evaluation/runner.py",
 )
 ANSWER_CODE = (*RETRIEVAL_CODE, "answering.py", "llm.py")
+REDTEAM_CODE = (*ANSWER_CODE, "agent.py", "agent_sql.py", "evaluation/redteam.py")
 
 
 def fingerprint(golden: Path, code: tuple[str, ...]) -> str:

@@ -17,6 +17,7 @@ from meridian_ai.db import tenant_transaction
 from meridian_ai.embedding import Embedder
 from meridian_ai.events import Event
 from meridian_ai.fetchers import Fetcher, RawDocument
+from meridian_ai.guardrails import mask_pii
 from meridian_ai.handlers import PermanentError
 from meridian_ai.parsing import parse_markdown
 
@@ -98,7 +99,8 @@ class Indexer:
 
         documents = []
         for raw in await fetcher.fetch(source.config):
-            parsed = parse_markdown(raw.text, raw.path)
+            # Kişisel veri ne vektöre ne parçaya girer; özgün metin hiçbir yere yazılmaz.
+            parsed = parse_markdown(mask_pii(raw.text), raw.path)
             chunks = chunk_document(parsed)
             if chunks:
                 documents.append(_Document(uuid4(), raw, parsed.title, chunks))

@@ -100,7 +100,9 @@ def test_endpoint_is_closed_when_no_secret_is_configured(settings: Settings, mod
 def test_answer_is_streamed_as_ordered_events(client: TestClient, tenant: UUID) -> None:
     rows = events(ask(client, tenant))
 
-    assert [name for name, _ in rows] == ["sources", "token", "token", "done"]
+    names = [name for name, _ in rows]
+    assert names[0] == "sources" and names[-1] == "done" and set(names[1:-1]) == {"token"}
+    assert "".join(row[1]["text"] for row in rows[1:-1]) == "Otuz gün içinde [1]."
     source = rows[0][1]["sources"][0]
     assert source["number"] == 1
     assert source["documentPath"] == DOC.path

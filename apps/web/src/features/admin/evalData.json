@@ -67,8 +67,8 @@
     },
     {
       "version": "v0.4.0",
-      "commit": "77c094e-dirty",
-      "date": "2026-11-06",
+      "commit": "e66c6b9-dirty",
+      "date": "2026-11-07",
       "golden": "v2",
       "questions": 165,
       "config": "vector",
@@ -85,7 +85,7 @@
         "gold_in_context": 0.934,
         "gold_cited": 0.8,
         "invalid_citation_rate": 0.006,
-        "median_total_seconds": 64.9
+        "median_total_seconds": 65.7
       }
     },
     {

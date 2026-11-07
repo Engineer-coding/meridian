@@ -54,7 +54,7 @@ yerel model de güvenilir karar vermez. Üç soru belirleyicidir: model neyi yap
 - Görev "ticket" kelimesi içeriyorsa belge etkisiyle yanlış içerikli öneri çıkabilir; son kapı insandır.
 - Ticket çalıştırmayı bitirir: önce arama, sonra ticket isteyen görevde arama sonucu cevaba yazılmaz.
 - Kullanıcı başına tek etkin çalıştırma; API çökerse kayıt 10 dakika sonra serbest kalır.
-- Canlı istem enjeksiyonu kırmızı takım setiyle henüz ölçülmedi (sıradaki adım).
+- Canlı istem enjeksiyonu [ADR-0016](0016-guardrails-and-red-team.md) ile ölçüldü.
 - OAuth yok; MCP yalnızca API anahtarıyla çalışır.
 
 ## Geri dönüş maliyeti ve yeniden değerlendirme tetikleyicisi

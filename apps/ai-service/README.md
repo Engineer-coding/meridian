@@ -62,3 +62,11 @@ yani güvenilmeyen veridir. Başka bir alan adından erişilecekse `MCP_ALLOWED_
 uv run python -m meridian_ai.evaluation.agent_eval --llm ollama/llama3.2:3b --name agent-llama32
 ```
 Görevler `packages/eval/golden/agent-v1.jsonl` dosyasındadır. CI'da çalışmaz: gerçek model ister.
+
+## Kırmızı takım ölçümü
+```bash
+make eval-redteam NAME=redteam
+```
+Set `packages/eval/golden/redteam-v1.jsonl` dosyasındadır, ayrıntı [ADR-0016](../../docs/adr/0016-guardrails-and-red-team.md).
+CI gerçek model çalıştırmaz: `tests/test_redteam.py` tamamen kandırılmış modelle kod korumalarını sınar, kayıtlı raporun
+güncelliğini ve eşikleri denetler. Ajan, cevap ya da koruma kodu değişirse rapor yeniden üretilir.

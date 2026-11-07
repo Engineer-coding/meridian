@@ -22,7 +22,7 @@ import re
 import time
 import uuid
 from collections.abc import AsyncIterator, Awaitable, Callable, Sequence
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from enum import StrEnum
 from typing import Any, Literal, Protocol
 from uuid import UUID
@@ -42,6 +42,7 @@ from meridian_ai.answering import (
     verify_quote,
 )
 from meridian_ai.db import tenant_transaction
+from meridian_ai.guardrails import classify_request, neutralize, strip_foreign_urls
 from meridian_ai.llm import LLM, LLMUnavailable, Message, StructuredLLM, usage_counter
 from meridian_ai.retrieval import Hit, Mode, Retriever
 
@@ -216,7 +217,7 @@ def strip_invalid_citations(answer: str, invalid: Sequence[int]) -> str:
 
 
 def _fence(text: str) -> str:
-    return "<<<\n" + _FENCE.sub("", text)[:MAX_OBSERVATION_CHARS] + "\n>>>"
+    return "<<<\n" + neutralize(_FENCE.sub("", text))[:MAX_OBSERVATION_CHARS] + "\n>>>"
 
 
 def _render(goal: str, history: Sequence[dict[str, Any]]) -> list[Message]:
@@ -287,6 +288,12 @@ def _signature(action: str, inputs: dict[str, Any]) -> str:
     return json.dumps([action, inputs], sort_keys=True, ensure_ascii=False)
 
 
+def _without_foreign_urls(finished: RunFinished) -> RunFinished:
+    """Son kapı: cevap kaynaktan da SQL satırından da gelse belge metnindeki adres kullanıcıya ulaşmaz."""
+    allowed = {source["url"] for source in finished.sources if source.get("url")}
+    return replace(finished, answer=strip_foreign_urls(finished.answer, allowed))
+
+
 class Agent:
     def __init__(
         self,
@@ -325,6 +332,13 @@ class Agent:
             )
             return
 
+        if (refusal := classify_request(goal)) is not None:
+            # Yalnızca tür loglanır: görev metni loga yazılmaz.
+            log.info("görev reddedildi tür=%s", refusal)
+            machine.go(State.FINISH)
+            yield RunFinished("completed", answer=ABSTAIN)
+            return
+
         while True:
             stop = self._over_budget(history, tokens_used, started)
             if stop:
@@ -335,7 +349,9 @@ class Agent:
             # Son adım: yeni araç yok, elde olanla cevap yazılır. Bütçe boşa gitmez.
             if len(history) >= self._budget.max_steps:
                 machine.go(State.FINISH)
-                yield await self._finish(goal, history, started, StopReason.STEP_BUDGET)
+                yield _without_foreign_urls(
+                    await self._finish(goal, history, started, StopReason.STEP_BUDGET)
+                )
                 return
 
             actions = allowed_actions(goal, history)
@@ -378,7 +394,7 @@ class Agent:
 
             if decision.action == "finish":
                 machine.go(State.FINISH)
-                yield await self._finish(goal, history, started, None)
+                yield _without_foreign_urls(await self._finish(goal, history, started, None))
                 return
 
             machine.go(State.ACT)
@@ -398,7 +414,7 @@ class Agent:
         try:
             decision = Decision.model_validate_json(raw)
         except ValidationError:
-            log.info("ajan çıktısı şemaya uymuyor: %r", raw[:200])
+            log.info("ajan çıktısı şemaya uymuyor (%d karakter)", len(raw))
             return None
         if decision.action not in actions:
             log.info("ajan izinli olmayan eylem seçti: %s", decision.action)
@@ -494,7 +510,7 @@ class Agent:
         source_language = detect_language(" ".join(s["content"] for s in sources))
         quote = await self._plain([*prefix, Message("user", EVIDENCE_PROMPTS[source_language])], 120)
         if verify_quote(quote, typed) is None:
-            log.info("ajan kanıtı doğrulanamadı: %r", quote[:120])
+            log.info("ajan kanıtı doğrulanamadı (%d karakter)", len(quote))
             return RunFinished("completed", answer=ABSTAIN, sources=sources, stop_reason=reason, model=model)
         answer = (
             await self._plain([*prefix, Message("user", ANSWER_PROMPTS[detect_language(goal)])], 300)

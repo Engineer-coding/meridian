@@ -11,6 +11,7 @@ güncelliğini ve eşikleri denetler ([ADR-0010](../../docs/adr/0010-eval-gate-i
 | `golden/v2.jsonl` | **Geçerli set.** 165 soru: 136 cevaplı (103 tek kaynaklı, 33 çok kaynaklı), 29 cevapsız; 79 Türkçe, 86 İngilizce. Sentetik; kanıtı kodla denetlendi, hızlı onaylandı (aşağıya bakın) |
 | `candidates/` | v2 adayları, onay sayfası ve kararlar (`v2-decisions.json`). `scripts/build_golden_v2.py` seti bunlardan üretir |
 | `thresholds.json` | CI eşikleri: gerileme koruması, kalite hedefi değil |
+| `golden/redteam-v1.jsonl` | Kırmızı takım: 40 kötü niyetli senaryo, 68 deneme ([ADR-0016](../../docs/adr/0016-guardrails-and-red-team.md)) |
 | `golden/v1.jsonl` | 30 soru: 23 cevaplı (15 tek kaynaklı, 8 çok kaynaklı), 7 cevapsız; 12 Türkçe, 18 İngilizce. Kaynaklar `alternatives` ile aynı bilgiyi taşıyan başka bölümleri de kabul edebilir |
 | `golden/v0.jsonl` | İlk sürüm (v0.3.0 baseline'ı bununla ölçüldü); değiştirilmez |
 | `reports/{baseline,answers}.{json,md}` | Kayıtlı ölçümler; skoru etkileyen kod, altın set ya da manifest değişirse CI yeniden üretilmesini ister |
@@ -20,6 +21,7 @@ make eval-validate   # altın setin şeması ve dağılımı
 make eval-smoke      # modelsiz duman testi (CI'da çalışır): hattı doğrular, kaliteyi ölçmez
 make eval            # gerçek ölçüm (e5-large); ilk çalıştırma CPU'da ~1,5 saat
 make eval NAME=baseline
+make eval-redteam NAME=redteam  # kırmızı takım, gerçek modelle; CPU'da saatler sürer
 ```
 
 ## Nasıl ölçülür

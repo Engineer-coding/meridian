@@ -34,6 +34,8 @@ packages/eval/reports/*
 !packages/eval/reports/answers-bge-m3.md
 !packages/eval/reports/agent-*.json
 !packages/eval/reports/agent-*.md
+!packages/eval/reports/redteam*.json
+!packages/eval/reports/redteam*.md
 
 next-env.d.ts
 playwright-report/

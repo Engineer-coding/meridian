@@ -18,6 +18,13 @@ from collections.abc import AsyncIterator, Sequence
 from dataclasses import dataclass, field
 from uuid import UUID
 
+from meridian_ai.guardrails import (
+    UrlGuard,
+    carries_content,
+    classify_request,
+    neutralize,
+    strip_foreign_urls,
+)
 from meridian_ai.llm import LLM, LLMUnavailable, Message
 from meridian_ai.retrieval import Hit, Mode, Retriever
 
@@ -104,8 +111,9 @@ Event = SourcesFound | Token | Done
 
 
 def build_messages(question: str, sources: Sequence[Source]) -> list[Message]:
-    """Her iki çağrının ortak öneki."""
-    blocks = "\n\n".join(f"[{s.number}] {_clean(s.hit.section)}\n{_clean(s.hit.content)}" for s in sources)
+    """Her iki çağrının ortak öneki. Numaralar korunur: kullanıcının gördüğü kaynak listesi değişmez."""
+    usable = [s for s in sources if carries_content(s.hit.content)]
+    blocks = "\n\n".join(f"[{s.number}] {_clean(s.hit.section)}\n{_clean(s.hit.content)}" for s in usable)
     return [
         Message("system", SYSTEM_PROMPT),
         Message("user", f"Kaynaklar:\n\n{blocks}\n\nSoru: {question.strip()}"),
@@ -113,7 +121,7 @@ def build_messages(question: str, sources: Sequence[Source]) -> list[Message]:
 
 
 def _clean(text: str) -> str:
-    return _FAKE_SOURCE.sub(r"(\1)", text.replace("\r", ""))
+    return _FAKE_SOURCE.sub(r"(\1)", neutralize(text.replace("\r", "")))
 
 
 def _fold(text: str) -> str:
@@ -187,6 +195,12 @@ class Answerer:
         self, tenant_id: UUID, question: str, collection_ids: Sequence[UUID] | None = None
     ) -> AsyncIterator[Event]:
         started = time.monotonic()
+        if (refusal := classify_request(question)) is not None:
+            # Yalnızca tür loglanır: soru metni loga yazılmaz.
+            log.info("istek reddedildi tür=%s", refusal)
+            yield SourcesFound([])
+            yield Done(ABSTAIN, abstained=True, total_seconds=time.monotonic() - started)
+            return
         hits = await self._retriever.search(
             tenant_id,
             question,
@@ -207,13 +221,14 @@ class Answerer:
         first_token: float | None = None
         source_language = detect_language(" ".join(s.hit.content for s in sources))
         question_language = detect_language(question)
+        allowed_urls = {s.hit.url for s in sources if s.hit.url}
         try:
             quote = await self._complete(
                 [*prefix, Message("user", EVIDENCE_PROMPTS[source_language])], self._evidence_tokens
             )
             evidence_source = verify_quote(quote, sources)
             if evidence_source is None:
-                log.info("kanıt doğrulanamadı, cevap verilmiyor: %r", quote[:120])
+                log.info("kanıt doğrulanamadı, cevap verilmiyor (%d karakter)", len(quote))
                 yield Done(
                     ABSTAIN,
                     abstained=True,
@@ -221,18 +236,23 @@ class Answerer:
                     total_seconds=time.monotonic() - started,
                 )
                 return
+            guard = UrlGuard(allowed_urls)
             async for text in self._llm.stream(
                 [*prefix, Message("user", ANSWER_PROMPTS[question_language])], max_tokens=self._max_tokens
             ):
                 first_token = first_token or time.monotonic() - started
                 parts.append(text)
-                yield Token(text)
+                if safe := guard.feed(text):
+                    yield Token(safe)
+            if safe := guard.flush():
+                yield Token(safe)
         except LLMUnavailable as e:
             log.error("cevap üretilemedi, yalnızca kaynaklar dönülüyor: %s", e)
-            yield Done("".join(parts), degraded=True, total_seconds=time.monotonic() - started)
+            partial = strip_foreign_urls("".join(parts), allowed_urls)
+            yield Done(partial, degraded=True, total_seconds=time.monotonic() - started)
             return
 
-        answer = "".join(parts).strip()
+        answer = strip_foreign_urls("".join(parts), allowed_urls).strip()
         cited, invalid, abstained = inspect(answer, len(sources))
         yield Done(
             answer,
