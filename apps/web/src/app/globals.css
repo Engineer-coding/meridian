@@ -138,6 +138,27 @@ button, input, textarea, select { font: inherit; color: inherit; }
 .composer { display: flex; align-items: flex-end; gap: .5rem; }
 .composer textarea { flex: 1; min-width: 0; resize: none; padding: .55rem .7rem; border: 1px solid var(--ink-soft); border-radius: var(--radius); background: var(--surface); }
 
+/* ajan */
+.agent-nav-title { font-weight: 600; font-size: .875rem; color: var(--ink-soft); margin: 0 0 .4rem .6rem; }
+.agent-form { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: .75rem .9rem; margin-bottom: 1rem; }
+.agent-form label { display: block; font-weight: 600; font-size: .875rem; margin-bottom: .2rem; }
+.agent-form textarea { width: 100%; resize: vertical; padding: .5rem .6rem; border: 1px solid var(--ink-soft); border-radius: 6px; background: var(--paper); }
+.agent-form-actions { display: flex; justify-content: flex-end; margin-top: .5rem; }
+.agent-steps { list-style: none; margin: 0 0 1rem; padding: 0; display: grid; gap: .4rem; }
+.agent-step { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: .4rem .7rem; font-size: .9rem; min-width: 0; }
+.agent-step summary { cursor: pointer; overflow-wrap: anywhere; }
+.agent-step .badge { margin-left: .5rem; }
+.agent-step-input { display: block; color: var(--ink-soft); font: 400 .8125rem var(--mono); overflow-wrap: anywhere; margin-left: 1rem; }
+.agent-thought { color: var(--ink-soft); font-style: italic; margin: .4rem 0; }
+.agent-observation { background: var(--sunken); border-radius: 6px; padding: .5rem .6rem; margin: .4rem 0 .2rem; font: 400 .8125rem/1.5 var(--mono); white-space: pre-wrap; overflow-wrap: anywhere; max-height: 18rem; overflow-y: auto; }
+.approval { background: var(--warn-soft); border-left: 3px solid var(--warn); border-radius: 6px; padding: .75rem .9rem; margin-bottom: 1rem; }
+.admin-main .approval h2 { margin-top: 0; }
+.approval dl { margin: 0; }
+.approval dt { font-weight: 600; font-size: .875rem; }
+.approval dd { margin: 0 0 .5rem; overflow-wrap: anywhere; }
+.approval-text { white-space: pre-wrap; }
+.topbar-link { font-size: .875rem; }
+
 /* yönetim paneli */
 .admin-back { margin-left: auto; font-size: .875rem; }
 .admin { display: grid; grid-template-columns: 200px minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); grid-template-areas: "top top" "nav main"; min-height: 100dvh; }

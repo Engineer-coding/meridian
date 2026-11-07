@@ -23,8 +23,9 @@ let messages = {};
 let sources = {};
 let collections = {};
 let apiKeys = [];
+let agentRuns = {};
 let challenge;
-let state = { interrupted: 0, tokenRefreshes: 0, lastAuthorization: null, sourceTenants: [] };
+let state = { interrupted: 0, tokenRefreshes: 0, lastAuthorization: null, sourceTenants: [], tickets: 0, agentInterrupted: 0 };
 let seq = 0;
 
 const id = () => `22222222-2222-4222-8222-${String(++seq).padStart(12, "0")}`;
@@ -93,6 +94,83 @@ async function answer(req, res, conversationId, content) {
     createdAt: new Date().toISOString(),
   });
   send("done", { messageId, answer: final, cited: abstain ? [] : [1], abstained: abstain, degraded: false });
+  res.end();
+}
+
+function searchStep(observation = SOURCE.content) {
+  return { thought: "Belgelerde arıyorum", action: "search_knowledge", input: { query: "başvuru" }, observation, sources: [SOURCE] };
+}
+
+async function agentApi(req, res, [, tenantId, runId, approval]) {
+  const runs = (agentRuns[tenantId] ??= []);
+  if (req.method === "GET" && !runId) return json(res, 200, runs);
+  if (req.method === "GET") {
+    const found = runs.find((item) => item.id === runId);
+    return found ? json(res, 200, found) : json(res, 404, { title: "Not Found", status: 404 });
+  }
+  const body = JSON.parse(await readBody(req));
+
+  let run;
+  let steps = [];
+  if (approval) {
+    run = runs.find((item) => item.id === runId);
+    if (!run || run.status !== "waiting_approval") return json(res, 409, { title: "Conflict", status: 409 });
+    if (body.approved) state.tickets += 1;
+    steps = [
+      {
+        thought: run.pending.thought,
+        action: "create_ticket",
+        input: { title: run.pending.title, description: run.pending.description },
+        observation: body.approved ? "Ticket oluşturuldu" : "Kullanıcı reddetti",
+        approved: body.approved,
+      },
+    ];
+    run.pending = null;
+    run.status = "running";
+  } else {
+    if (body.goal.includes("meşgul")) return json(res, 409, { title: "Conflict", status: 409 });
+    if (body.goal.includes("kota dolu")) return json(res, 429, { title: "Too Many Requests", status: 429 });
+    run = { id: id(), goal: body.goal, status: "running", steps: [], pending: null, answer: null, cited: [], sources: [], stopReason: null, model: "m", tokens: 0, createdAt: new Date().toISOString() };
+    runs.unshift(run);
+    const hostile = '<img src=x onerror="window.__pwned=1"> ![d](http://localhost:4010/leak.png)';
+    steps = [searchStep(body.goal.includes("zararlı") ? hostile : SOURCE.content)];
+  }
+
+  res.writeHead(200, { "Content-Type": "text/event-stream" });
+  const send = (event, data) => res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
+  let closed = false;
+  res.on("close", () => {
+    if (!res.writableEnded) {
+      closed = true;
+      state.agentInterrupted += 1;
+      run.status = "interrupted";
+    }
+  });
+
+  send("run", { id: run.id });
+  for (const step of steps) {
+    await sleep(100);
+    run.steps.push(step);
+    send("step", step);
+  }
+  await sleep(run.goal.includes("yavaş") ? 15000 : 150);
+  if (closed) return;
+
+  if (!approval && run.goal.includes("ticket")) {
+    run.status = "waiting_approval";
+    run.pending = { thought: "Ticket öneriyorum", title: "Disk dolu", description: "Sunucu diski doldu.\nİkinci satır." };
+    run.tokens = 500;
+  } else if (run.goal.includes("bütçe")) {
+    run.status = "budget_exceeded";
+    run.stopReason = "step_budget";
+  } else {
+    run.status = "completed";
+    run.answer = approval ? "Ticket açıldı." : "Başvuru **otuz gün** içinde sonuçlandırılır [1].";
+    run.cited = approval ? [] : [1];
+    run.sources = approval ? [] : [SOURCE];
+    run.tokens += 1115;
+  }
+  send("end", run);
   res.end();
 }
 
@@ -241,7 +319,8 @@ createServer(async (req, res) => {
     sources = {};
     collections = {};
     apiKeys = [];
-    state = { interrupted: 0, tokenRefreshes: 0, lastAuthorization: null, sourceTenants: [] };
+    agentRuns = {};
+    state = { interrupted: 0, tokenRefreshes: 0, lastAuthorization: null, sourceTenants: [], tickets: 0, agentInterrupted: 0 };
     return json(res, 200, {});
   }
 
@@ -304,6 +383,8 @@ createServer(async (req, res) => {
       ],
     });
   }
+  const agent = path.match(/^\/v1\/tenants\/([^/]+)\/agent-runs(?:\/([^/]+))?(\/approval)?$/);
+  if (agent) return agentApi(req, res, agent);
   const admin = path.match(/^\/v1\/tenants\/([^/]+)\/(sources|collections|usage|api-keys|audit-log)(?:\/([^/]+))?(\/retry)?$/);
   if (admin) return adminApi(req, res, url, admin);
   const match = path.match(/^\/v1\/tenants\/([^/]+)\/conversations(?:\/([^/]+)\/messages)?$/);

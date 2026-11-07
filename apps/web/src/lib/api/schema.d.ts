@@ -201,6 +201,113 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/tenants/{tenantId}/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tenantId: components["parameters"]["TenantId"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Belgelerde ara */
+        post: operations["searchKnowledge"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/tenants/{tenantId}/documents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tenantId: components["parameters"]["TenantId"];
+            };
+            cookie?: never;
+        };
+        /** Belgenin metnini yolundan getir */
+        get: operations["getDocument"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/tenants/{tenantId}/agent-runs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tenantId: components["parameters"]["TenantId"];
+            };
+            cookie?: never;
+        };
+        /** Kullanıcının kendi çalıştırmaları, en yeniden eskiye */
+        get: operations["listAgentRuns"];
+        put?: never;
+        /**
+         * Ajanı başlat; adımlar akışla döner
+         * @description Server-Sent Events olarak akar: `run` (kimlik), sıfır ya da daha çok `step` (`AgentStep`), `end`
+         *     (`AgentRun`, son durum). Yazma etkili bir eylemde `end` durumu `waiting_approval` olur ve akış biter.
+         *     Kullanıcı başına tek çalıştırma sürebilir; ikincisi 409 alır.
+         */
+        post: operations["createAgentRun"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/tenants/{tenantId}/agent-runs/{runId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tenantId: components["parameters"]["TenantId"];
+                runId: string;
+            };
+            cookie?: never;
+        };
+        /** Çalıştırma ayrıntısı */
+        get: operations["getAgentRun"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/tenants/{tenantId}/agent-runs/{runId}/approval": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tenantId: components["parameters"]["TenantId"];
+                runId: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Bekleyen ticket'ı onayla ya da reddet; ajan akışla sürer
+         * @description Ticket içeriği yalnızca ajanın kayıtlı önerisinden alınır, istek gövdesinde gönderilemez. Karar bir
+         *     kez verilir; ikincisi 409 alır. Salt-okunur rol onaylayamaz.
+         */
+        post: operations["decideAgentRun"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/tenants/{tenantId}/usage": {
         parameters: {
             query?: never;
@@ -554,6 +661,72 @@ export interface components {
         AuditPage: {
             items: components["schemas"]["AuditEntry"][];
             nextCursor?: string | null;
+        };
+        SearchRequest: {
+            query: string;
+            /** @default 5 */
+            k: number;
+            collectionIds?: string[];
+        };
+        SearchHit: {
+            documentPath: string;
+            title: string;
+            url?: string | null;
+            section: string;
+            content: string;
+            /** Format: double */
+            score: number;
+        };
+        SearchResult: {
+            hits: components["schemas"]["SearchHit"][];
+        };
+        DocumentContent: {
+            path: string;
+            title: string;
+            url?: string | null;
+            content: string;
+        };
+        CreateAgentRunRequest: {
+            goal: string;
+        };
+        AgentApprovalRequest: {
+            approved: boolean;
+        };
+        AgentStep: {
+            thought?: string;
+            /** @example search_knowledge */
+            action: string;
+            input?: {
+                [key: string]: unknown;
+            };
+            /** @description Araç çıktısı; güvenilmeyen belge metni içerebilir */
+            observation: string;
+            sources?: components["schemas"]["CitedSource"][];
+            /** @description Yalnızca onay adımlarında */
+            approved?: boolean;
+        };
+        AgentPendingTicket: {
+            thought?: string;
+            title: string;
+            description: string;
+        };
+        AgentRun: {
+            /** Format: uuid */
+            id: string;
+            goal: string;
+            /** @enum {string} */
+            status: "running" | "waiting_approval" | "completed" | "failed" | "budget_exceeded" | "interrupted";
+            steps?: components["schemas"]["AgentStep"][];
+            pending?: components["schemas"]["AgentPendingTicket"] | null;
+            answer?: string | null;
+            cited?: number[];
+            sources?: components["schemas"]["CitedSource"][];
+            /** @example step_budget */
+            stopReason?: string | null;
+            model?: string | null;
+            tokens: number;
+            /** Format: date-time */
+            createdAt: string;
         };
     };
     responses: {
@@ -1055,6 +1228,178 @@ export interface operations {
             403: components["responses"]["Forbidden"];
             404: components["responses"]["NotFound"];
             409: components["responses"]["Conflict"];
+        };
+    };
+    searchKnowledge: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tenantId: components["parameters"]["TenantId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SearchRequest"];
+            };
+        };
+        responses: {
+            /** @description Sonuçlar; içerik güvenilmeyen belge metnidir */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SearchResult"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
+    getDocument: {
+        parameters: {
+            query: {
+                path: string;
+            };
+            header?: never;
+            path: {
+                tenantId: components["parameters"]["TenantId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Belge */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DocumentContent"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+        };
+    };
+    listAgentRuns: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tenantId: components["parameters"]["TenantId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Çalıştırmalar */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgentRun"][];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            404: components["responses"]["NotFound"];
+        };
+    };
+    createAgentRun: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tenantId: components["parameters"]["TenantId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateAgentRunRequest"];
+            };
+        };
+        responses: {
+            /** @description Olay akışı */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/event-stream": string;
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            401: components["responses"]["Unauthorized"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
+    getAgentRun: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tenantId: components["parameters"]["TenantId"];
+                runId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Çalıştırma */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgentRun"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            404: components["responses"]["NotFound"];
+        };
+    };
+    decideAgentRun: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tenantId: components["parameters"]["TenantId"];
+                runId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AgentApprovalRequest"];
+            };
+        };
+        responses: {
+            /** @description Olay akışı */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/event-stream": string;
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+            429: components["responses"]["TooManyRequests"];
         };
     };
     getUsage: {

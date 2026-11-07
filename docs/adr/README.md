@@ -21,3 +21,4 @@ Kabul edilmiş bir ADR değiştirilmez; yerine yeni bir ADR yazılır ve eskisin
 | [0012](0012-indexing-pipeline.md) | İndeksleme hattı ve embedding modeli (v0) | Kabul edildi |
 | [0013](0013-web-session-bff.md) | Web oturumu: token'lar tarayıcıya verilmez (BFF) | Kabul edildi |
 | [0014](0014-audit-usage-api-keys.md) | Denetim kaydı, token kotası ve API anahtarları | Kabul edildi |
+| [0015](0015-agent-and-mcp.md) | Ajan ve MCP sunucusu | Kabul edildi |

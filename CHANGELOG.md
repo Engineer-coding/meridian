@@ -5,6 +5,9 @@ Biçim: [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/).
 
 ## [Unreleased]
 ### Added
+- Ajan: açık durum makinesi, `search_knowledge`, `fetch_document`, salt-okunur `query_sql`, onaylı `create_ticket`; adım, token ve süre bütçesi. Arayüz `/agent`: canlı adımlar, onay kartı. Ajan ölçümü `packages/eval/reports/agent-*` (ADR-0015).
+- MCP sunucusu (`POST /mcp/`, AI servisi): `list_collections`, `search_knowledge`, `fetch_document`; yetki kararı çekirdek API'de. Tehdit T28.
+- `POST .../search`, `GET .../documents`, `GET|POST .../agent-runs`, `GET .../agent-runs/{id}`, `POST .../agent-runs/{id}/approval`. Tehditler T26, T27.
 - Yönetim paneli (`/admin`): kaynak ekleme, canlı indeksleme durumu, yeniden deneme ve silme; günlük kullanım grafiği ve kota göstergesi; sürümler arası değerlendirme tablosu; API anahtarı yönetimi; denetim kayıtları. Bölümler role göre gösterilir, giriş sonrası istenen panel sayfasına dönülür.
 - `POST .../sources/{id}/retry`, `GET .../usage`, `GET|POST|DELETE .../api-keys`, `GET .../audit-log` (ADR-0014).
 - Denetim kaydı (`audit_log`, append-only): değişiklikler ve reddedilen kararlar; soru metni yazılmaz. Rol denetimi tek yerde (`audit.Policy`). Tehdit T10 uygulandı.

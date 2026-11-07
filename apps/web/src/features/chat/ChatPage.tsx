@@ -115,7 +115,10 @@ function TenantChat({
         ) : (
           <span className="tenant">{membership.tenantName}</span>
         )}
-        <Link href="/admin" className="admin-back">
+        <Link href="/agent" className="admin-back">
+          {t("agentTitle")}
+        </Link>
+        <Link href="/admin" className="topbar-link">
           {t("adminTitle")}
         </Link>
       </header>

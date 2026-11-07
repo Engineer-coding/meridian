@@ -12,6 +12,8 @@ export type Me = components["schemas"]["Me"];
 export type Membership = components["schemas"]["Membership"];
 export type Problem = components["schemas"]["Problem"];
 export type Source = components["schemas"]["Source"];
+export type AgentRun = components["schemas"]["AgentRun"];
+export type AgentStep = components["schemas"]["AgentStep"];
 export type UsageDay = components["schemas"]["UsageDay"];
 export type ApiKeyScope = components["schemas"]["ApiKeyScope"];
 

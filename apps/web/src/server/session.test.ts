@@ -37,6 +37,7 @@ describe("girişten sonra dönüş", () => {
   it("yalnızca panel sayfalarına döner, dış adrese yönlendirmez", () => {
     expect(safeReturnTo("/admin/api-keys")).toBe("/admin/api-keys");
     expect(safeReturnTo("/admin")).toBe("/admin");
+    expect(safeReturnTo("/agent")).toBe("/agent");
     for (const bad of ["https://evil.test", "//evil.test", "/\evil.test", "/admin/../x", "/admin/x?y=1", "/", "", null, undefined]) {
       expect(safeReturnTo(bad)).toBe("/");
     }

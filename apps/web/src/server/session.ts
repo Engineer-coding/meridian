@@ -13,9 +13,9 @@ export type Session = {
 
 export type LoginState = { state: string; verifier: string; returnTo?: string };
 
-/** Girişten sonra dönülecek yol. Yalnızca panel sayfaları: dış adrese yönlendirme yapılamaz (open redirect). */
+/** Girişten sonra dönülecek yol. Yalnızca panel ve ajan sayfaları: dış adrese yönlendirme yapılamaz (open redirect). */
 export function safeReturnTo(value: string | null | undefined): string {
-  return value && /^\/admin(\/[a-z-]+)?$/.test(value) ? value : "/";
+  return value && /^\/(agent|admin(\/[a-z-]+)?)$/.test(value) ? value : "/";
 }
 
 export const SESSION_COOKIE = "meridian_session";

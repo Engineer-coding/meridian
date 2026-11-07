@@ -10,7 +10,8 @@ npm run dev        # http://localhost:3000; Keycloak, API ve AI servisi çalış
 ```
 
 Yerel kullanıcılar `infra/compose/keycloak/meridian-realm.json` içindedir. Yönetim paneli `/admin`
-altındadır: kaynaklar, kullanım ve kota, değerlendirme, API anahtarları, denetim kayıtları.
+altındadır: kaynaklar, kullanım ve kota, değerlendirme, API anahtarları, denetim kayıtları. Ajan `/agent`
+sayfasındadır; adımları gösterir, yazma işlemlerinde onay ister.
 
 | Komut | İş |
 |---|---|
@@ -23,7 +24,7 @@ altındadır: kaynaklar, kullanım ve kota, değerlendirme, API anahtarları, de
 ## Yapı
 - `src/app/`: sayfalar, `auth/*` giriş uçları, `api/v1/*` API vekili
 - `src/server/`: yalnızca sunucuda çalışan kod (oturum, OIDC, vekil kuralları)
-- `src/features/`: `chat`, `admin`, `onboarding`, `shell`
+- `src/features/`: `chat`, `agent`, `admin`, `onboarding`, `shell`
 - `src/i18n/`: Türkçe ve İngilizce metinler (dil tarayıcıdan seçilir)
 
 ## Sınırlar
