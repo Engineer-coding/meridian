@@ -7,6 +7,7 @@ import httpx
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 
+from meridian_ai.agent import Agent
 from meridian_ai.answering import Answerer
 from meridian_ai.consumer import IndexingConsumer
 from meridian_ai.db import create_pool
@@ -16,6 +17,7 @@ from meridian_ai.handlers import Handler
 from meridian_ai.indexer import Indexer
 from meridian_ai.internal_api import create_router
 from meridian_ai.llm import LLM, build_chain
+from meridian_ai.mcp_server import ApiGate, create_mcp
 from meridian_ai.reranking import MODELS, CrossEncoderReranker
 from meridian_ai.retrieval import Retriever
 from meridian_ai.settings import Settings
@@ -62,19 +64,33 @@ def create_app(
         rerank=reranker is not None,
     )
 
+    agent_llm = (
+        build_chain(settings.agent_llm_chain, llm_http, settings.ollama_url)
+        if settings.agent_llm_chain
+        else llm
+    )
+    agent = Agent(pool, retriever, agent_llm) if hasattr(agent_llm, "complete_json") else None
+    mcp_http = httpx.AsyncClient(timeout=httpx.Timeout(30.0, connect=5.0))
+    mcp, mcp_app = create_mcp(settings.api_url, mcp_http, settings.mcp_allowed_hosts)
+
     @asynccontextmanager
     async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         # Veritabanı açılmasa da süreç başlar; hazır olma kontrolü bunu gösterir.
         await pool.open(wait=False)
         consumer.start()
-        yield
+        async with mcp.session_manager.run():
+            yield
         await consumer.stop()
+        await mcp_http.aclose()
         await http.aclose()
         await llm_http.aclose()
         await pool.close()
 
     app = FastAPI(title="Meridian AI", version=version("meridian-ai"), lifespan=lifespan)
-    app.include_router(create_router(answerer, settings.ai_internal_token.get_secret_value()))
+    app.include_router(
+        create_router(answerer, settings.ai_internal_token.get_secret_value(), retriever, agent)
+    )
+    app.mount("/mcp", ApiGate(mcp_app))
 
     @app.get("/health/live")
     async def live() -> dict[str, str]:

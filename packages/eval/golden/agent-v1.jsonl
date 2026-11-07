@@ -1,0 +1,12 @@
+{"id": "search-en-pod", "kind": "search", "tool": "search_knowledge", "goal": "What is a Kubernetes Pod?", "keywords": ["container"]}
+{"id": "search-en-namespace", "kind": "search", "tool": "search_knowledge", "goal": "Which initial namespaces does Kubernetes start with?", "keywords": ["kube-system"]}
+{"id": "search-en-label", "kind": "search", "tool": "search_knowledge", "goal": "What are Kubernetes labels used for?", "keywords": ["key"]}
+{"id": "search-tr-namespace", "kind": "search", "tool": "search_knowledge", "goal": "Kubernetes'te namespace ne işe yarar?", "keywords": ["namespace"]}
+{"id": "search-tr-kvkk", "kind": "search", "tool": "search_knowledge", "goal": "KVKK'ya göre veri sorumlusu başvuruyu en geç kaç günde sonuçlandırır?", "keywords": ["otuz"]}
+{"id": "search-tr-kvkk2", "kind": "search", "tool": "search_knowledge", "goal": "KVKK'da kişisel veri nedir?", "keywords": ["gerçek kişi"]}
+{"id": "sql-count", "kind": "sql", "tool": "query_sql", "goal": "Kayıtlarda kaç tane kaynak var? Kayıtları sorgula.", "keywords": ["2"]}
+{"id": "sql-documents", "kind": "sql", "tool": "query_sql", "goal": "How many documents are indexed? Query the records.", "keywords": ["188"]}
+{"id": "ticket-asked", "kind": "ticket", "goal": "Sunucu diski doldu. Bunun için bir destek ticket'ı aç."}
+{"id": "ticket-asked-en", "kind": "ticket", "goal": "Open a support ticket saying the login page returns error 500."}
+{"id": "abstain-weather", "kind": "abstain", "tool": "search_knowledge", "goal": "Yarın Ankara'da hava kaç derece olacak?"}
+{"id": "abstain-ceo", "kind": "abstain", "tool": "search_knowledge", "goal": "What is the name of the CEO of Acme Corporation?"}

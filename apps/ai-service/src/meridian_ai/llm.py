@@ -10,7 +10,7 @@ import logging
 from collections.abc import AsyncIterator, Sequence
 from contextvars import ContextVar
 from dataclasses import dataclass
-from typing import Literal, Protocol
+from typing import Any, Literal, Protocol
 
 import httpx
 
@@ -46,6 +46,16 @@ class LLM(Protocol):
     def stream(self, messages: Sequence[Message], *, max_tokens: int) -> AsyncIterator[str]:
         """Cevabı parça parça üretir. Başarısızlıkta ``LLMUnavailable`` fırlatır."""
         ...
+
+
+class StructuredLLM(Protocol):
+    """Şemaya uyan tek JSON üretir; ajan buna dayanır. Çıktıyı yine de çağıran doğrular."""
+
+    name: str
+
+    async def complete_json(
+        self, messages: Sequence[Message], schema: dict[str, Any], *, max_tokens: int
+    ) -> str: ...
 
 
 class OllamaLLM:
@@ -97,6 +107,33 @@ class OllamaLLM:
         except json.JSONDecodeError as e:
             raise LLMUnavailable(f"{self.name}: bozuk akış") from e
 
+    async def complete_json(
+        self, messages: Sequence[Message], schema: dict[str, Any], *, max_tokens: int
+    ) -> str:
+        body = {
+            "model": self._model,
+            "messages": [{"role": m.role, "content": m.content} for m in messages],
+            "stream": False,
+            "format": schema,
+            "options": self._options | {"num_predict": max_tokens},
+        }
+        try:
+            response = await self._client.post(self._url, json=body)
+            if response.status_code != 200:
+                raise LLMUnavailable(f"{self.name}: HTTP {response.status_code} {response.text[:200]}")
+            data = response.json()
+        except httpx.HTTPError as e:
+            raise LLMUnavailable(f"{self.name}: {type(e).__name__}") from e
+        except json.JSONDecodeError as e:
+            raise LLMUnavailable(f"{self.name}: bozuk cevap") from e
+        if "error" in data:
+            raise LLMUnavailable(f"{self.name}: {data['error']}")
+        if (counter := usage_counter.get()) is not None:
+            counter.prompt_tokens += data.get("prompt_eval_count", 0)
+            counter.completion_tokens += data.get("eval_count", 0)
+            counter.counted = True
+        return data.get("message", {}).get("content", "")
+
 
 class FallbackLLM:
     """Sağlayıcıları sırayla dener.
@@ -130,6 +167,24 @@ class FallbackLLM:
             async for token in tokens:
                 yield token
             return
+        raise LLMUnavailable("tüm sağlayıcılar kullanılamıyor: " + "; ".join(failures))
+
+    async def complete_json(
+        self, messages: Sequence[Message], schema: dict[str, Any], *, max_tokens: int
+    ) -> str:
+        failures = []
+        for provider in self._providers:
+            if not hasattr(provider, "complete_json"):
+                failures.append(f"{provider.name}: yapılandırılmış çıktı yok")
+                continue
+            try:
+                text = await provider.complete_json(messages, schema, max_tokens=max_tokens)
+            except LLMUnavailable as e:
+                log.warning("LLM sağlayıcısı kullanılamıyor, sıradakine geçiliyor: %s", e)
+                failures.append(str(e))
+                continue
+            self.last_used = provider.name
+            return text
         raise LLMUnavailable("tüm sağlayıcılar kullanılamıyor: " + "; ".join(failures))
 
 

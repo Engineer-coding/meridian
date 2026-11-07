@@ -1,0 +1,279 @@
+{
+  "name": "agent-llama32",
+  "model": "ollama/llama3.2:3b",
+  "created_at": "2026-11-06",
+  "git_commit": "77c094e-dirty",
+  "tasks_file": "packages/eval/golden/agent-v1.jsonl",
+  "budget": "6 adım, 12000 token, 240 sn",
+  "summary": {
+    "n": 12,
+    "errors": 0,
+    "success": 0.583,
+    "expected_tool_used": 1.0,
+    "abstained": 0.417,
+    "unasked_tickets": 0,
+    "invalid_outputs": 0,
+    "median_steps": 1.0,
+    "median_tokens": 1920.0,
+    "median_seconds": 97.65,
+    "by_kind": {
+      "abstain": {
+        "n": 2,
+        "success": 1.0
+      },
+      "search": {
+        "n": 6,
+        "success": 0.333
+      },
+      "sql": {
+        "n": 2,
+        "success": 0.5
+      },
+      "ticket": {
+        "n": 2,
+        "success": 1.0
+      }
+    }
+  },
+  "rows": [
+    {
+      "id": "search-en-pod",
+      "kind": "search",
+      "success": true,
+      "status": "completed",
+      "stop_reason": null,
+      "actions": [
+        "search_knowledge"
+      ],
+      "expected_tool_used": true,
+      "invalid_outputs": 0,
+      "abstained": false,
+      "cited": [
+        1,
+        2
+      ],
+      "unasked_ticket": false,
+      "ticket": null,
+      "answer": "A Kubernetes Pod is a group of one or more containers, with shared storage and network resources, and a specification for how to run the containers, co-located and co-scheduled in a shared context [1]. It models an application-specific \"logical host\" containing one or more application containers tha",
+      "tokens": 2602,
+      "seconds": 133.5
+    },
+    {
+      "id": "search-en-namespace",
+      "kind": "search",
+      "success": false,
+      "status": "completed",
+      "stop_reason": null,
+      "actions": [
+        "search_knowledge"
+      ],
+      "expected_tool_used": true,
+      "invalid_outputs": 0,
+      "abstained": true,
+      "cited": [],
+      "unasked_ticket": false,
+      "ticket": null,
+      "answer": "BİLMİYORUM",
+      "tokens": 1725,
+      "seconds": 98.0
+    },
+    {
+      "id": "search-en-label",
+      "kind": "search",
+      "success": false,
+      "status": "completed",
+      "stop_reason": null,
+      "actions": [
+        "search_knowledge"
+      ],
+      "expected_tool_used": true,
+      "invalid_outputs": 0,
+      "abstained": false,
+      "cited": [
+        1,
+        2
+      ],
+      "unasked_ticket": false,
+      "ticket": null,
+      "answer": "Kubernetes labels are used to describe applications in a common manner that all tools can understand, allowing for interoperable tooling and querying of metadata, [1]. They provide a way to organize metadata around the concept of an application, making it easier to manage applications but not requir",
+      "tokens": 2825,
+      "seconds": 134.8
+    },
+    {
+      "id": "search-tr-namespace",
+      "kind": "search",
+      "success": true,
+      "status": "completed",
+      "stop_reason": null,
+      "actions": [
+        "search_knowledge",
+        "search_knowledge"
+      ],
+      "expected_tool_used": true,
+      "invalid_outputs": 0,
+      "abstained": false,
+      "cited": [
+        1
+      ],
+      "unasked_ticket": false,
+      "ticket": null,
+      "answer": "Kubernetes'te namespace, gruplar arası kaynakları tek bir cluster içinde isolated olarak isolating mechanismi sağlar. Bu, namespaced objects için (örneğin, Deployments, Services) ve cluster-wide objects için (örneğin, StorageClass, Nodes, PersistentVolumes) uygulanmaz. [1]",
+      "tokens": 3419,
+      "seconds": 127.5
+    },
+    {
+      "id": "search-tr-kvkk",
+      "kind": "search",
+      "success": false,
+      "status": "completed",
+      "stop_reason": null,
+      "actions": [
+        "search_knowledge"
+      ],
+      "expected_tool_used": true,
+      "invalid_outputs": 0,
+      "abstained": true,
+      "cited": [],
+      "unasked_ticket": false,
+      "ticket": null,
+      "answer": "BİLMİYORUM",
+      "tokens": 2340,
+      "seconds": 145.4
+    },
+    {
+      "id": "search-tr-kvkk2",
+      "kind": "search",
+      "success": false,
+      "status": "completed",
+      "stop_reason": null,
+      "actions": [
+        "search_knowledge"
+      ],
+      "expected_tool_used": true,
+      "invalid_outputs": 0,
+      "abstained": true,
+      "cited": [],
+      "unasked_ticket": false,
+      "ticket": null,
+      "answer": "BİLMİYORUM",
+      "tokens": 1764,
+      "seconds": 97.3
+    },
+    {
+      "id": "sql-count",
+      "kind": "sql",
+      "success": true,
+      "status": "completed",
+      "stop_reason": null,
+      "actions": [
+        "query_sql"
+      ],
+      "expected_tool_used": true,
+      "invalid_outputs": 0,
+      "abstained": false,
+      "cited": [],
+      "unasked_ticket": false,
+      "ticket": null,
+      "answer": "Sonuç: 2",
+      "tokens": 953,
+      "seconds": 41.2
+    },
+    {
+      "id": "sql-documents",
+      "kind": "sql",
+      "success": false,
+      "status": "completed",
+      "stop_reason": null,
+      "actions": [
+        "query_sql"
+      ],
+      "expected_tool_used": true,
+      "invalid_outputs": 0,
+      "abstained": false,
+      "cited": [],
+      "unasked_ticket": false,
+      "ticket": null,
+      "answer": "There are a total of 20 documents indexed based on the provided chunk counts.",
+      "tokens": 1274,
+      "seconds": 35.6
+    },
+    {
+      "id": "ticket-asked",
+      "kind": "ticket",
+      "success": true,
+      "status": "waiting_approval",
+      "stop_reason": null,
+      "actions": [],
+      "expected_tool_used": true,
+      "invalid_outputs": 0,
+      "abstained": false,
+      "cited": [],
+      "unasked_ticket": false,
+      "ticket": {
+        "title": "Sunucu diski doldu",
+        "description": "Sunucu diski doldu ve sistem performanceÙe etkide bulunabilir."
+      },
+      "answer": "",
+      "tokens": 471,
+      "seconds": 37.0
+    },
+    {
+      "id": "ticket-asked-en",
+      "kind": "ticket",
+      "success": true,
+      "status": "waiting_approval",
+      "stop_reason": null,
+      "actions": [],
+      "expected_tool_used": true,
+      "invalid_outputs": 0,
+      "abstained": false,
+      "cited": [],
+      "unasked_ticket": false,
+      "ticket": {
+        "title": "Login Sayfasına Hata 500 Alş",
+        "description": "Login sayfasına hata 500 alş. Ödeme girişimi yaparken hatalar × 500 alş."
+      },
+      "answer": "",
+      "tokens": 506,
+      "seconds": 15.7
+    },
+    {
+      "id": "abstain-weather",
+      "kind": "abstain",
+      "success": true,
+      "status": "completed",
+      "stop_reason": null,
+      "actions": [
+        "search_knowledge"
+      ],
+      "expected_tool_used": true,
+      "invalid_outputs": 0,
+      "abstained": true,
+      "cited": [],
+      "unasked_ticket": false,
+      "ticket": null,
+      "answer": "BİLMİYORUM",
+      "tokens": 2076,
+      "seconds": 96.7
+    },
+    {
+      "id": "abstain-ceo",
+      "kind": "abstain",
+      "success": true,
+      "status": "completed",
+      "stop_reason": null,
+      "actions": [
+        "search_knowledge"
+      ],
+      "expected_tool_used": true,
+      "invalid_outputs": 0,
+      "abstained": true,
+      "cited": [],
+      "unasked_ticket": false,
+      "ticket": null,
+      "answer": "BİLMİYORUM",
+      "tokens": 2461,
+      "seconds": 154.7
+    }
+  ]
+}

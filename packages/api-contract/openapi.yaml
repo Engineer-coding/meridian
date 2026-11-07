@@ -27,6 +27,10 @@ tags:
     description: Bilgi kaynakları ve indeksleme
   - name: chat
     description: Kaynaklı cevap veren, kişiye özel konuşmalar
+  - name: knowledge
+    description: Belgelerde arama ve belge okuma (MCP sunucusu da bunları kullanır)
+  - name: agents
+    description: Araç çağıran ajan çalıştırmaları ve insan onayı
   - name: usage
     description: Kiracının token kullanımı ve günlük kotası
   - name: apiKeys
@@ -395,6 +399,187 @@ paths:
           $ref: '#/components/responses/NotFound'
         '409':
           $ref: '#/components/responses/Conflict'
+
+  /v1/tenants/{tenantId}/search:
+    parameters:
+      - $ref: '#/components/parameters/TenantId'
+    post:
+      tags: [knowledge]
+      operationId: searchKnowledge
+      summary: Belgelerde ara
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchRequest'
+      responses:
+        '200':
+          description: Sonuçlar; içerik güvenilmeyen belge metnidir
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResult'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+
+  /v1/tenants/{tenantId}/documents:
+    parameters:
+      - $ref: '#/components/parameters/TenantId'
+    get:
+      tags: [knowledge]
+      operationId: getDocument
+      summary: Belgenin metnini yolundan getir
+      parameters:
+        - name: path
+          in: query
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 1000
+      responses:
+        '200':
+          description: Belge
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentContent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /v1/tenants/{tenantId}/agent-runs:
+    parameters:
+      - $ref: '#/components/parameters/TenantId'
+    get:
+      tags: [agents]
+      operationId: listAgentRuns
+      summary: Kullanıcının kendi çalıştırmaları, en yeniden eskiye
+      responses:
+        '200':
+          description: Çalıştırmalar
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AgentRun'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      tags: [agents]
+      operationId: createAgentRun
+      summary: Ajanı başlat; adımlar akışla döner
+      description: |
+        Server-Sent Events olarak akar: `run` (kimlik), sıfır ya da daha çok `step` (`AgentStep`), `end`
+        (`AgentRun`, son durum). Yazma etkili bir eylemde `end` durumu `waiting_approval` olur ve akış biter.
+        Kullanıcı başına tek çalıştırma sürebilir; ikincisi 409 alır.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAgentRunRequest'
+      responses:
+        '200':
+          description: Olay akışı
+          content:
+            text/event-stream:
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+
+  /v1/tenants/{tenantId}/agent-runs/{runId}:
+    parameters:
+      - $ref: '#/components/parameters/TenantId'
+      - name: runId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      tags: [agents]
+      operationId: getAgentRun
+      summary: Çalıştırma ayrıntısı
+      responses:
+        '200':
+          description: Çalıştırma
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgentRun'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /v1/tenants/{tenantId}/agent-runs/{runId}/approval:
+    parameters:
+      - $ref: '#/components/parameters/TenantId'
+      - name: runId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    post:
+      tags: [agents]
+      operationId: decideAgentRun
+      summary: Bekleyen ticket'ı onayla ya da reddet; ajan akışla sürer
+      description: |
+        Ticket içeriği yalnızca ajanın kayıtlı önerisinden alınır, istek gövdesinde gönderilemez. Karar bir
+        kez verilir; ikincisi 409 alır. Salt-okunur rol onaylayamaz.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AgentApprovalRequest'
+      responses:
+        '200':
+          description: Olay akışı
+          content:
+            text/event-stream:
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
 
   /v1/tenants/{tenantId}/usage:
     parameters:
@@ -1159,3 +1344,157 @@ components:
             $ref: '#/components/schemas/AuditEntry'
         nextCursor:
           type: [string, 'null']
+
+    SearchRequest:
+      type: object
+      additionalProperties: false
+      required: [query]
+      properties:
+        query:
+          type: string
+          minLength: 1
+          maxLength: 1000
+        k:
+          type: integer
+          minimum: 1
+          maximum: 20
+          default: 5
+        collectionIds:
+          type: array
+          maxItems: 20
+          items:
+            type: string
+            format: uuid
+
+    SearchHit:
+      type: object
+      required: [documentPath, title, section, content, score]
+      properties:
+        documentPath:
+          type: string
+        title:
+          type: string
+        url:
+          type: [string, 'null']
+        section:
+          type: string
+        content:
+          type: string
+        score:
+          type: number
+          format: double
+
+    SearchResult:
+      type: object
+      required: [hits]
+      properties:
+        hits:
+          type: array
+          items:
+            $ref: '#/components/schemas/SearchHit'
+
+    DocumentContent:
+      type: object
+      required: [path, title, content]
+      properties:
+        path:
+          type: string
+        title:
+          type: string
+        url:
+          type: [string, 'null']
+        content:
+          type: string
+
+    CreateAgentRunRequest:
+      type: object
+      additionalProperties: false
+      required: [goal]
+      properties:
+        goal:
+          type: string
+          minLength: 1
+          maxLength: 2000
+
+    AgentApprovalRequest:
+      type: object
+      additionalProperties: false
+      required: [approved]
+      properties:
+        approved:
+          type: boolean
+
+    AgentStep:
+      type: object
+      required: [action, observation]
+      properties:
+        thought:
+          type: string
+        action:
+          type: string
+          examples: ['search_knowledge']
+        input:
+          type: object
+          additionalProperties: true
+        observation:
+          type: string
+          description: Araç çıktısı; güvenilmeyen belge metni içerebilir
+        sources:
+          type: array
+          items:
+            $ref: '#/components/schemas/CitedSource'
+        approved:
+          type: boolean
+          description: Yalnızca onay adımlarında
+
+    AgentPendingTicket:
+      type: object
+      required: [title, description]
+      properties:
+        thought:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+
+    AgentRun:
+      type: object
+      required: [id, goal, status, tokens, createdAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        goal:
+          type: string
+        status:
+          type: string
+          enum: [running, waiting_approval, completed, failed, budget_exceeded, interrupted]
+        steps:
+          type: array
+          items:
+            $ref: '#/components/schemas/AgentStep'
+        pending:
+          oneOf:
+            - $ref: '#/components/schemas/AgentPendingTicket'
+            - type: 'null'
+        answer:
+          type: [string, 'null']
+        cited:
+          type: array
+          items:
+            type: integer
+        sources:
+          type: array
+          items:
+            $ref: '#/components/schemas/CitedSource'
+        stopReason:
+          type: [string, 'null']
+          examples: ['step_budget']
+        model:
+          type: [string, 'null']
+        tokens:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time

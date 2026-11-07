@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
  */
 public final class ApiKeyScopes {
 
-    private static final Pattern SOURCES_READ = Pattern.compile("/(sources(/[^/]+)?|collections)");
+    private static final Pattern SOURCES_READ = Pattern.compile("/(sources(/[^/]+)?|collections|documents)");
     private static final Pattern SOURCES_WRITE = Pattern.compile("/(sources(/[^/]+(/retry)?)?|collections)");
     private static final Pattern CHAT = Pattern.compile("/conversations(/[^/]+/messages)?");
 
@@ -23,6 +23,7 @@ public final class ApiKeyScopes {
         boolean read = "GET".equals(method);
         boolean write = "POST".equals(method) || "DELETE".equals(method);
         return (scopes.contains("sources:read") && read && SOURCES_READ.matcher(path).matches())
+            || (scopes.contains("sources:read") && "POST".equals(method) && "/search".equals(path))
             || (scopes.contains("sources:write") && write && SOURCES_WRITE.matcher(path).matches())
             || (scopes.contains("chat") && (read || "POST".equals(method)) && CHAT.matcher(path).matches());
     }

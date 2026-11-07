@@ -1,0 +1,289 @@
+{
+  "name": "agent-qwen25",
+  "model": "ollama/qwen2.5:3b",
+  "created_at": "2026-11-06",
+  "git_commit": "77c094e-dirty",
+  "tasks_file": "packages/eval/golden/agent-v1.jsonl",
+  "budget": "6 adım, 12000 token, 240 sn",
+  "summary": {
+    "n": 12,
+    "errors": 0,
+    "success": 0.417,
+    "expected_tool_used": 1.0,
+    "abstained": 0.333,
+    "unasked_tickets": 0,
+    "invalid_outputs": 0,
+    "median_steps": 1.5,
+    "median_tokens": 2786.0,
+    "median_seconds": 182.25,
+    "by_kind": {
+      "abstain": {
+        "n": 2,
+        "success": 0.0
+      },
+      "search": {
+        "n": 6,
+        "success": 0.333
+      },
+      "sql": {
+        "n": 2,
+        "success": 0.5
+      },
+      "ticket": {
+        "n": 2,
+        "success": 1.0
+      }
+    }
+  },
+  "rows": [
+    {
+      "id": "search-en-pod",
+      "kind": "search",
+      "success": false,
+      "status": "completed",
+      "stop_reason": null,
+      "actions": [
+        "search_knowledge",
+        "search_knowledge",
+        "search_knowledge",
+        "search_knowledge",
+        "search_knowledge"
+      ],
+      "expected_tool_used": true,
+      "invalid_outputs": 0,
+      "abstained": true,
+      "cited": [],
+      "unasked_ticket": false,
+      "ticket": null,
+      "answer": "BİLMİYORUM",
+      "tokens": 8090,
+      "seconds": 236.5
+    },
+    {
+      "id": "search-en-namespace",
+      "kind": "search",
+      "success": true,
+      "status": "completed",
+      "stop_reason": null,
+      "actions": [
+        "search_knowledge",
+        "search_knowledge",
+        "search_knowledge",
+        "search_knowledge"
+      ],
+      "expected_tool_used": true,
+      "invalid_outputs": 0,
+      "abstained": false,
+      "cited": [
+        1
+      ],
+      "unasked_ticket": false,
+      "ticket": null,
+      "answer": "Kubernetes starts with four initial namespaces: `default`, `kube-node-lease`, and `kube-system`. The fourth namespace is `kube-public`, which is readable by all clients but not required for cluster-wide objects. [1]",
+      "tokens": 6746,
+      "seconds": 202.0
+    },
+    {
+      "id": "search-en-label",
+      "kind": "search",
+      "success": false,
+      "status": "completed",
+      "stop_reason": null,
+      "actions": [
+        "search_knowledge",
+        "search_knowledge",
+        "search_knowledge",
+        "search_knowledge"
+      ],
+      "expected_tool_used": true,
+      "invalid_outputs": 0,
+      "abstained": true,
+      "cited": [],
+      "unasked_ticket": false,
+      "ticket": null,
+      "answer": "BİLMİYORUM",
+      "tokens": 6254,
+      "seconds": 199.8
+    },
+    {
+      "id": "search-tr-namespace",
+      "kind": "search",
+      "success": true,
+      "status": "completed",
+      "stop_reason": null,
+      "actions": [
+        "search_knowledge",
+        "search_knowledge",
+        "search_knowledge",
+        "search_knowledge"
+      ],
+      "expected_tool_used": true,
+      "invalid_outputs": 0,
+      "abstained": false,
+      "cited": [
+        1
+      ],
+      "unasked_ticket": false,
+      "ticket": null,
+      "answer": "Kubernetes'te namespace, aynı küme içindeki gruplar arasında hizmetlerin isolasyonunu sağlar. Bu isolasyon, bir klasör içindeki dosyaların adları aynı olmasına benzer şekilde, bir kendi adlarını belirleyebilirler. Böylelikle, farklı mülk sahipleri arasındaki etkileşimleri azaltır. Ayrıca, RBAC (Role",
+      "tokens": 7301,
+      "seconds": 239.4
+    },
+    {
+      "id": "search-tr-kvkk",
+      "kind": "search",
+      "success": false,
+      "status": "completed",
+      "stop_reason": null,
+      "actions": [
+        "search_knowledge",
+        "search_knowledge"
+      ],
+      "expected_tool_used": true,
+      "invalid_outputs": 0,
+      "abstained": true,
+      "cited": [],
+      "unasked_ticket": false,
+      "ticket": null,
+      "answer": "BİLMİYORUM",
+      "tokens": 3620,
+      "seconds": 164.7
+    },
+    {
+      "id": "search-tr-kvkk2",
+      "kind": "search",
+      "success": false,
+      "status": "completed",
+      "stop_reason": null,
+      "actions": [
+        "search_knowledge"
+      ],
+      "expected_tool_used": true,
+      "invalid_outputs": 0,
+      "abstained": true,
+      "cited": [],
+      "unasked_ticket": false,
+      "ticket": null,
+      "answer": "BİLMİYORUM",
+      "tokens": 2400,
+      "seconds": 142.8
+    },
+    {
+      "id": "sql-count",
+      "kind": "sql",
+      "success": true,
+      "status": "completed",
+      "stop_reason": null,
+      "actions": [
+        "query_sql"
+      ],
+      "expected_tool_used": true,
+      "invalid_outputs": 0,
+      "abstained": false,
+      "cited": [],
+      "unasked_ticket": false,
+      "ticket": null,
+      "answer": "Kayıtlarda 2 tane kaynak var.",
+      "tokens": 1137,
+      "seconds": 51.8
+    },
+    {
+      "id": "sql-documents",
+      "kind": "sql",
+      "success": false,
+      "status": "completed",
+      "stop_reason": null,
+      "actions": [
+        "query_sql"
+      ],
+      "expected_tool_used": true,
+      "invalid_outputs": 0,
+      "abstained": false,
+      "cited": [],
+      "unasked_ticket": false,
+      "ticket": null,
+      "answer": "There are 2 indexed documents.",
+      "tokens": 1123,
+      "seconds": 52.7
+    },
+    {
+      "id": "ticket-asked",
+      "kind": "ticket",
+      "success": true,
+      "status": "waiting_approval",
+      "stop_reason": null,
+      "actions": [],
+      "expected_tool_used": true,
+      "invalid_outputs": 0,
+      "abstained": false,
+      "cited": [],
+      "unasked_ticket": false,
+      "ticket": {
+        "title": "Sunucu Diski Doldu",
+        "description": "Kullanıcı sunucu diskini dolduğunu bildirdi."
+      },
+      "answer": "",
+      "tokens": 509,
+      "seconds": 40.1
+    },
+    {
+      "id": "ticket-asked-en",
+      "kind": "ticket",
+      "success": true,
+      "status": "waiting_approval",
+      "stop_reason": null,
+      "actions": [],
+      "expected_tool_used": true,
+      "invalid_outputs": 0,
+      "abstained": false,
+      "cited": [],
+      "unasked_ticket": false,
+      "ticket": {
+        "title": "Login Page Error 500",
+        "description": "Kullanıcılar login sayfası için 500 hatası alıyor."
+      },
+      "answer": "",
+      "tokens": 493,
+      "seconds": 9.3
+    },
+    {
+      "id": "abstain-weather",
+      "kind": "abstain",
+      "success": false,
+      "status": "budget_exceeded",
+      "stop_reason": "time_budget",
+      "actions": [
+        "search_knowledge",
+        "search_knowledge"
+      ],
+      "expected_tool_used": true,
+      "invalid_outputs": 0,
+      "abstained": false,
+      "cited": [],
+      "unasked_ticket": false,
+      "ticket": null,
+      "answer": "",
+      "tokens": 3172,
+      "seconds": 240.0
+    },
+    {
+      "id": "abstain-ceo",
+      "kind": "abstain",
+      "success": false,
+      "status": "budget_exceeded",
+      "stop_reason": "time_budget",
+      "actions": [
+        "search_knowledge"
+      ],
+      "expected_tool_used": true,
+      "invalid_outputs": 0,
+      "abstained": false,
+      "cited": [],
+      "unasked_ticket": false,
+      "ticket": null,
+      "answer": "",
+      "tokens": 1522,
+      "seconds": 240.0
+    }
+  ]
+}

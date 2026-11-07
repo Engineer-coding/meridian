@@ -16,8 +16,10 @@ from fastapi import APIRouter, Header, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, ConfigDict, Field
 
+from meridian_ai.agent import Agent, ApprovalRequired, RunFinished, StepDone
 from meridian_ai.answering import Answerer, Done, SourcesFound, Token
 from meridian_ai.llm import UsageCounter, usage_counter
+from meridian_ai.retrieval import Mode, Retriever
 
 log = logging.getLogger(__name__)
 
@@ -28,6 +30,24 @@ class AnswerRequest(BaseModel):
     tenant_id: UUID = Field(alias="tenantId")
     question: str = Field(min_length=1, max_length=4000)
     collection_ids: list[UUID] | None = Field(default=None, alias="collectionIds", max_length=20)
+
+
+class SearchRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    tenant_id: UUID = Field(alias="tenantId")
+    query: str = Field(min_length=1, max_length=1000)
+    k: int = Field(default=5, ge=1, le=20)
+    collection_ids: list[UUID] | None = Field(default=None, alias="collectionIds", max_length=20)
+
+
+class AgentRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    tenant_id: UUID = Field(alias="tenantId")
+    goal: str = Field(min_length=1, max_length=2000)
+    steps: list[dict[str, Any]] = Field(default_factory=list, max_length=50)
+    tokens_used: int = Field(default=0, ge=0, alias="tokensUsed")
 
 
 def _line(event: str, data: dict[str, Any]) -> bytes:
@@ -82,17 +102,110 @@ async def _stream(answerer: Answerer, request: AnswerRequest) -> AsyncIterator[b
         yield _line("done", _done(Done("", degraded=True), usage))
 
 
-def create_router(answerer: Answerer, token: str) -> APIRouter:
+async def _agent_stream(agent: Agent, request: AgentRequest) -> AsyncIterator[bytes]:
+    usage = UsageCounter()
+    usage_counter.set(usage)
+
+    def counts() -> dict[str, int] | None:
+        if not usage.counted:
+            return None
+        return {"promptTokens": usage.prompt_tokens, "completionTokens": usage.completion_tokens}
+
+    try:
+        async for event in agent.run(request.tenant_id, request.goal, request.steps, request.tokens_used):
+            match event:
+                case StepDone(data=step):
+                    yield _line("step", step)
+                case ApprovalRequired(thought=thought, title=title, description=description):
+                    yield _line(
+                        "approval_required",
+                        {"thought": thought, "title": title, "description": description, "usage": counts()},
+                    )
+                case RunFinished() as finished:
+                    yield _line(
+                        "done",
+                        {
+                            "status": finished.status,
+                            "answer": finished.answer,
+                            "cited": finished.cited,
+                            "invalidCitations": finished.invalid_citations,
+                            "sources": finished.sources,
+                            "stopReason": finished.stop_reason,
+                            "model": finished.model,
+                            "usage": counts(),
+                        },
+                    )
+    except Exception:
+        log.exception("ajan akışı başarısız tenant=%s", request.tenant_id)
+        yield _line(
+            "done",
+            {
+                "status": "failed",
+                "answer": "",
+                "cited": [],
+                "invalidCitations": [],
+                "sources": [],
+                "stopReason": "internal",
+                "model": None,
+                "usage": counts(),
+            },
+        )
+
+
+def create_router(
+    answerer: Answerer, token: str, retriever: Retriever | None = None, agent: Agent | None = None
+) -> APIRouter:
     router = APIRouter(prefix="/internal/v1")
+
+    def require_token(given: str | None) -> None:
+        if not token or not hmac.compare_digest((given or "").encode(), token.encode()):
+            raise HTTPException(status_code=401)
+
+    @router.post("/search")
+    async def search(
+        request: SearchRequest,
+        x_internal_token: Annotated[str | None, Header()] = None,
+    ) -> dict[str, Any]:
+        require_token(x_internal_token)
+        if retriever is None:
+            raise HTTPException(status_code=503)
+        hits = await retriever.search(
+            request.tenant_id,
+            request.query,
+            k=request.k,
+            mode=Mode.VECTOR,
+            collection_ids=request.collection_ids,
+        )
+        return {
+            "hits": [
+                {
+                    "documentPath": hit.document_path,
+                    "title": hit.title,
+                    "url": hit.url,
+                    "section": hit.section,
+                    "content": hit.content,
+                    "score": hit.score,
+                }
+                for hit in hits
+            ]
+        }
+
+    @router.post("/agent/run")
+    async def agent_run(
+        request: AgentRequest,
+        x_internal_token: Annotated[str | None, Header()] = None,
+    ) -> StreamingResponse:
+        require_token(x_internal_token)
+        if agent is None:
+            raise HTTPException(status_code=503)
+        return StreamingResponse(_agent_stream(agent, request), media_type="application/x-ndjson")
 
     @router.post("/answer")
     async def answer(
         request: AnswerRequest,
         x_internal_token: Annotated[str | None, Header()] = None,
     ) -> StreamingResponse:
-        given = (x_internal_token or "").encode()
-        if not token or not hmac.compare_digest(given, token.encode()):
-            raise HTTPException(status_code=401)
+        require_token(x_internal_token)
         return StreamingResponse(_stream(answerer, request), media_type="application/x-ndjson")
 
     return router

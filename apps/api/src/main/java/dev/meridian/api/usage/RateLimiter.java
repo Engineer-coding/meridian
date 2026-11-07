@@ -1,11 +1,10 @@
-package dev.meridian.api.chat;
+package dev.meridian.api.usage;
 
 import java.util.List;
 import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -19,9 +18,9 @@ import org.springframework.web.server.ResponseStatusException;
  * aynı kovayı paylaşır. Redis kapalıysa istek geçer: oran sınırı korumadır, sohbetin ön koşulu değil.
  */
 @Component
-class ChatRateLimiter {
+public class RateLimiter {
 
-    private static final Logger log = LoggerFactory.getLogger(ChatRateLimiter.class);
+    private static final Logger log = LoggerFactory.getLogger(RateLimiter.class);
 
     /** Döndürdüğü değer: 0 = izin verildi, aksi hâlde beklenecek saniye. */
     private static final DefaultRedisScript<Long> TAKE = new DefaultRedisScript<>("""
@@ -45,21 +44,16 @@ class ChatRateLimiter {
         """, Long.class);
 
     private final StringRedisTemplate redis;
-    private final int capacity;
-    private final int refillPerMinute;
 
-    ChatRateLimiter(StringRedisTemplate redis,
-            @Value("${meridian.chat.rate.capacity}") int capacity,
-            @Value("${meridian.chat.rate.refill-per-minute}") int refillPerMinute) {
+    RateLimiter(StringRedisTemplate redis) {
         this.redis = redis;
-        this.capacity = capacity;
-        this.refillPerMinute = refillPerMinute;
     }
 
-    void acquire(UUID tenantId, UUID userId) {
+    /** @param bucket işlem türü: sohbet ve arama birbirinin kovasını tüketmez */
+    public void acquire(String bucket, UUID tenantId, UUID userId, int capacity, int refillPerMinute) {
         Long wait;
         try {
-            wait = redis.execute(TAKE, List.of("chat:rate:" + tenantId + ":" + userId),
+            wait = redis.execute(TAKE, List.of(bucket + ":rate:" + tenantId + ":" + userId),
                 String.valueOf(capacity), String.valueOf(refillPerMinute));
         } catch (DataAccessException e) {
             log.warn("oran sınırı uygulanamadı, istek geçiriliyor: {}", e.getMessage());
@@ -74,7 +68,7 @@ class ChatRateLimiter {
         private final long retryAfterSeconds;
 
         TooManyMessages(long retryAfterSeconds) {
-            super(HttpStatus.TOO_MANY_REQUESTS, "Çok fazla mesaj gönderildi; lütfen biraz bekleyin");
+            super(HttpStatus.TOO_MANY_REQUESTS, "Çok fazla istek; lütfen biraz bekleyin");
             this.retryAfterSeconds = retryAfterSeconds;
         }
 

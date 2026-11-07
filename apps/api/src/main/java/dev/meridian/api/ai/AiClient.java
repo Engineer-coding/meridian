@@ -1,4 +1,4 @@
-package dev.meridian.api.chat;
+package dev.meridian.api.ai;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -29,19 +29,19 @@ import tools.jackson.databind.json.JsonMapper;
  */
 @Component
 @EnableConfigurationProperties(AiClient.AiProperties.class)
-class AiClient {
+public class AiClient {
 
     @ConfigurationProperties("meridian.ai")
-    record AiProperties(URI url, String internalToken, Duration answerDeadline) {
+    public record AiProperties(URI url, String internalToken, Duration answerDeadline) {
     }
 
     @FunctionalInterface
-    interface Listener {
+    public interface Listener {
         void onEvent(String event, JsonNode data);
     }
 
     /** AI servisine ulaşılamadı, isteği reddetti ya da akış yarıda kesildi. */
-    static class Unavailable extends Exception {
+    public static class Unavailable extends Exception {
         Unavailable(String message, Throwable cause) {
             super(message, cause);
         }
@@ -55,19 +55,46 @@ class AiClient {
         .connectTimeout(Duration.ofSeconds(5))
         .build();
 
-    AiClient(AiProperties properties, JsonMapper json) {
+    public AiClient(AiProperties properties, JsonMapper json) {
         this.properties = properties;
         this.json = json;
     }
 
-    void answer(UUID tenantId, String question, List<UUID> collectionIds, Listener listener) throws Unavailable {
+    public void answer(UUID tenantId, String question, List<UUID> collectionIds, Listener listener) throws Unavailable {
         var body = new LinkedHashMap<String, Object>();
         body.put("tenantId", tenantId);
         body.put("question", question);
         if (collectionIds != null && !collectionIds.isEmpty()) {
             body.put("collectionIds", collectionIds);
         }
-        var request = HttpRequest.newBuilder(properties.url().resolve("/internal/v1/answer"))
+        stream("/internal/v1/answer", body, listener);
+    }
+
+    /** Tek JSON cevap dönen iç uç. */
+    public JsonNode call(String path, Object body) throws Unavailable {
+        var request = HttpRequest.newBuilder(properties.url().resolve(path))
+            .header("Content-Type", "application/json")
+            .header("X-Internal-Token", properties.internalToken())
+            .timeout(Duration.ofSeconds(60))
+            .POST(HttpRequest.BodyPublishers.ofString(json.writeValueAsString(body)))
+            .build();
+        try {
+            HttpResponse<String> response = http.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+            if (response.statusCode() != 200) {
+                throw new Unavailable("AI servisi HTTP " + response.statusCode(), null);
+            }
+            return json.readTree(response.body());
+        } catch (IOException | JacksonException e) {
+            throw new Unavailable("AI servisi kullanılamıyor: " + e.getMessage(), e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new Unavailable("AI servisi çağrısı kesildi", e);
+        }
+    }
+
+    /** Satır satır JSON akan iç uç; "done" gelmeden biterse {@link Unavailable}. */
+    public void stream(String path, Object body, Listener listener) throws Unavailable {
+        var request = HttpRequest.newBuilder(properties.url().resolve(path))
             .header("Content-Type", "application/json")
             .header("X-Internal-Token", properties.internalToken())
             // Yalnızca başlıklara kadar geçerli; ilk satır modelden önce, arama bitince gelir.
@@ -89,7 +116,7 @@ class AiClient {
                     while ((line = lines.readLine()) != null) {
                         JsonNode event = json.readTree(line);
                         String name = event.get("event").asString();
-                        finished |= "done".equals(name);
+                        finished |= "done".equals(name) || "approval_required".equals(name);
                         listener.onEvent(name, event.get("data"));
                     }
                 } finally {

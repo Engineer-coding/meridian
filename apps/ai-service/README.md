@@ -37,3 +37,28 @@ CPU'da çalışır ve yavaştır: dizüstü bir makinede parça başına ~2 sani
 | `GITHUB_TOKEN` | yok (saatte 60 API isteği) |
 | `MAX_FILES_PER_SOURCE`, `PREFETCH`, `RETRY_BASE_MS`, `RETRY_FACTOR`, `MAX_RETRIES` | `2000`, `2`, `1000`, `4`, `4` |
 | `HTTP_HOST`, `HTTP_PORT` | `127.0.0.1`, `8090` |
+
+## MCP sunucusu
+AI servisi `POST /mcp/` adresinde durumsuz Streamable HTTP sunar. API anahtarı yönetim panelinden
+(`sources:read` kapsamıyla) alınır; kiracı başlıkla seçilir. Tasarım: [ADR-0015](../../docs/adr/0015-agent-and-mcp.md).
+
+```json
+{
+  "mcpServers": {
+    "meridian": {
+      "type": "http",
+      "url": "http://127.0.0.1:8090/mcp/",
+      "headers": { "X-API-Key": "mrd_...", "X-Tenant-Id": "<kiracı kimliği>" }
+    }
+  }
+}
+```
+
+Araçlar salt-okunurdur: `list_collections`, `search_knowledge`, `fetch_document`. Dönen metin belge içeriğidir,
+yani güvenilmeyen veridir. Başka bir alan adından erişilecekse `MCP_ALLOWED_HOSTS` ayarlanır.
+
+## Ajan ölçümü
+```bash
+uv run python -m meridian_ai.evaluation.agent_eval --llm ollama/llama3.2:3b --name agent-llama32
+```
+Görevler `packages/eval/golden/agent-v1.jsonl` dosyasındadır. CI'da çalışmaz: gerçek model ister.

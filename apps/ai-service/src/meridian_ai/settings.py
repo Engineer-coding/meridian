@@ -43,6 +43,8 @@ class Settings(BaseSettings):
     # sağlayıcının yerine sıradaki denenir. CPU'da her parça ~30 sn ekler; bağlam küçük tutulur.
     llm_chain: str = "ollama/llama3.2:3b"
     ollama_url: str = "http://127.0.0.1:11434"
+    # Ajan kararları için ayrı zincir; boşsa llm_chain kullanılır. Cevap ölçümlerini etkilemez.
+    agent_llm_chain: str = ""
     answer_sources: int = Field(default=3, ge=1, le=10)
     answer_max_tokens: int = Field(default=300, ge=16)
     # İkinci aşama sıralama (ADR-0007): varsayılan kapalı; ablasyonda 3 kaynakla kazanç yok.
@@ -51,6 +53,10 @@ class Settings(BaseSettings):
 
     # Çekirdek API'nin iç uca gönderdiği paylaşılan anahtar; boşsa iç uç her isteği reddeder.
     ai_internal_token: SecretStr = SecretStr("")
+
+    # MCP sunucusu (ADR-0015): her araç çağrısı istemcinin anahtarıyla bu API'ye gider.
+    api_url: str = "http://127.0.0.1:8080"
+    mcp_allowed_hosts: list[str] = ["127.0.0.1:*", "localhost:*"]
 
     # GitHub: token olmadan saatte 60 API isteği; dosya içerikleri bu sınıra dahil değildir.
     github_token: SecretStr | None = None

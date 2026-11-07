@@ -9,6 +9,7 @@ import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import dev.meridian.api.ai.AiClient;
 import dev.meridian.api.audit.AuditLog;
 import dev.meridian.api.contract.api.ChatApi;
 import dev.meridian.api.contract.model.ChatMessage;
@@ -26,6 +28,7 @@ import dev.meridian.api.contract.model.CreateConversationRequest;
 import dev.meridian.api.contract.model.SendMessageRequest;
 import dev.meridian.api.idempotency.IdempotencyStore;
 import dev.meridian.api.tenancy.TenantContext;
+import dev.meridian.api.usage.RateLimiter;
 import dev.meridian.api.usage.UsageMeter;
 import jakarta.servlet.http.HttpServletResponse;
 import tools.jackson.core.type.TypeReference;
@@ -46,18 +49,24 @@ class ChatController implements ChatApi {
     private final ConversationRepository conversations;
     private final IdempotencyStore idempotency;
     private final AiClient ai;
-    private final ChatRateLimiter limiter;
+    private final RateLimiter limiter;
+    private final int rateCapacity;
+    private final int rateRefillPerMinute;
     private final UsageMeter usage;
     private final AuditLog audit;
     private final JsonMapper json;
     private final HttpServletResponse response;
 
     ChatController(ConversationRepository conversations, IdempotencyStore idempotency, AiClient ai,
-            ChatRateLimiter limiter, UsageMeter usage, AuditLog audit, JsonMapper json, HttpServletResponse response) {
+            RateLimiter limiter, UsageMeter usage, AuditLog audit, JsonMapper json, HttpServletResponse response,
+            @Value("${meridian.chat.rate.capacity}") int rateCapacity,
+            @Value("${meridian.chat.rate.refill-per-minute}") int rateRefillPerMinute) {
         this.conversations = conversations;
         this.idempotency = idempotency;
         this.ai = ai;
         this.limiter = limiter;
+        this.rateCapacity = rateCapacity;
+        this.rateRefillPerMinute = rateRefillPerMinute;
         this.usage = usage;
         this.audit = audit;
         this.json = json;
@@ -100,7 +109,7 @@ class ChatController implements ChatApi {
     public ResponseEntity<String> sendMessage(UUID tenantId, UUID conversationId, SendMessageRequest request) {
         var identity = TenantContext.current().orElseThrow();
         // Hatalar akış başlamadan, normal HTTP durumlarıyla döner.
-        limiter.acquire(tenantId, identity.userId());
+        limiter.acquire("chat", tenantId, identity.userId(), rateCapacity, rateRefillPerMinute);
         requireConversation(conversationId);
         usage.requireQuota();
         // Soru metni yazılmaz: konuşma kişiye özeldir, denetim kaydını yöneticiler okur.

@@ -73,6 +73,11 @@ meridian:
     rate:
       capacity: 10
       refill-per-minute: 10
+  search:
+    # Embedding CPU harcar; MCP ve API anahtarları bu sınırla modeli meşgul edemez.
+    rate:
+      capacity: 60
+      refill-per-minute: 60
   usage:
     # Plan başına günlük token (ADR-0014). Yerel modelde bir cevap ~2-8 bin token.
     daily-tokens:
