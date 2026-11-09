@@ -45,11 +45,60 @@ spring:
     deserialization:
       fail-on-unknown-properties: true
 
+logging:
+  # Yapılandırılmış JSON (ECS): her satırda traceId, spanId ve kiracı; kişisel veri yok.
+  structured:
+    format:
+      console: ${LOG_FORMAT:ecs}
+    ecs:
+      service:
+        name: meridian-api
+
 server:
   port: 8080
   shutdown: graceful
 
 management:
+  # İzleme (ADR-0017): izler, metrikler ve loglar OTLP ile toplayıcıya gider. Gönderim varsayılan kapalıdır;
+  # toplayıcı yokken her dakika bağlantı hatası yazılmasın. Span, iz kimliği ve taşınması her durumda çalışır.
+  tracing:
+    sampling:
+      probability: ${OTEL_SAMPLING:1.0}
+    # Genel dışa aktarım açık kalmalı: bu sürümde iz bağlamının servisler arası taşınması da ona bağlı.
+    # Toplayıcıya gönderim aşağıdaki OTLP anahtarıyla açılır.
+    export:
+      otlp:
+        enabled: ${OTEL_EXPORT:false}
+    propagation:
+      type: W3C
+  opentelemetry:
+    resource-attributes:
+      service.namespace: meridian
+      deployment.environment: ${DEPLOYMENT_ENVIRONMENT:local}
+    tracing:
+      export:
+        otlp:
+          endpoint: ${OTEL_ENDPOINT:http://127.0.0.1:4318}/v1/traces
+    logging:
+      export:
+        otlp:
+          endpoint: ${OTEL_ENDPOINT:http://127.0.0.1:4318}/v1/logs
+  logging:
+    export:
+      otlp:
+        enabled: ${OTEL_EXPORT:false}
+  otlp:
+    metrics:
+      export:
+        enabled: ${OTEL_EXPORT:false}
+        url: ${OTEL_ENDPOINT:http://127.0.0.1:4318}/v1/metrics
+        step: 15s
+  metrics:
+    distribution:
+      # SLO'lar yüzdelik ister (ADR-0017): HTTP süreleri histogram olarak gider.
+      percentiles-histogram:
+        http.server.requests: true
+        meridian.ai.request: true
   endpoints:
     web:
       exposure:

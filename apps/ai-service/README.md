@@ -70,3 +70,9 @@ make eval-redteam NAME=redteam
 Set `packages/eval/golden/redteam-v1.jsonl` dosyasındadır, ayrıntı [ADR-0016](../../docs/adr/0016-guardrails-and-red-team.md).
 CI gerçek model çalıştırmaz: `tests/test_redteam.py` tamamen kandırılmış modelle kod korumalarını sınar, kayıtlı raporun
 güncelliğini ve eşikleri denetler. Ajan, cevap ya da koruma kodu değişirse rapor yeniden üretilir.
+
+## İzleme
+`OTEL_EXPORT=true` iken izler, metrikler ve loglar `OTEL_ENDPOINT` (varsayılan `http://127.0.0.1:4318`) adresindeki
+toplayıcıya gider. Loglar JSON'dur (`LOG_FORMAT=text` yalnızca yerelde okumak için). Model, arama ve embedding
+`observability.py` içinde sarılır; ölçülen kod değişmez. Ayrıntı: [ADR-0017](../../docs/adr/0017-observability.md).
+

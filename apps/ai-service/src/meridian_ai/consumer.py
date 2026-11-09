@@ -9,7 +9,7 @@ from aio_pika import DeliveryMode, Message
 from aio_pika.abc import AbstractChannel, AbstractIncomingMessage, AbstractRobustConnection
 from aio_pika.connection import make_url
 
-from meridian_ai import topology
+from meridian_ai import observability, topology
 from meridian_ai.events import Event, InvalidMessage, parse_event
 from meridian_ai.handlers import Handler, PermanentError
 from meridian_ai.retry import backoff
@@ -95,15 +95,17 @@ class IndexingConsumer:
             log.warning("okunamayan mesaj, DLQ'ya gönderiliyor message_id=%s: %s", message.message_id, e)
             await message.reject(requeue=False)
             return
-        try:
-            await self._handler.handle(event)
-        except PermanentError as e:
-            log.warning("kalıcı hata, DLQ'ya gönderiliyor message_id=%s: %s", message.message_id, e)
-            await self._dead_letter(message, event, e)
-        except Exception as e:
-            await self._retry_later(message, event, headers, e)
-        else:
-            await message.ack()
+        # İndeksleme, olayı yazan isteğin izinin devamıdır (ADR-0017); yeniden denemede başlıklar korunur.
+        with observability.consumed(headers, f"process {event.type}"):
+            try:
+                await self._handler.handle(event)
+            except PermanentError as e:
+                log.warning("kalıcı hata, DLQ'ya gönderiliyor message_id=%s: %s", message.message_id, e)
+                await self._dead_letter(message, event, e)
+            except Exception as e:
+                await self._retry_later(message, event, headers, e)
+            else:
+                await message.ack()
 
     async def _dead_letter(self, message: AbstractIncomingMessage, event: Event, error: Exception) -> None:
         try:

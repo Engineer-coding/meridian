@@ -230,3 +230,19 @@ async def test_untrustworthy_message_is_never_handled(
     assert len(await dead_letters(channel, expected=1)) == 1
     assert handler.calls == []
     assert handler.failures == []
+
+
+async def test_indexing_continues_the_trace_of_the_request_that_wrote_the_event(
+    run_consumer, channel: AbstractChannel, spans
+) -> None:
+    """Outbox ``traceparent`` başlığını taşır; işleme span'ı aynı izdedir (ADR-0017)."""
+    trace_id = "0af7651916cd43dd8448eb211c80319c"
+    recorder = Recorder()
+    await run_consumer(recorder)
+    await publish(channel, envelope(), traceparent=f"00-{trace_id}-b7ad6b7169203331-01")
+    await eventually(lambda: len(recorder.calls) == 1)
+    await eventually(lambda: any(s.name == "process source.created" for s in spans.get_finished_spans()))
+
+    span = next(s for s in spans.get_finished_spans() if s.name == "process source.created")
+    assert format(span.context.trace_id, "032x") == trace_id
+    assert span.kind.name == "CONSUMER"

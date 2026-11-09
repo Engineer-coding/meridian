@@ -9,6 +9,32 @@ const CANARY = "MRD-E2E-CANARY";
 const EVIL = "evil.example";
 const EMAIL = "ayse.test@example.com";
 const REFUSED = "API anahtarı geçersiz";
+const TEMPO = "http://127.0.0.1:13201";
+const QUESTION = "Başvuru ne kadar sürede sonuçlanır?";
+
+type Trace = { batches: { resource: { attributes: { key: string; value: { stringValue?: string } }[] } }[] };
+
+/** Tempo izi birkaç saniye sonra arar; servis adlarıyla birlikte tüm iz döner. */
+async function findTrace(request: APIRequestContext, traceql: string): Promise<{ services: Set<string>; raw: string }> {
+  for (let attempt = 0; attempt < 30; attempt++) {
+    const search = await request.get(`${TEMPO}/api/search`, { params: { q: traceql, limit: "5" } });
+    const found = (await search.json()).traces?.[0]?.traceID;
+    if (found) {
+      // Diğer servislerin span'ları toplu gönderildiği için biraz geç gelebilir.
+      await new Promise((resolve) => setTimeout(resolve, 6_000));
+      const raw = await (await request.get(`${TEMPO}/api/traces/${found}`)).text();
+      const trace = JSON.parse(raw) as Trace;
+      const services = new Set(
+        trace.batches.flatMap((batch) =>
+          batch.resource.attributes.filter((item) => item.key === "service.name").map((item) => item.value.stringValue ?? ""),
+        ),
+      );
+      return { services, raw };
+    }
+    await new Promise((resolve) => setTimeout(resolve, 2_000));
+  }
+  throw new Error(`Tempo'da iz bulunamadı: ${traceql}`);
+}
 
 let alice: Page;
 let tenantId = "";
@@ -76,7 +102,7 @@ test("eklenen kaynak kuyruktan geçip indekslenir", async () => {
 
 test("cevap akar, kaynak gösterir; belgedeki talimat, dış bağlantı ve kişisel veri geçmez", async () => {
   await alice.goto("/");
-  await ask(alice, "Başvuru ne kadar sürede sonuçlanır?");
+  await ask(alice, QUESTION);
 
   const answer = alice.getByRole("article", { name: "Cevap" });
   await expect(answer).toContainText("otuz gün");
@@ -95,6 +121,19 @@ test("cevap akar, kaynak gösterir; belgedeki talimat, dış bağlantı ve kişi
   await alice.getByRole("button", { name: /Başvuru ne kadar/ }).click();
   await expect(alice.getByRole("article", { name: "Cevap" })).toContainText("otuz gün");
   await expect(alice.getByRole("article", { name: "Cevap" })).not.toContainText(EVIL);
+});
+
+test("tek soru web, API ve AI servisinden geçen tek iz bırakır; metin ize yazılmaz", async ({ request }) => {
+  const chat = await findTrace(request, '{ resource.service.name = "meridian-ai" && name = "llm chat" }');
+  expect([...chat.services].sort()).toEqual(["meridian-ai", "meridian-api", "meridian-web"]);
+  expect(chat.raw).toContain("retrieval.search");
+  expect(chat.raw).not.toContain(QUESTION);
+  expect(chat.raw).not.toContain("otuz gün");
+
+  // Kaynak ekleme isteği ile kuyruktan geçen indeksleme aynı izdedir (outbox traceparent).
+  const indexing = await findTrace(request, '{ name = "process source.created" }');
+  expect(indexing.services).toContain("meridian-api");
+  expect(indexing.services).toContain("meridian-ai");
 });
 
 test("zararlı istek modele gitmeden reddedilir", async () => {

@@ -5,6 +5,7 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
@@ -32,6 +33,8 @@ class TenantContextFilter extends OncePerRequestFilter {
 
     private static final Pattern TENANT_PATH = Pattern.compile(
         "^/v1/tenants/([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})(/.*)?$");
+
+    static final String TENANT_MDC = "tenant.id";
 
     private final MembershipRepository memberships;
     private final HandlerExceptionResolver errors;
@@ -76,12 +79,18 @@ class TenantContextFilter extends OncePerRequestFilter {
             }
         }
 
+        // Kimlik değil yalnızca kiracı: log satırı ve iz kişiye işaret etmez.
+        if (tenantId != null) {
+            MDC.put(TENANT_MDC, tenantId.toString());
+        }
         try {
             TenantContext.runChecked(new Identity(userId, tenantId, apiKeyId), () -> chain.doFilter(request, response));
         } catch (IOException | ServletException | RuntimeException e) {
             throw e;
         } catch (Exception e) {
             throw new ServletException(e);
+        } finally {
+            MDC.remove(TENANT_MDC);
         }
     }
 

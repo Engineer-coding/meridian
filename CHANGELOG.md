@@ -4,6 +4,9 @@ Bu proje [Semantic Versioning](https://semver.org) kullanır.
 Biçim: [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/).
 
 ## [Unreleased]
+### Added
+- İzleme (ADR-0017): web, API ve AI servisi OTLP ile OpenTelemetry Collector'a yazar; bir soru tek izde görünür. İz kuyruktan da geçer (outbox `traceparent`, V8). Metrikler: HTTP RED, AI çağrısı, model süresi, ilk token, token, arama, indeksleme, cevap sonucu, ajan durumu. JSON loglar: her satırda iz ve kiracı kimliği. Gönderim `OTEL_EXPORT=true` ile açılır.
+- Compose'a OpenTelemetry Collector ve Tempo eklendi (`127.0.0.1:4318`, `127.0.0.1:3201`). Tam sistem testi izin üç servisten geçtiğini Tempo'dan doğrular.
 
 ## [0.5.0] - 2026-11-09
 Yönetim paneli, araç çağıran ajan, MCP sunucusu, kod korumaları ve tam sistem testi. Ajan 12 sentetik

@@ -37,7 +37,7 @@ public class OutboxRelay implements AutoCloseable {
     private static final long LEADER_LOCK = 0x6d6572_6f7574L; // "mer" "out"
 
     private record Pending(long id, UUID eventId, UUID tenantId, String eventType, UUID aggregateId,
-            String payload, OffsetDateTime createdAt) {
+            String payload, OffsetDateTime createdAt, String traceparent) {
     }
 
     private final DataSource dataSource;
@@ -65,13 +65,14 @@ public class OutboxRelay implements AutoCloseable {
                 return 0;
             }
             List<Pending> batch = jdbc.sql("""
-                    SELECT id, event_id, tenant_id, event_type, aggregate_id, payload::text AS payload, created_at
+                    SELECT id, event_id, tenant_id, event_type, aggregate_id, payload::text AS payload, created_at,
+                           traceparent
                     FROM outbox ORDER BY id LIMIT :limit""")
                 .param("limit", BATCH_SIZE)
                 .query((rs, rowNum) -> new Pending(rs.getLong("id"), rs.getObject("event_id", UUID.class),
                     rs.getObject("tenant_id", UUID.class), rs.getString("event_type"),
                     rs.getObject("aggregate_id", UUID.class), rs.getString("payload"),
-                    rs.getObject("created_at", OffsetDateTime.class)))
+                    rs.getObject("created_at", OffsetDateTime.class), rs.getString("traceparent")))
                 .list();
             if (batch.isEmpty()) {
                 return 0;
@@ -118,6 +119,9 @@ public class OutboxRelay implements AutoCloseable {
         properties.setContentEncoding("utf-8");
         properties.setDeliveryMode(MessageDeliveryMode.PERSISTENT);
         properties.setHeader(Messaging.TENANT_HEADER, event.tenantId().toString());
+        if (event.traceparent() != null) {
+            properties.setHeader(Messaging.TRACEPARENT_HEADER, event.traceparent());
+        }
         return new Message(json.writeValueAsBytes(envelope), properties);
     }
 

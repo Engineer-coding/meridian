@@ -1,0 +1,26 @@
+# Tempo, tek süreç ve yerel disk: yalnızca geliştirme ve test içindir.
+server:
+  http_listen_port: 3200
+
+distributor:
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+          endpoint: 0.0.0.0:4317
+
+ingester:
+  # Testte iz birkaç saniye içinde aranabilir olsun.
+  max_block_duration: 1m
+
+compactor:
+  compaction:
+    block_retention: 72h
+
+storage:
+  trace:
+    backend: local
+    local:
+      path: /var/tempo/traces
+    wal:
+      path: /var/tempo/wal

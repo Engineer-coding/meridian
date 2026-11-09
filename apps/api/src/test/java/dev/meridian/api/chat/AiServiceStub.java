@@ -20,7 +20,7 @@ public final class AiServiceStub {
         void respond(HttpExchange exchange) throws Exception;
     }
 
-    public record Call(String token, String body, String upgrade) {
+    public record Call(String token, String body, String upgrade, String traceparent) {
     }
 
     public final List<Call> calls = new CopyOnWriteArrayList<>();
@@ -37,7 +37,8 @@ public final class AiServiceStub {
         server.createContext("/internal/v1/answer", exchange -> {
             calls.add(new Call(exchange.getRequestHeaders().getFirst("X-Internal-Token"),
                 new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8),
-                exchange.getRequestHeaders().getFirst("Upgrade")));
+                exchange.getRequestHeaders().getFirst("Upgrade"),
+                exchange.getRequestHeaders().getFirst("traceparent")));
             try {
                 behavior.respond(exchange);
             } catch (Exception e) {
@@ -49,7 +50,8 @@ public final class AiServiceStub {
         server.createContext("/internal/v1/agent/run", exchange -> {
             calls.add(new Call(exchange.getRequestHeaders().getFirst("X-Internal-Token"),
                 new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8),
-                exchange.getRequestHeaders().getFirst("Upgrade")));
+                exchange.getRequestHeaders().getFirst("Upgrade"),
+                exchange.getRequestHeaders().getFirst("traceparent")));
             try {
                 behavior.respond(exchange);
             } catch (Exception e) {
@@ -61,7 +63,8 @@ public final class AiServiceStub {
         server.createContext("/internal/v1/search", exchange -> {
             calls.add(new Call(exchange.getRequestHeaders().getFirst("X-Internal-Token"),
                 new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8),
-                exchange.getRequestHeaders().getFirst("Upgrade")));
+                exchange.getRequestHeaders().getFirst("Upgrade"),
+                exchange.getRequestHeaders().getFirst("traceparent")));
             byte[] body = ("{\"hits\":[{\"documentPath\":\"a.md\",\"title\":\"A\",\"url\":null,\"section\":\"S\","
                 + "\"content\":\"metin\",\"score\":0.9}]}").getBytes(StandardCharsets.UTF_8);
             exchange.getResponseHeaders().set("Content-Type", "application/json");

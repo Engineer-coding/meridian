@@ -84,7 +84,31 @@ services:
       retries: 30
       start_period: 20s
 
+  # İzleme (ADR-0017): servisler OTLP'yi toplayıcıya gönderir (OTEL_EXPORT=true).
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.163.2
+    command: ["--config=/etc/otelcol/collector.yaml"]
+    ports:
+      - "127.0.0.1:4317:4317"
+      - "127.0.0.1:4318:4318"
+    volumes:
+      - ./otel/collector.yaml:/etc/otelcol/collector.yaml:ro
+    depends_on:
+      - tempo
+
+  tempo:
+    image: grafana/tempo:2.10.10
+    command: ["-config.file=/etc/tempo/tempo.yaml"]
+    # 3200 web uygulamasının tam sistem testine ayrıldığı için dışarıya 3201'den açılır.
+    ports:
+      - "127.0.0.1:3201:3200"
+    volumes:
+      - ./tempo/tempo.yaml:/etc/tempo/tempo.yaml:ro
+      - tempodata:/var/tempo
+    # İmajda kabuk ve wget yok; hazır olma http://127.0.0.1:3201/ready ile görülür.
+
 volumes:
   pgdata:
   rabbitdata:
   objectdata:
+  tempodata:

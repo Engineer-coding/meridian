@@ -149,3 +149,65 @@ def test_collection_filter_is_applied(client: TestClient, tenant: UUID) -> None:
 )
 def test_malformed_requests_are_rejected(client: TestClient, body: dict) -> None:
     assert client.post("/internal/v1/answer", headers=HEADERS, json=body).status_code == 422
+
+
+# --- izleme (ADR-0017) ------------------------------------------------------------------------------------
+
+PARENT_TRACE = "4bf92f3577b34da6a3ce929d0e0e4736"
+TRACEPARENT = f"00-{PARENT_TRACE}-00f067aa0ba902b7-01"
+
+
+def test_answer_continues_the_trace_of_the_core_api(client: TestClient, tenant: UUID, spans) -> None:
+    question = "Başvuru kaç gün içinde sonuçlandırılır?"
+    events(
+        client.post(
+            "/internal/v1/answer",
+            headers={**HEADERS, "traceparent": TRACEPARENT},
+            json={"tenantId": str(tenant), "question": question},
+        )
+    )
+
+    finished = spans.get_finished_spans()
+    names = [span.name for span in finished]
+    assert "retrieval.search" in names and names.count("llm chat") == 2
+    assert {format(span.context.trace_id, "032x") for span in finished} == {PARENT_TRACE}
+
+    llm = next(span for span in finished if span.name == "llm chat")
+    assert llm.attributes["gen_ai.request.model"] == "test/model"
+    assert "meridian.first_token_s" in llm.attributes
+    server = next(span for span in finished if span.kind.name == "SERVER")
+    assert server.attributes["tenant.id"] == str(tenant)
+    # Soru ve belge metni hiçbir span'a yazılmaz.
+    dumped = " ".join(str(dict(span.attributes or {})) for span in finished)
+    assert question not in dumped and "otuz gün" not in dumped
+
+
+def test_answer_outcome_is_counted(client: TestClient, tenant: UUID, metric_points) -> None:
+    def answered() -> int:
+        data = metric_points.get_metrics_data()
+        return sum(
+            point.value
+            for resource in (data.resource_metrics if data else [])
+            for scope in resource.scope_metrics
+            for metric in scope.metrics
+            if metric.name == "meridian.answers"
+            for point in metric.data.data_points
+            if point.attributes.get("outcome") == "answered"
+        )
+
+    before = answered()
+    events(ask(client, tenant))
+    assert answered() == before + 1
+
+
+def test_log_lines_are_json_with_trace_and_tenant(caplog: pytest.LogCaptureFixture) -> None:
+    import logging
+
+    from meridian_ai.observability import JsonFormatter, tenant_scope, tracer
+
+    with tracer.start_as_current_span("iş") as span, tenant_scope("t-1"):
+        record = logging.LogRecord("x", logging.INFO, "x", 1, "kayıt %s", ("yazıldı",), None)
+        line = json.loads(JsonFormatter().format(record))
+    assert line["message"] == "kayıt yazıldı"
+    assert line["traceId"] == format(span.get_span_context().trace_id, "032x")
+    assert line["tenant.id"] == "t-1"

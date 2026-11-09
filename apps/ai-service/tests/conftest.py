@@ -9,14 +9,34 @@ import sys
 from collections.abc import Iterator
 
 import pytest
+from opentelemetry.sdk.metrics.export import InMemoryMetricReader
+from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanExporter
 from testcontainers.community.rabbitmq import RabbitMqContainer
 
+from meridian_ai import observability
 from meridian_ai.evaluation import database as db
 from meridian_ai.settings import Settings
 
 # psycopg'nin asenkron sürücüsü Windows'un varsayılan ProactorEventLoop'unu desteklemez.
 if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
+
+# İzleme süreç başına bir kez kurulur; testler span ve metrikleri bellekten okur (ADR-0017).
+SPANS = InMemorySpanExporter()
+METRICS = InMemoryMetricReader()
+observability.configure(span_exporter=SPANS, metric_reader=METRICS)
+
+
+@pytest.fixture
+def spans() -> InMemorySpanExporter:
+    SPANS.clear()
+    return SPANS
+
+
+@pytest.fixture
+def metric_points() -> InMemoryMetricReader:
+    return METRICS
 
 
 @pytest.fixture(scope="session")

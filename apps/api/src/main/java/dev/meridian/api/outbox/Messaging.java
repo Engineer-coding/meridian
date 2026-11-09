@@ -15,6 +15,8 @@ public final class Messaging {
 
     /** Mesaj başlığı: olayın ait olduğu kiracı. */
     public static final String TENANT_HEADER = "tenant_id";
+    /** W3C iz bağlamı; tüketici indekslemeyi olayı doğuran isteğin izine bağlar (ADR-0017). */
+    public static final String TRACEPARENT_HEADER = "traceparent";
 
     private Messaging() {
     }

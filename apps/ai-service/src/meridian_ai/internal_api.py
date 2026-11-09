@@ -19,6 +19,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from meridian_ai.agent import Agent, ApprovalRequired, RunFinished, StepDone
 from meridian_ai.answering import Answerer, Done, SourcesFound, Token
 from meridian_ai.llm import UsageCounter, usage_counter
+from meridian_ai.observability import agent_runs, answers, tenant_scope
 from meridian_ai.retrieval import Mode, Retriever
 
 log = logging.getLogger(__name__)
@@ -72,7 +73,17 @@ def _done(done: Done, usage: UsageCounter) -> dict[str, Any]:
     }
 
 
+def _outcome(done: Done) -> str:
+    return "degraded" if done.degraded else "abstained" if done.abstained else "answered"
+
+
 async def _stream(answerer: Answerer, request: AnswerRequest) -> AsyncIterator[bytes]:
+    with tenant_scope(request.tenant_id):
+        async for line in _answer_lines(answerer, request):
+            yield line
+
+
+async def _answer_lines(answerer: Answerer, request: AnswerRequest) -> AsyncIterator[bytes]:
     usage = UsageCounter()
     usage_counter.set(usage)
     try:
@@ -94,15 +105,23 @@ async def _stream(answerer: Answerer, request: AnswerRequest) -> AsyncIterator[b
                 case Token(text=text):
                     yield _line("token", {"text": text})
                 case Done() as done:
+                    answers.add(1, {"outcome": _outcome(done)})
                     yield _line("done", _done(done, usage))
     except Exception:
         # Akış başladı, durum kodu artık değiştirilemez; arama ya da embedding hatası da
         # kullanıcıya yarım bağlantı olarak değil, "cevap üretilemedi" olarak ulaşır.
         log.exception("cevap akışı başarısız tenant=%s", request.tenant_id)
+        answers.add(1, {"outcome": "error"})
         yield _line("done", _done(Done("", degraded=True), usage))
 
 
 async def _agent_stream(agent: Agent, request: AgentRequest) -> AsyncIterator[bytes]:
+    with tenant_scope(request.tenant_id):
+        async for line in _agent_lines(agent, request):
+            yield line
+
+
+async def _agent_lines(agent: Agent, request: AgentRequest) -> AsyncIterator[bytes]:
     usage = UsageCounter()
     usage_counter.set(usage)
 
@@ -117,11 +136,15 @@ async def _agent_stream(agent: Agent, request: AgentRequest) -> AsyncIterator[by
                 case StepDone(data=step):
                     yield _line("step", step)
                 case ApprovalRequired(thought=thought, title=title, description=description):
+                    agent_runs.add(1, {"status": "waiting_approval"})
                     yield _line(
                         "approval_required",
                         {"thought": thought, "title": title, "description": description, "usage": counts()},
                     )
                 case RunFinished() as finished:
+                    agent_runs.add(
+                        1, {"status": finished.status, "stop_reason": str(finished.stop_reason or "")}
+                    )
                     yield _line(
                         "done",
                         {
@@ -137,6 +160,7 @@ async def _agent_stream(agent: Agent, request: AgentRequest) -> AsyncIterator[by
                     )
     except Exception:
         log.exception("ajan akışı başarısız tenant=%s", request.tenant_id)
+        agent_runs.add(1, {"status": "failed", "stop_reason": "internal"})
         yield _line(
             "done",
             {
@@ -169,13 +193,14 @@ def create_router(
         require_token(x_internal_token)
         if retriever is None:
             raise HTTPException(status_code=503)
-        hits = await retriever.search(
-            request.tenant_id,
-            request.query,
-            k=request.k,
-            mode=Mode.VECTOR,
-            collection_ids=request.collection_ids,
-        )
+        with tenant_scope(request.tenant_id):
+            hits = await retriever.search(
+                request.tenant_id,
+                request.query,
+                k=request.k,
+                mode=Mode.VECTOR,
+                collection_ids=request.collection_ids,
+            )
         return {
             "hits": [
                 {

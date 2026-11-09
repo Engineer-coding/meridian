@@ -6,7 +6,9 @@ from importlib.metadata import version
 import httpx
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
+from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 
+from meridian_ai import observability
 from meridian_ai.agent import Agent
 from meridian_ai.answering import Answerer
 from meridian_ai.consumer import IndexingConsumer
@@ -19,6 +21,7 @@ from meridian_ai.indexer import Indexer
 from meridian_ai.internal_api import create_router
 from meridian_ai.llm import LLM, build_chain
 from meridian_ai.mcp_server import ApiGate, create_mcp
+from meridian_ai.observability import TracedEmbedder, TracedHandler, TracedLLM, TracedRetriever
 from meridian_ai.reranking import MODELS, CrossEncoderReranker
 from meridian_ai.retrieval import Retriever
 from meridian_ai.settings import Settings
@@ -34,7 +37,15 @@ def create_app(
 ) -> FastAPI:
     """Uygulama fabrikası: testler kendi bileşenlerini verir, üretimde ortamdan okunur."""
     settings = settings or Settings()
+    observability.configure(
+        export=settings.otel_export,
+        endpoint=settings.otel_endpoint,
+        sampling=settings.otel_sampling,
+        environment=settings.deployment_environment,
+    )
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
+    if settings.log_format == "json":
+        observability.use_json_logs()
     install_log_masking()
     # Her GitHub/model indirme isteği INFO seviyesinde loglanırdı.
     logging.getLogger("httpx").setLevel(logging.WARNING)
@@ -43,26 +54,31 @@ def create_app(
     )
     if embedder.dimensions != DIMENSIONS:
         raise ValueError(f"embedding boyutu {embedder.dimensions}, şema {DIMENSIONS} bekliyor")
+    embedder = TracedEmbedder(embedder)
 
     pool = create_pool(settings.database_conninfo)
     http = httpx.AsyncClient(timeout=httpx.Timeout(30.0), follow_redirects=True)
     token = settings.github_token.get_secret_value() if settings.github_token else None
-    handler: Handler = Indexer(
-        pool,
-        embedder,
-        fetchers or {"github": GitHubFetcher(http, settings.max_files_per_source, token=token)},
+    handler: Handler = TracedHandler(
+        Indexer(
+            pool,
+            embedder,
+            fetchers or {"github": GitHubFetcher(http, settings.max_files_per_source, token=token)},
+        )
     )
     consumer = IndexingConsumer(settings, handler)
 
     # CPU'da ilk token dakikalar sürebilir: okuma süresi genel istemciden çok daha uzun.
     llm_http = httpx.AsyncClient(timeout=httpx.Timeout(300.0, connect=5.0))
-    llm = llm or build_chain(settings.llm_chain, llm_http, settings.ollama_url)
+    llm = TracedLLM(llm or build_chain(settings.llm_chain, llm_http, settings.ollama_url))
     reranker = (
         CrossEncoderReranker(MODELS[settings.reranker], settings.embedding_cache_dir)
         if settings.reranker
         else None
     )
-    retriever = Retriever(pool, embedder, reranker=reranker, rerank_candidates=settings.rerank_candidates)
+    retriever = TracedRetriever(
+        Retriever(pool, embedder, reranker=reranker, rerank_candidates=settings.rerank_candidates)
+    )
     answerer = Answerer(
         retriever,
         llm,
@@ -72,7 +88,7 @@ def create_app(
     )
 
     agent_llm = (
-        build_chain(settings.agent_llm_chain, llm_http, settings.ollama_url)
+        TracedLLM(build_chain(settings.agent_llm_chain, llm_http, settings.ollama_url))
         if settings.agent_llm_chain
         else llm
     )
@@ -98,6 +114,8 @@ def create_app(
         create_router(answerer, settings.ai_internal_token.get_secret_value(), retriever, agent)
     )
     app.mount("/mcp", ApiGate(mcp_app))
+    # Sağlık uçları her birkaç saniyede bir çağrılır; iz kalabalığı yaratmasınlar.
+    FastAPIInstrumentor.instrument_app(app, excluded_urls="health/live,health/ready")
 
     @app.get("/health/live")
     async def live() -> dict[str, str]:

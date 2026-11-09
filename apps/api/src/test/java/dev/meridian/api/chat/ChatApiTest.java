@@ -111,6 +111,8 @@ class ChatApiTest extends PostgresIntegrationTest {
         var call = AI.calls.getFirst();
         assertThat(call.token()).isEqualTo("test-internal-token");
         assertThat(call.upgrade()).as("uvicorn h2c yükseltmesinde gövdeyi okumaz").isNull();
+        assertThat(call.traceparent()).as("iz AI servisinde sürer (ADR-0017)")
+            .matches("00-[0-9a-f]{32}-[0-9a-f]{16}-[0-9a-f]{2}");
         assertThat((String) JsonPath.read(call.body(), "$.tenantId")).isEqualTo(tenantId);
         assertThat((String) JsonPath.read(call.body(), "$.question")).isEqualTo("soru");
         assertThat((String) JsonPath.read(call.body(), "$.collectionIds[0]")).isEqualTo(collection.toString());

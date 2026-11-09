@@ -27,6 +27,8 @@ import dev.meridian.api.tenancy.Tenant;
 import dev.meridian.api.tenancy.TenantContext;
 import dev.meridian.api.tenancy.TenantContext.Identity;
 import dev.meridian.api.tenancy.TenantRepository;
+import io.micrometer.tracing.Span;
+import io.micrometer.tracing.Tracer;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -57,6 +59,9 @@ class OutboxRelayTest extends PostgresIntegrationTest {
     Identity alice;
     Tenant acme;
 
+    @Autowired
+    Tracer tracer;
+
     @BeforeEach
     void emptyOutboxAndQueue() {
         alice = new Identity(UUID.randomUUID(), UUID.randomUUID());
@@ -85,6 +90,25 @@ class OutboxRelayTest extends PostgresIntegrationTest {
         assertThat(envelope.get("data").get("sourceId").asString()).isEqualTo(sourceId.toString());
 
         assertThat(queryAsSuperuser("SELECT count(*) FROM core.outbox WHERE event_id = '" + eventId + "'")).containsExactly("0");
+    }
+
+    @Test
+    void indexingContinuesTheTraceOfTheRequestThatWroteTheEvent() {
+        Span request = tracer.nextSpan().name("istek").start();
+        try (var scope = tracer.withSpan(request)) {
+            append("source.created", UUID.randomUUID(), Map.of());
+        } finally {
+            request.end();
+        }
+        UUID untraced = append("source.created", UUID.randomUUID(), Map.of());
+        relay.drain();
+
+        Message traced = rabbit.receive(Messaging.INDEXING_QUEUE, 5_000);
+        assertThat((String) traced.getMessageProperties().getHeader(Messaging.TRACEPARENT_HEADER))
+            .startsWith("00-" + request.context().traceId() + "-");
+        Message plain = rabbit.receive(Messaging.INDEXING_QUEUE, 5_000);
+        assertThat(plain.getMessageProperties().getMessageId()).isEqualTo(untraced.toString());
+        assertThat((Object) plain.getMessageProperties().getHeader(Messaging.TRACEPARENT_HEADER)).isNull();
     }
 
     @Test

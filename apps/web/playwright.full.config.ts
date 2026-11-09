@@ -7,11 +7,13 @@ const APP = "http://localhost:3200";
 const API = "http://localhost:18080";
 const AI_PORT = "18090";
 const ISSUER = "http://localhost:18180/realms/meridian";
+// İzler gerçekten toplanır: test, tek bir sorunun üç servisten geçen tek iz bıraktığını Tempo'dan okur.
+const TELEMETRY = { OTEL_EXPORT: "true", OTEL_ENDPOINT: "http://127.0.0.1:14318", DEPLOYMENT_ENVIRONMENT: "e2e" };
 
 const secrets = Object.fromEntries(
   readFileSync(new URL("../../.env.example", import.meta.url), "utf8")
     .split(/\r?\n/)
-    .filter((line) => line.includes("="))
+    .filter((line) => line.includes("=") && !line.startsWith("#"))
     .map((line) => line.split("=", 2) as [string, string]),
 );
 
@@ -35,6 +37,7 @@ export default defineConfig({
       reuseExistingServer: false,
       env: {
         ...secrets,
+        ...TELEMETRY,
         SERVER_PORT: "18080",
         SPRING_DATASOURCE_URL: "jdbc:postgresql://localhost:15432/meridian",
         SPRING_RABBITMQ_PORT: "15673",
@@ -51,6 +54,7 @@ export default defineConfig({
       reuseExistingServer: false,
       env: {
         ...secrets,
+        ...TELEMETRY,
         PYTHONUTF8: "1",
         HTTP_PORT: AI_PORT,
         POSTGRES_PORT: "15432",
@@ -64,6 +68,7 @@ export default defineConfig({
       timeout: 240_000,
       reuseExistingServer: false,
       env: {
+        ...TELEMETRY,
         APP_URL: APP,
         API_URL: API,
         OIDC_ISSUER: ISSUER,

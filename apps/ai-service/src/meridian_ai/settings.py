@@ -58,6 +58,14 @@ class Settings(BaseSettings):
     api_url: str = "http://127.0.0.1:8080"
     mcp_allowed_hosts: list[str] = ["127.0.0.1:*", "localhost:*"]
 
+    # İzleme (ADR-0017): izler, metrikler ve loglar OTLP ile toplayıcıya; gönderim varsayılan kapalı.
+    otel_export: bool = False
+    otel_endpoint: str = "http://127.0.0.1:4318"
+    otel_sampling: float = Field(default=1.0, ge=0.0, le=1.0)
+    deployment_environment: str = "local"
+    # JSON: her satırda iz ve kiracı kimliği. "text" yalnızca yerelde okumak için.
+    log_format: str = Field(default="json", pattern="^(json|text)$")
+
     # GitHub: token olmadan saatte 60 API isteği; dosya içerikleri bu sınıra dahil değildir.
     github_token: SecretStr | None = None
     max_files_per_source: int = Field(default=2_000, ge=1)

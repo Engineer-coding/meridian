@@ -4,6 +4,7 @@ import java.sql.DriverManager;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.boot.micrometer.tracing.test.autoconfigure.AutoConfigureTracing;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -20,6 +21,8 @@ import org.testcontainers.utility.MountableFile;
  * aynı fiziksel bağlantıyı kullanır, böylece bağlamın bağlantı üzerinden sızması testlerde
  * yakalanır. Outbox aktarıcısının zamanlayıcısı kapalıdır; testler onu elle çalıştırır.
  */
+// Testler üretimdeki gibi iz bağlamı taşır; OTLP gönderimi yapılandırmada kapalıdır.
+@AutoConfigureTracing
 @SpringBootTest
 public abstract class PostgresIntegrationTest {
 

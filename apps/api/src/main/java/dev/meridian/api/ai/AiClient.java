@@ -18,6 +18,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import io.micrometer.observation.Observation;
+import io.micrometer.observation.ObservationRegistry;
+import io.micrometer.tracing.Span;
+import io.micrometer.tracing.Tracer;
+import io.micrometer.tracing.propagation.Propagator;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
@@ -55,9 +60,34 @@ public class AiClient {
         .connectTimeout(Duration.ofSeconds(5))
         .build();
 
-    public AiClient(AiProperties properties, JsonMapper json) {
+    private final ObservationRegistry observations;
+    private final Tracer tracer;
+    private final Propagator propagator;
+
+    public AiClient(AiProperties properties, JsonMapper json, ObservationRegistry observations, Tracer tracer,
+            Propagator propagator) {
         this.properties = properties;
         this.json = json;
+        this.observations = observations;
+        this.tracer = tracer;
+        this.propagator = propagator;
+    }
+
+    /** Çağrı kendi span'ıdır; süresi {@code meridian.ai.request} metriğine yazılır, iz AI servisinde sürer. */
+    private <T> T observed(String path, Observation.CheckedCallable<T, Unavailable> work) throws Unavailable {
+        return Observation.createNotStarted("meridian.ai.request", observations)
+            .contextualName("ai " + path)
+            .lowCardinalityKeyValue("path", path)
+            .observeChecked(work);
+    }
+
+    /** W3C {@code traceparent}: AI servisinin span'ları bu isteğin altına bağlanır. */
+    private HttpRequest.Builder traced(HttpRequest.Builder builder) {
+        Span span = tracer.currentSpan();
+        if (span != null) {
+            propagator.inject(span.context(), builder, HttpRequest.Builder::header);
+        }
+        return builder;
     }
 
     public void answer(UUID tenantId, String question, List<UUID> collectionIds, Listener listener) throws Unavailable {
@@ -72,7 +102,11 @@ public class AiClient {
 
     /** Tek JSON cevap dönen iç uç. */
     public JsonNode call(String path, Object body) throws Unavailable {
-        var request = HttpRequest.newBuilder(properties.url().resolve(path))
+        return observed(path, () -> send(path, body));
+    }
+
+    private JsonNode send(String path, Object body) throws Unavailable {
+        var request = traced(HttpRequest.newBuilder(properties.url().resolve(path)))
             .header("Content-Type", "application/json")
             .header("X-Internal-Token", properties.internalToken())
             .timeout(Duration.ofSeconds(60))
@@ -94,7 +128,14 @@ public class AiClient {
 
     /** Satır satır JSON akan iç uç; "done" gelmeden biterse {@link Unavailable}. */
     public void stream(String path, Object body, Listener listener) throws Unavailable {
-        var request = HttpRequest.newBuilder(properties.url().resolve(path))
+        observed(path, () -> {
+            receive(path, body, listener);
+            return null;
+        });
+    }
+
+    private void receive(String path, Object body, Listener listener) throws Unavailable {
+        var request = traced(HttpRequest.newBuilder(properties.url().resolve(path)))
             .header("Content-Type", "application/json")
             .header("X-Internal-Token", properties.internalToken())
             // Yalnızca başlıklara kadar geçerli; ilk satır modelden önce, arama bitince gelir.
