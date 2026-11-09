@@ -95,6 +95,7 @@ services:
       - ./otel/collector.yaml:/etc/otelcol/collector.yaml:ro
     depends_on:
       - tempo
+      - loki
 
   tempo:
     image: grafana/tempo:2.10.10
@@ -107,8 +108,50 @@ services:
       - tempodata:/var/tempo
     # İmajda kabuk ve wget yok; hazır olma http://127.0.0.1:3201/ready ile görülür.
 
+  prometheus:
+    image: prom/prometheus:v3.15.1
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.retention.time=7d
+    ports:
+      - "127.0.0.1:9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus/rules:/etc/prometheus/rules:ro
+      - promdata:/prometheus
+
+  loki:
+    image: grafana/loki:3.7.9
+    command: ["-config.file=/etc/loki/loki.yaml"]
+    ports:
+      - "127.0.0.1:3100:3100"
+    volumes:
+      - ./loki/loki.yaml:/etc/loki/loki.yaml:ro
+      - lokidata:/loki
+
+  # Paneller ve veri kaynakları dosyadan gelir (ADR-0018); elle yapılan değişiklik kalıcı değildir.
+  grafana:
+    image: grafana/grafana:13.2.4
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD}
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_USERS_DEFAULT_LANGUAGE: tr-TR
+    ports:
+      - "127.0.0.1:3001:3000"
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      - prometheus
+      - loki
+      - tempo
+
 volumes:
   pgdata:
   rabbitdata:
   objectdata:
   tempodata:
+  promdata:
+  lokidata:

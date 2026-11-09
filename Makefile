@@ -4,7 +4,7 @@ COMPOSE = docker compose -f infra/compose/compose.yaml --env-file .env
 
 PYTHON ?= python
 
-.PHONY: up down ps logs psql reset smoke contract-lint eval-validate api-test ai-test ai-run web-test web-e2e e2e-full web-run eval eval-smoke eval-answers eval-redteam
+.PHONY: up down ps logs psql reset smoke contract-lint eval-validate api-test ai-test ai-run web-test web-e2e e2e-full web-run eval eval-smoke eval-answers eval-redteam obs-check
 
 up:
 	$(COMPOSE) up -d --wait
@@ -47,6 +47,12 @@ web-e2e:
 
 # Tam sistem: gerçek Keycloak, API, AI servisi, RabbitMQ, PostgreSQL ve tarayıcı. Atılabilir altyapı, ayrı portlar.
 E2E_COMPOSE = docker compose -f infra/compose/compose.e2e.yaml --env-file .env.example
+# Prometheus kuralları ve alarm testleri (ADR-0018): eşikler sentetik seriyle sınanır.
+obs-check:
+	docker run --rm -v "$(CURDIR)/infra/compose/prometheus:/p" -w /p/tests --entrypoint promtool prom/prometheus:v3.15.1 check rules ../rules/slo.yml
+	docker run --rm -v "$(CURDIR)/infra/compose/prometheus:/p" -w /p/tests --entrypoint promtool prom/prometheus:v3.15.1 test rules slo_test.yml
+	docker run --rm -v "$(CURDIR)/infra/compose/prometheus:/p" -w /p --entrypoint promtool prom/prometheus:v3.15.1 check config prometheus.yml
+
 e2e-full:
 	$(E2E_COMPOSE) down -v
 	$(E2E_COMPOSE) up -d --wait

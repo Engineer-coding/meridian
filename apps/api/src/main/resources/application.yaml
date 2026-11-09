@@ -93,6 +93,8 @@ management:
         enabled: ${OTEL_EXPORT:false}
         url: ${OTEL_ENDPOINT:http://127.0.0.1:4318}/v1/metrics
         step: 15s
+        # Prometheus adları saniyeyle biter (http_server_requests_seconds); diğer servislerle aynı birim.
+        base-time-unit: seconds
   metrics:
     distribution:
       # SLO'lar yüzdelik ister (ADR-0017): HTTP süreleri histogram olarak gider.

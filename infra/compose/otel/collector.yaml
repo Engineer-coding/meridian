@@ -18,7 +18,13 @@ exporters:
     endpoint: tempo:4317
     tls:
       insecure: true
-  nop: {}
+  # Prometheus bu uçtan kazır; servis adı (service.name) etiket olarak kalır.
+  prometheus:
+    endpoint: 0.0.0.0:8889
+    resource_to_telemetry_conversion:
+      enabled: true
+  otlp_http/loki:
+    endpoint: http://loki:3100/otlp
 
 service:
   telemetry:
@@ -29,12 +35,11 @@ service:
       receivers: [otlp]
       processors: [memory_limiter, batch]
       exporters: [otlp_grpc/tempo]
-    # Metrik ve log arka uçları (Prometheus, Loki) bir sonraki adımda bağlanır.
     metrics:
       receivers: [otlp]
       processors: [memory_limiter, batch]
-      exporters: [nop]
+      exporters: [prometheus]
     logs:
       receivers: [otlp]
       processors: [memory_limiter, batch]
-      exporters: [nop]
+      exporters: [otlp_http/loki]

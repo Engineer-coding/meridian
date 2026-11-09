@@ -13,7 +13,7 @@ koddaki her değişiklikte yeniden üretilmeyi ister (ADR-0010, ADR-0016); izlem
 **Her servis OTLP ile tek bir toplayıcıya yazar; iz bağlamı W3C `traceparent` ile HTTP'den ve kuyruktan geçer.**
 
 - **Toplayıcı:** OpenTelemetry Collector. Servisler arka ucu bilmez; arka uç değişirse servisler değişmez.
-  İzler Tempo'ya gider; metrik ve log arka uçları (Prometheus, Loki) sonraki adımdadır.
+  İzler Tempo'ya, metrikler Prometheus'a, loglar Loki'ye gider ([ADR-0018](0018-slo-alerts-dashboards.md)).
 - **API:** `spring-boot-starter-opentelemetry` (Micrometer köprüsü). HTTP istekleri ve AI servisi çağrıları
   span ve süre histogramıdır (`http.server.requests`, `meridian.ai.request`). AI çağrısına `traceparent` eklenir.
 - **Kuyruk:** olayı yazan isteğin `traceparent` değeri outbox'ta saklanır (V8), aktarıcı mesaj başlığına koyar,

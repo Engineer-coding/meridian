@@ -6,6 +6,8 @@ Biçim: [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/).
 ## [Unreleased]
 ### Added
 - İzleme (ADR-0017): web, API ve AI servisi OTLP ile OpenTelemetry Collector'a yazar; bir soru tek izde görünür. İz kuyruktan da geçer (outbox `traceparent`, V8). Metrikler: HTTP RED, AI çağrısı, model süresi, ilk token, token, arama, indeksleme, cevap sonucu, ajan durumu. JSON loglar: her satırda iz ve kiracı kimliği. Gönderim `OTEL_EXPORT=true` ile açılır.
+- SLO'lar ve alarmlar (ADR-0018): API kullanılabilirliği %99,5 için çok pencereli yanma hızı alarmları, indeksleme süresi, DLQ ve kuyruk birikmesi, model kesintisi, "bilmiyorum" oranı. Eşikler `promtool test rules` ile sınanır (`make obs-check`, CI). Her alarmın runbook'u `docs/runbooks/` altında.
+- Grafana paneli kod olarak (`infra/compose/grafana`): SLO, API RED, model, arama, indeksleme, kuyruk, alarmlar ve hata logları; izden loga ve logdan ize geçiş. Compose'a Prometheus (`127.0.0.1:9090`), Loki (`127.0.0.1:3100`) ve Grafana (`127.0.0.1:3001`) eklendi.
 - Compose'a OpenTelemetry Collector ve Tempo eklendi (`127.0.0.1:4318`, `127.0.0.1:3201`). Tam sistem testi izin üç servisten geçtiğini Tempo'dan doğrular.
 
 ## [0.5.0] - 2026-11-09

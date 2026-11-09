@@ -10,6 +10,9 @@ const EVIL = "evil.example";
 const EMAIL = "ayse.test@example.com";
 const REFUSED = "API anahtarı geçersiz";
 const TEMPO = "http://127.0.0.1:13201";
+const PROMETHEUS = "http://127.0.0.1:19090";
+const LOKI = "http://127.0.0.1:13100";
+const GRAFANA = "http://127.0.0.1:13001";
 const QUESTION = "Başvuru ne kadar sürede sonuçlanır?";
 
 type Trace = { batches: { resource: { attributes: { key: string; value: { stringValue?: string } }[] } }[] };
@@ -134,6 +137,54 @@ test("tek soru web, API ve AI servisinden geçen tek iz bırakır; metin ize yaz
   const indexing = await findTrace(request, '{ name = "process source.created" }');
   expect(indexing.services).toContain("meridian-api");
   expect(indexing.services).toContain("meridian-ai");
+});
+
+test("metrikler, SLO kuralları, loglar ve panel gerçek trafikle dolar", async ({ request }) => {
+  // Metrikler 15 sn'de bir gönderilir ve kazınır; birkaç tur beklenir.
+  const has = async (query: string) => {
+    for (let attempt = 0; attempt < 20; attempt++) {
+      const body = await (await request.get(`${PROMETHEUS}/api/v1/query`, { params: { query } })).json();
+      if (body.data.result.length > 0) return body.data.result;
+      await new Promise((resolve) => setTimeout(resolve, 3_000));
+    }
+    throw new Error(`Prometheus'ta yok: ${query}`);
+  };
+  await has('meridian_answers_total{outcome="answered"}');
+  await has("meridian_llm_first_token_seconds_count");
+  await has('meridian_indexing_duration_seconds_count{outcome="ok"}');
+  await has('http_server_requests_seconds_count{service_name="meridian-api", uri="/v1/me"}');
+  await has('rabbitmq_detailed_queue_messages{queue="ai.indexing.dlq"}');
+  await has("meridian:api_requests:rate5m");
+
+  const rules = (await (await request.get(`${PROMETHEUS}/api/v1/rules`)).json()).data.groups;
+  const unhealthy = rules.flatMap((group: { rules: { name: string; health: string }[] }) =>
+    group.rules.filter((rule) => rule.health !== "ok").map((rule) => rule.name),
+  );
+  expect(unhealthy).toEqual([]);
+  expect(rules.flatMap((group: { rules: { name: string }[] }) => group.rules.map((rule) => rule.name))).toContain(
+    "IndexingDeadLetters",
+  );
+
+  // Her servisin logu Loki'de, iz kimliğiyle; e-posta adresi maskeli.
+  const since = `${(Date.now() - 15 * 60_000) * 1_000_000}`;
+  for (const service of ["meridian-api", "meridian-ai"]) {
+    const logs = await (
+      await request.get(`${LOKI}/loki/api/v1/query_range`, {
+        params: { query: `{service_name="${service}"} | trace_id != ""`, start: since, limit: "500" },
+      })
+    ).json();
+    expect(logs.data.result.length, service).toBeGreaterThan(0);
+    expect(JSON.stringify(logs)).not.toContain(EMAIL);
+  }
+
+  // Panel dosyadan yüklenir ve üç veri kaynağı çalışır.
+  const auth = { Authorization: `Basic ${Buffer.from("admin:grafana_dev").toString("base64")}` };
+  const dashboard = await request.get(`${GRAFANA}/api/dashboards/uid/meridian-overview`, { headers: auth });
+  expect(dashboard.ok()).toBe(true);
+  for (const uid of ["prometheus", "loki", "tempo"]) {
+    const health = await request.get(`${GRAFANA}/api/datasources/uid/${uid}/health`, { headers: auth });
+    expect((await health.json()).status, uid).toBe("OK");
+  }
 });
 
 test("zararlı istek modele gitmeden reddedilir", async () => {

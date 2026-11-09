@@ -211,3 +211,39 @@ def test_log_lines_are_json_with_trace_and_tenant(caplog: pytest.LogCaptureFixtu
     assert line["message"] == "kayıt yazıldı"
     assert line["traceId"] == format(span.get_span_context().trace_id, "032x")
     assert line["tenant.id"] == "t-1"
+
+
+def test_log_export_keeps_console_output_and_masks_pii() -> None:
+    """Toplayıcıya log gönderimi konsol çıktısını bozmaz; gönderilen satır da maskelidir."""
+    import logging
+
+    from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler
+    from opentelemetry.sdk._logs.export import InMemoryLogRecordExporter, SimpleLogRecordProcessor
+
+    from meridian_ai import observability
+    from meridian_ai.guardrails import install_log_masking
+
+    root = logging.getLogger()
+    saved = (list(root.handlers), root.level)
+    exported = InMemoryLogRecordExporter()
+    provider = LoggerProvider()
+    provider.add_log_record_processor(SimpleLogRecordProcessor(exported))
+    try:
+        root.handlers = []
+        observability._log_provider = provider
+        logging.basicConfig(level=logging.INFO)
+        observability.export_logs()
+        install_log_masking()
+
+        assert root.level == logging.INFO
+        console = [h for h in root.handlers if not isinstance(h, LoggingHandler)]
+        assert any(isinstance(h, logging.StreamHandler) for h in console)
+        with observability.tenant_scope("t-1"):
+            logging.getLogger("x").info("kişi ayse.test@example.com")
+        [record] = exported.get_finished_logs()
+        body = record.log_record.body
+        assert "ayse.test" not in str(body) and "[E-POSTA]" in str(body)
+        assert record.log_record.attributes["tenant.id"] == "t-1"
+    finally:
+        observability._log_provider = None
+        root.handlers, root.level = saved

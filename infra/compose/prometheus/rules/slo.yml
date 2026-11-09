@@ -1,0 +1,127 @@
+# SLO'lar ve alarmlar (ADR-0018). Hedefler planın 9. bölümünden; pencere 30 gün.
+#
+# Kullanılabilirlik %99,5 → hata bütçesi %0,5. Çok pencereli yanma hızı (Google SRE Workbook, 5. bölüm):
+#   14,4 kat, 1 sa ve 5 dk: bütçenin %2'si bir saatte gider → acil
+#   6 kat,    6 sa ve 30 dk: bütçenin %5'i altı saatte gider → kayıt aç
+# Kısa pencere, sorun bittiğinde alarmın hızla susmasını sağlar.
+groups:
+  - name: meridian-sli
+    interval: 30s
+    rules:
+      # Sağlık uçları kullanıcı isteği değildir; oranı şişirmesinler.
+      - record: meridian:api_requests:rate5m
+        expr: sum(rate(http_server_requests_seconds_count{service_name="meridian-api", uri!~"/actuator.*"}[5m]))
+      - record: meridian:api_errors:rate5m
+        # 5xx hiç yoksa seri boş kalır ve oran "veri yok" olur; hata tarafı yoksa sıfır sayılır.
+        expr: sum(rate(http_server_requests_seconds_count{service_name="meridian-api", uri!~"/actuator.*", status=~"5.."}[5m])) or vector(0)
+      - record: meridian:api_error_ratio:rate5m
+        expr: meridian:api_errors:rate5m / meridian:api_requests:rate5m
+      - record: meridian:api_error_ratio:rate30m
+        expr: |
+          (sum(rate(http_server_requests_seconds_count{service_name="meridian-api", uri!~"/actuator.*", status=~"5.."}[30m])) or vector(0))
+          / sum(rate(http_server_requests_seconds_count{service_name="meridian-api", uri!~"/actuator.*"}[30m]))
+      - record: meridian:api_error_ratio:rate1h
+        expr: |
+          (sum(rate(http_server_requests_seconds_count{service_name="meridian-api", uri!~"/actuator.*", status=~"5.."}[1h])) or vector(0))
+          / sum(rate(http_server_requests_seconds_count{service_name="meridian-api", uri!~"/actuator.*"}[1h]))
+      - record: meridian:api_error_ratio:rate6h
+        expr: |
+          (sum(rate(http_server_requests_seconds_count{service_name="meridian-api", uri!~"/actuator.*", status=~"5.."}[6h])) or vector(0))
+          / sum(rate(http_server_requests_seconds_count{service_name="meridian-api", uri!~"/actuator.*"}[6h]))
+
+      # API gecikmesi uç başına p95 (akış uçları cevap bitene kadar sürer, ayrı okunur).
+      - record: meridian:api_latency_seconds:p95_5m
+        expr: histogram_quantile(0.95, sum by (le, uri) (rate(http_server_requests_seconds_bucket{service_name="meridian-api", uri!~"/actuator.*"}[5m])))
+
+      # İlk token: model çağrısı başına. Kanıt çağrısı da sayılır; kullanıcının gördüğü süre bundan uzundur.
+      - record: meridian:llm_first_token_seconds:p95_5m
+        expr: histogram_quantile(0.95, sum by (le) (rate(meridian_llm_first_token_seconds_bucket[5m])))
+
+      # İndeksleme: 60 saniyede biten olayların oranı (hedef p95 < 60 sn ≡ en az %95).
+      - record: meridian:indexing_within_60s:ratio1h
+        expr: |
+          sum(increase(meridian_indexing_duration_seconds_bucket{le="60", outcome="ok"}[1h]))
+          / sum(increase(meridian_indexing_duration_seconds_count[1h]))
+
+      # Kalite sinyali: "bilmiyorum" ve bozulmuş mod oranı.
+      - record: meridian:answers_abstained:ratio1h
+        expr: |
+          sum(increase(meridian_answers_total{outcome="abstained"}[1h]))
+          / sum(increase(meridian_answers_total[1h]))
+      - record: meridian:answers_degraded:ratio10m
+        expr: |
+          sum(increase(meridian_answers_total{outcome=~"degraded|error"}[10m]))
+          / sum(increase(meridian_answers_total[10m]))
+
+  - name: meridian-alerts
+    rules:
+      - alert: ApiErrorBudgetBurnFast
+        expr: meridian:api_error_ratio:rate1h > (14.4 * 0.005) and meridian:api_error_ratio:rate5m > (14.4 * 0.005)
+        for: 2m
+        labels:
+          severity: page
+        annotations:
+          summary: API hata bütçesi bir saatte %2 hızında tükeniyor
+          runbook: docs/runbooks/api-errors.md
+
+      - alert: ApiErrorBudgetBurnSlow
+        expr: meridian:api_error_ratio:rate6h > (6 * 0.005) and meridian:api_error_ratio:rate30m > (6 * 0.005)
+        for: 15m
+        labels:
+          severity: ticket
+        annotations:
+          summary: API hata bütçesi altı saatte %5 hızında tükeniyor
+          runbook: docs/runbooks/api-errors.md
+
+      # ADR-0011'de söz verilen alarm: DLQ'yu boşaltan otomatik süreç yok, mesaj insan bekler.
+      - alert: IndexingDeadLetters
+        expr: max(rabbitmq_detailed_queue_messages{queue="ai.indexing.dlq"}) > 0
+        for: 5m
+        labels:
+          severity: ticket
+        annotations:
+          summary: "ai.indexing.dlq kuyruğunda {{ $value }} mesaj bekliyor"
+          runbook: docs/runbooks/queue-backlog.md
+
+      - alert: IndexingBacklog
+        expr: max(rabbitmq_detailed_queue_messages{queue="ai.indexing"}) > 100
+        for: 10m
+        labels:
+          severity: ticket
+        annotations:
+          summary: "İndeksleme kuyruğunda {{ $value }} mesaj birikti"
+          runbook: docs/runbooks/queue-backlog.md
+
+      - alert: IndexingSlow
+        expr: meridian:indexing_within_60s:ratio1h < 0.95
+        for: 30m
+        labels:
+          severity: ticket
+        annotations:
+          summary: Olayların %95'inden azı 60 saniyede indeksleniyor
+
+      # Model sağlayıcısı kesintisi: cevaplar "yalnızca kaynaklar" moduna düşüyor.
+      - alert: AnswersDegraded
+        expr: meridian:answers_degraded:ratio10m > 0.1 and sum(increase(meridian_answers_total[10m])) >= 5
+        for: 5m
+        labels:
+          severity: page
+        annotations:
+          summary: Cevapların %10'undan fazlası model olmadan dönüyor
+          runbook: docs/runbooks/llm-outage.md
+
+      - alert: AbstentionRateHigh
+        expr: meridian:answers_abstained:ratio1h > 0.5 and sum(increase(meridian_answers_total[1h])) >= 20
+        for: 1h
+        labels:
+          severity: ticket
+        annotations:
+          summary: Son bir saatte cevapların yarısından fazlası "bilmiyorum"
+
+      - alert: TelemetryTargetDown
+        expr: up == 0
+        for: 5m
+        labels:
+          severity: ticket
+        annotations:
+          summary: "{{ $labels.job }} kazınamıyor"

@@ -46,6 +46,7 @@ def create_app(
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
     if settings.log_format == "json":
         observability.use_json_logs()
+    observability.export_logs()
     install_log_masking()
     # Her GitHub/model indirme isteği INFO seviyesinde loglanırdı.
     logging.getLogger("httpx").setLevel(logging.WARNING)

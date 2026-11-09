@@ -1,0 +1,108 @@
+# promtool test rules: alarmların doğru eşikte ateşlendiğini ve sağlıklı trafikte sustuğunu gösterir.
+rule_files:
+  - ../rules/slo.yml
+
+evaluation_interval: 30s
+
+tests:
+  # %10 hata (bütçenin 20 katı): hızlı yanma alarmı ateşlenir.
+  - interval: 1m
+    input_series:
+      - series: 'http_server_requests_seconds_count{service_name="meridian-api", uri="/v1/me", status="200"}'
+        values: "0+90x80"
+      - series: 'http_server_requests_seconds_count{service_name="meridian-api", uri="/v1/me", status="500"}'
+        values: "0+10x80"
+    alert_rule_test:
+      - eval_time: 70m
+        alertname: ApiErrorBudgetBurnFast
+        exp_alerts:
+          - exp_labels:
+              severity: page
+            exp_annotations:
+              summary: API hata bütçesi bir saatte %2 hızında tükeniyor
+              runbook: docs/runbooks/api-errors.md
+
+  # %0,2 hata (bütçenin içinde) ve sağlık uçlarındaki 500'ler: alarm yok.
+  - interval: 1m
+    input_series:
+      - series: 'http_server_requests_seconds_count{service_name="meridian-api", uri="/v1/me", status="200"}'
+        values: "0+998x80"
+      - series: 'http_server_requests_seconds_count{service_name="meridian-api", uri="/v1/me", status="500"}'
+        values: "0+2x80"
+      - series: 'http_server_requests_seconds_count{service_name="meridian-api", uri="/actuator/health/**", status="503"}'
+        values: "0+500x80"
+    alert_rule_test:
+      - eval_time: 70m
+        alertname: ApiErrorBudgetBurnFast
+        exp_alerts: []
+      - eval_time: 70m
+        alertname: ApiErrorBudgetBurnSlow
+        exp_alerts: []
+
+  # DLQ'ya düşen mesaj beş dakika bekleyince alarm.
+  - interval: 1m
+    input_series:
+      - series: 'rabbitmq_detailed_queue_messages{queue="ai.indexing.dlq", vhost="/"}'
+        values: "0 0 1 1 1 1 1 1 1 1"
+      - series: 'rabbitmq_detailed_queue_messages{queue="ai.indexing", vhost="/"}'
+        values: "0 0 0 0 0 0 0 0 0 0"
+    alert_rule_test:
+      - eval_time: 3m
+        alertname: IndexingDeadLetters
+        exp_alerts: []
+      - eval_time: 9m
+        alertname: IndexingDeadLetters
+        exp_alerts:
+          - exp_labels:
+              severity: ticket
+            exp_annotations:
+              summary: "ai.indexing.dlq kuyruğunda 1 mesaj bekliyor"
+              runbook: docs/runbooks/queue-backlog.md
+      - eval_time: 9m
+        alertname: IndexingBacklog
+        exp_alerts: []
+
+  # Model kesintisi: cevapların çoğu bozulmuş modda.
+  - interval: 1m
+    input_series:
+      - series: 'meridian_answers_total{service_name="meridian-ai", outcome="answered"}'
+        values: "0+1x30"
+      - series: 'meridian_answers_total{service_name="meridian-ai", outcome="degraded"}'
+        values: "0+3x30"
+    alert_rule_test:
+      - eval_time: 20m
+        alertname: AnswersDegraded
+        exp_alerts:
+          - exp_labels:
+              severity: page
+            exp_annotations:
+              summary: Cevapların %10'undan fazlası model olmadan dönüyor
+              runbook: docs/runbooks/llm-outage.md
+
+  # Az trafikte tek bozuk cevap alarm üretmez.
+  - interval: 1m
+    input_series:
+      - series: 'meridian_answers_total{service_name="meridian-ai", outcome="answered"}'
+        values: "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+      - series: 'meridian_answers_total{service_name="meridian-ai", outcome="degraded"}'
+        values: "0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1"
+    alert_rule_test:
+      - eval_time: 15m
+        alertname: AnswersDegraded
+        exp_alerts: []
+
+  # İndeksleme: 10 olayın 2'si 60 saniyeyi aşıyor (oran 0,8).
+  - interval: 1m
+    input_series:
+      - series: 'meridian_indexing_duration_seconds_bucket{le="60", outcome="ok"}'
+        values: "0+8x120"
+      - series: 'meridian_indexing_duration_seconds_count{outcome="ok"}'
+        values: "0+10x120"
+    alert_rule_test:
+      - eval_time: 100m
+        alertname: IndexingSlow
+        exp_alerts:
+          - exp_labels:
+              severity: ticket
+            exp_annotations:
+              summary: Olayların %95'inden azı 60 saniyede indeksleniyor

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Spring Boot'un varsayılan (JSON) konsol çıktısı aynen kalır; satırlar ayrıca OTLP ile toplayıcıya gider
+     (ADR-0018). Gönderimi management.logging.export.otlp.enabled açar; kapalıyken ekleyici boşa çalışır. -->
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+    <appender name="OTEL" class="io.opentelemetry.instrumentation.logback.appender.v1_0.OpenTelemetryAppender">
+        <captureMdcAttributes>tenant.id</captureMdcAttributes>
+    </appender>
+    <root level="INFO">
+        <appender-ref ref="OTEL"/>
+    </root>
+</configuration>

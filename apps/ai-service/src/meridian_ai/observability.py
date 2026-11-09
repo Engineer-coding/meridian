@@ -32,7 +32,6 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor, SimpleSpanProcess
 from opentelemetry.sdk.trace.sampling import ParentBased, TraceIdRatioBased
 from opentelemetry.trace import Span, Status, StatusCode
 
-from meridian_ai.guardrails import mask_pii
 from meridian_ai.llm import Message, usage_counter
 
 SERVICE = "meridian-ai"
@@ -74,6 +73,7 @@ agent_runs = _meter.create_counter(
 )
 
 _configured = False
+_log_provider: LoggerProvider | None = None
 
 
 def configure(
@@ -109,23 +109,36 @@ def configure(
         )
     metrics.set_meter_provider(MeterProvider(resource=resource, metric_readers=readers))
 
+    global _log_provider
     if export:
-        logs = LoggerProvider(resource=resource)
-        logs.add_log_record_processor(
+        _log_provider = LoggerProvider(resource=resource)
+        _log_provider.add_log_record_processor(
             BatchLogRecordProcessor(OTLPLogExporter(endpoint=f"{endpoint}/v1/logs"))
         )
-        handler = LoggingHandler(logger_provider=logs)
-        handler.addFilter(_PiiFilter())
-        logging.getLogger().addHandler(handler)
 
     # Model, MCP ve GitHub istekleri: span olur, iz bağlamı karşı tarafa geçer.
     HTTPXClientInstrumentor().instrument()
 
 
-class _PiiFilter(logging.Filter):
+def export_logs() -> None:
+    """Log satırlarını toplayıcıya da gönderir; ``logging.basicConfig`` sonrasında çağrılmalı.
+
+    Kök kaydedicide önceden işleyici varsa basicConfig hiçbir şey yapmaz; konsol çıktısı ve INFO düzeyi
+    kaybolur (denemede böyle oldu). PII maskesi ``install_log_masking`` ile bu işleyiciye de takılır.
+    """
+    root = logging.getLogger()
+    if _log_provider is not None and not any(isinstance(h, LoggingHandler) for h in root.handlers):
+        handler = LoggingHandler(logger_provider=_log_provider)
+        handler.addFilter(_TenantAttribute())
+        root.addHandler(handler)
+
+
+class _TenantAttribute(logging.Filter):
+    """Kiracı, toplayıcıya giden satırda öznitelik olur; Loki'de kiracıya göre süzülebilir."""
+
     def filter(self, record: logging.LogRecord) -> bool:
-        record.msg = mask_pii(record.getMessage())
-        record.args = None
+        if tenant := current_tenant.get():
+            setattr(record, "tenant.id", tenant)
         return True
 
 

@@ -30,6 +30,7 @@ jobs:
       - run: cp .env.example .env
       - run: make up
       - run: make smoke
+      - run: make obs-check
       - if: failure()
         run: make ps && docker compose -f infra/compose/compose.yaml --env-file .env logs --tail=50
       - if: always()

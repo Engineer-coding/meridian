@@ -24,3 +24,4 @@ Kabul edilmiş bir ADR değiştirilmez; yerine yeni bir ADR yazılır ve eskisin
 | [0015](0015-agent-and-mcp.md) | Ajan ve MCP sunucusu | Kabul edildi |
 | [0016](0016-guardrails-and-red-team.md) | Kod korumaları ve kırmızı takım seti | Kabul edildi |
 | [0017](0017-observability.md) | İzleme: OpenTelemetry, tek iz ve JSON loglar | Kabul edildi |
+| [0018](0018-slo-alerts-dashboards.md) | SLO'lar, yanma hızı alarmları ve kod olarak paneller | Kabul edildi |

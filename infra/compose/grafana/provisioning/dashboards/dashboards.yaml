@@ -1,0 +1,10 @@
+apiVersion: 1
+
+providers:
+  - name: meridian
+    folder: Meridian
+    type: file
+    # Paneller depodaki JSON'dan gelir; arayüzde yapılan değişiklik kalıcı değildir.
+    allowUiUpdates: false
+    options:
+      path: /var/lib/grafana/dashboards

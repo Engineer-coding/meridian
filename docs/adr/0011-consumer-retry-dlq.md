@@ -69,7 +69,8 @@ RabbitMQ'nun yerleşik gecikmeli teslimatı yoktur (eklenti gerekir).
   hacmi düşük olduğu için şimdilik kabul edildi.
 - Bekleme süreleri katman sayısıyla sabitlenir; `max_retries` artırılırsa yeni kuyruklar
   otomatik tanımlanır, azaltılırsa eskiler elle silinir.
-- DLQ'yu boşaltan otomatik bir süreç yoktur; DLQ derinliği alarmı Faz 5'te (gözlemlenebilirlik).
+- DLQ'yu boşaltan otomatik bir süreç yoktur; DLQ'da 5 dakika bekleyen mesaj alarm üretir (`IndexingDeadLetters`,
+  [ADR-0018](0018-slo-alerts-dashboards.md)), işlem adımları [runbook](../runbooks/queue-backlog.md)'tadır.
 
 ## Geri dönüş maliyeti ve yeniden değerlendirme tetikleyicisi
 **Düşük.** Karar mantığı tek bir sınıftadır (`IndexingConsumer`); işleyiciler yalnızca
