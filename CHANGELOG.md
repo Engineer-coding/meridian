@@ -4,6 +4,14 @@ Bu proje [Semantic Versioning](https://semver.org) kullanır.
 Biçim: [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/).
 
 ## [Unreleased]
+
+## [0.5.0] - 2026-11-09
+Yönetim paneli, araç çağıran ajan, MCP sunucusu, kod korumaları ve tam sistem testi. Ajan 12 sentetik
+görevde %58 başarılı (`llama3.2:3b`; bilgi sorularında 6'da 2), istenmeyen ticket 0. Kırmızı takım setinde
+başarılı saldırı korumasız 67 denemede 10, korumalı 2; kalan ikisi belgeyle yerleştirilen yanlış bilgi.
+Sohbet kalitesi değişmedi: cevaplı sorularda %30 gereksiz "bilmiyorum", %61 doğru. Küçük yerel modelle
+cevap kalitesi canlı kullanım için yeterli değildir.
+
 ### Added
 - Tam sistem testi (`make e2e-full`, CI işi `full-stack`): gerçek Keycloak girişi, kaynak indeksleme, akışlı cevap, ajan onayı, denetim, API anahtarı ile MCP, kiracı izolasyonu ve çıkış tek senaryoda; model, embedding ve GitHub sabit parçayla değişir.
 - Kırmızı takım seti: 40 senaryo (`packages/eval/golden/redteam-v1.jsonl`). CI'da tamamen kandırılmış modelle çalışır, canlı rapor `reports/redteam.*` eşikle denetlenir (ADR-0016).
@@ -105,7 +113,8 @@ Faz 2 (çekirdek backend) kapısı geçildi: sözleşmedeki her kiracıya bağl�
 - MinIO yerine RustFS: MinIO topluluk Docker imajları yayından kalktı.
 - gitleaks-action yerine sürümü sabitlenmiş gitleaks imajı: action ilk commit'te aralığı çözemiyordu.
 
-[Unreleased]: https://github.com/Engineer-coding/meridian/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/Engineer-coding/meridian/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/Engineer-coding/meridian/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/Engineer-coding/meridian/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/Engineer-coding/meridian/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/Engineer-coding/meridian/compare/v0.1.0...v0.2.0
