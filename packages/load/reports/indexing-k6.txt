@@ -1,0 +1,42 @@
+
+
+  █ THRESHOLDS 
+
+    indexing_ready
+    ✓ 'rate==1' rate=100.00%
+
+    indexing_ready_seconds
+    ✓ 'p(95)<60' p(95)=5.3497
+
+
+  █ TOTAL RESULTS 
+
+    checks_total.......: 101     11.080277/s
+    checks_succeeded...: 100.00% 101 out of 101
+    checks_failed......: 0.00%   0 out of 101
+
+    ✓ giriş 200
+    ✓ kaynak hazır
+
+    CUSTOM
+    indexing_ready.................: 100.00% 50 out of 50
+    indexing_ready_seconds.........: avg=3.8406   med=3.4125   p(90)=5.3383 p(95)=5.3497 p(99)=5.37518 max=5.384
+
+    HTTP
+    http_req_duration..............: avg=738.07ms med=286.05ms p(90)=3.26s  p(95)=3.41s  p(99)=3.97s   max=4.08s
+      { expected_response:true }...: avg=738.07ms med=286.05ms p(90)=3.26s  p(95)=3.41s  p(99)=3.97s   max=4.08s
+    http_req_failed................: 0.00%   0 out of 266
+    http_reqs......................: 266     29.181719/s
+
+    EXECUTION
+    iteration_duration.............: avg=4.13s    med=4s       p(90)=5.31s  p(95)=5.33s  p(99)=5.35s   max=5.36s
+    iterations.....................: 50      5.485285/s
+    vus............................: 17      min=0        max=50
+    vus_max........................: 50      min=50       max=50
+
+    NETWORK
+    data_received..................: 294 kB  32 kB/s
+    data_sent......................: 301 kB  33 kB/s
+
+
+

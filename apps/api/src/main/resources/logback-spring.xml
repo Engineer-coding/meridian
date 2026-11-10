@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Spring Boot'un varsayılan (JSON) konsol çıktısı aynen kalır; satırlar ayrıca OTLP ile toplayıcıya gider
-     (ADR-0018). Gönderimi management.logging.export.otlp.enabled açar; kapalıyken ekleyici boşa çalışır. -->
+<!-- Konsol, Spring Boot'un yapılandırılmış (JSON, ECS) çıktısıdır; satırlar ayrıca OTLP ile toplayıcıya gider
+     (ADR-0018). Bu dosya varken Boot'un kendi kurulumu devre dışı kalır: base.xml'i eklemek konsolu düz metne
+     çevirir (yük testinde böyle fark edildi), bu yüzden yapılandırılmış konsol ekleyicisi açıkça seçilir.
+     Biçim logging.structured.format.console (LOG_FORMAT) ile gelir. -->
 <configuration>
-    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <include resource="org/springframework/boot/logging/logback/structured-console-appender.xml"/>
     <appender name="OTEL" class="io.opentelemetry.instrumentation.logback.appender.v1_0.OpenTelemetryAppender">
         <captureMdcAttributes>tenant.id</captureMdcAttributes>
     </appender>
     <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
         <appender-ref ref="OTEL"/>
     </root>
 </configuration>

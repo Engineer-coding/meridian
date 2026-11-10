@@ -1,0 +1,49 @@
+
+
+  █ THRESHOLDS 
+
+    chat_answer_seconds
+    ✗ 'p(95)<8' p(95)=8.3144
+
+    chat_answered
+    ✓ 'rate>0.995' rate=99.94%
+
+    http_req_failed{name:message}
+    ✓ 'rate<0.005' rate=0.00%
+
+
+  █ TOTAL RESULTS 
+
+    checks_total.......: 35489  117.709951/s
+    checks_succeeded...: 99.97% 35479 out of 35489
+    checks_failed......: 0.02%  10 out of 35489
+
+    ✓ giriş 200
+    ✓ konuşma 201
+    ✗ cevap tamam
+      ↳  99% — ✓ 17255 / ✗ 10
+
+    CUSTOM
+    chat_answer_seconds............: avg=5.535904 med=5.096838 p(90)=7.701213 p(95)=8.3144   p(99)=9.560376 max=12.011834
+    chat_answered..................: 99.94% 17255 out of 17265
+    chat_first_event_seconds.......: avg=1.123436 med=0.874359 p(90)=2.221681 p(95)=3.148885 p(99)=4.7394   max=7.901188 
+
+    HTTP
+    http_req_duration..............: avg=2.96s    med=1.95s    p(90)=6.64s    p(95)=7.67s    p(99)=9.01s    max=12.01s   
+      { expected_response:true }...: avg=2.96s    med=1.95s    p(90)=6.64s    p(95)=7.67s    p(99)=9.01s    max=12.01s   
+    http_req_failed................: 0.00%  0 out of 35494
+      { name:message }.............: 0.00%  0 out of 17265
+    http_reqs......................: 35494  117.726535/s
+
+    EXECUTION
+    iteration_duration.............: avg=6.58s    med=6.39s    p(90)=8.16s    p(95)=8.83s    p(99)=10.17s   max=13.46s   
+    iterations.....................: 17265  57.264569/s
+    vus............................: 1      min=0              max=500
+    vus_max........................: 500    min=500            max=500
+
+    NETWORK
+    data_received..................: 105 MB 348 kB/s
+    data_sent......................: 49 MB  161 kB/s
+
+
+

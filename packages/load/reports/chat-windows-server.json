@@ -1,0 +1,57 @@
+{
+  "scenario": "chat",
+  "window_seconds": 296,
+  "model_delay": "1,0.5,3",
+  "trace_sampling": 0.1,
+  "api_and_ai_avg_cores": 1.74,
+  "api_p95_by_uri": {
+    "/v1/tenants/{tenantId}/sources/{sourceId}": null,
+    "/v1/tenants/{tenantId}/conversations/{conversationId}/messages": 26.5912,
+    "/v1/tenants": null,
+    "/v1/tenants/{tenantId}/collections": null,
+    "/v1/tenants/{tenantId}/conversations": 0.1565,
+    "/v1/tenants/{tenantId}/sources": null
+  },
+  "api_requests_by_status": {
+    "200": 6641.2728,
+    "201": 6792.4829,
+    "202": 0.0
+  },
+  "ai_request_p95_by_path": {
+    "/internal/v1/answer": 26.5133
+  },
+  "ai_http_p95_ms": {
+    "toplam": 10000.0
+  },
+  "retrieval_p95": {
+    "toplam": 28.7657
+  },
+  "llm_first_token_p95": {
+    "toplam": 2.3501
+  },
+  "llm_duration_p95_by_operation": {
+    "chat": 4.7486
+  },
+  "indexing_p95": {
+    "toplam": null
+  },
+  "answers_by_outcome": {
+    "answered": 6703.3766
+  },
+  "max_queue_depth": {
+    "ai.indexing": 0.0,
+    "ai.indexing.retry.1": 0.0,
+    "ai.indexing.retry.3": 0.0,
+    "ai.indexing.retry.2": 0.0,
+    "ai.indexing.retry.4": 0.0,
+    "ai.indexing.dlq": 0.0
+  },
+  "hikari_pending_max": {
+    "HikariPool-1": 40.0
+  },
+  "hikari_active_max": {
+    "HikariPool-1": 10.0
+  },
+  "jvm_threads_live_max": {},
+  "alerts_fired": {}
+}

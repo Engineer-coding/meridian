@@ -1,0 +1,27 @@
+{
+  "scenario": "indexing",
+  "window_seconds": 9,
+  "model_delay": "1,0.5,3",
+  "trace_sampling": 0.1,
+  "ai_db_pool_size": 4,
+  "ai_workers": 2,
+  "api_db_pool_size": 20,
+  "avg_cores": {
+    "api": 2.11,
+    "ai": 0.8
+  },
+  "api_p95_by_uri": {},
+  "api_requests_by_status": {},
+  "ai_request_p95_by_path": {},
+  "ai_http_p95_ms": {},
+  "retrieval_p95": {},
+  "llm_first_token_p95": {},
+  "llm_duration_p95_by_operation": {},
+  "indexing_p95": {},
+  "answers_by_outcome": {},
+  "max_queue_depth": {},
+  "hikari_pending_max": {},
+  "hikari_active_max": {},
+  "jvm_threads_live_max": {},
+  "alerts_fired": {}
+}

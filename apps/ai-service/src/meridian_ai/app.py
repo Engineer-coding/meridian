@@ -57,7 +57,7 @@ def create_app(
         raise ValueError(f"embedding boyutu {embedder.dimensions}, şema {DIMENSIONS} bekliyor")
     embedder = TracedEmbedder(embedder)
 
-    pool = create_pool(settings.database_conninfo)
+    pool = create_pool(settings.database_conninfo, settings.db_pool_size)
     http = httpx.AsyncClient(timeout=httpx.Timeout(30.0), follow_redirects=True)
     token = settings.github_token.get_secret_value() if settings.github_token else None
     handler: Handler = TracedHandler(

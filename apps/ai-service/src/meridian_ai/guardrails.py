@@ -10,6 +10,7 @@ oluşturur; asıl sınırlar en az yetkili araçlar, insan onayı, RLS ve kodla 
 yakaladıkları kırmızı takım raporunda ölçülür, yanlış alarmları da gerçek korpusta sayılır.
 """
 
+import functools
 import logging
 import re
 import unicodedata
@@ -105,6 +106,9 @@ _SYSTEM_SPOOF = re.compile(r"\bSYSTEM\s*:\s")
 _PARAGRAPH = re.compile(r"\n\s*\n")
 
 
+# Aynı parçalar istekler arasında tekrar tekrar gelir; yük testinde bu tarama AI sürecinin işlemci zamanının
+# %30'unu harcıyordu (ADR-0019). Sonuç yalnızca metne bağlıdır, önbellek davranışı değiştirmez.
+@functools.lru_cache(maxsize=8192)
 def is_instruction_like(text: str) -> bool:
     normalized = _normalized(text)
     return bool(_INSTRUCTION.search(normalized) or _SYSTEM_SPOOF.search(normalized))

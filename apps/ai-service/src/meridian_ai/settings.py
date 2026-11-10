@@ -33,6 +33,8 @@ class Settings(BaseSettings):
     postgres_db: str = "meridian"
     db_ai_user: str = "meridian_ai"
     db_ai_password: str = ""
+    # Bağlantı havuzu (ADR-0019): yük testinde 4 bağlantı, aramayı kuyrukta bekletti.
+    db_pool_size: int = Field(default=4, ge=1, le=100)
 
     # Embedding (ADR-0012). Model ilk kullanımda indirilir ve önbellekte tutulur.
     embedding_model: str = DEFAULT_MODEL

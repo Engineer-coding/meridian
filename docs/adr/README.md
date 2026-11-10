@@ -25,3 +25,4 @@ Kabul edilmiş bir ADR değiştirilmez; yerine yeni bir ADR yazılır ve eskisin
 | [0016](0016-guardrails-and-red-team.md) | Kod korumaları ve kırmızı takım seti | Kabul edildi |
 | [0017](0017-observability.md) | İzleme: OpenTelemetry, tek iz ve JSON loglar | Kabul edildi |
 | [0018](0018-slo-alerts-dashboards.md) | SLO'lar, yanma hızı alarmları ve kod olarak paneller | Kabul edildi |
+| [0019](0019-load-test.md) | Yük testi: k6, sahte model ve ölçülerek bulunan darboğazlar | Kabul edildi |

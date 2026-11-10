@@ -11,6 +11,9 @@ spring:
     url: jdbc:postgresql://localhost:5432/meridian
     username: meridian_app
     password: ${DB_APP_PASSWORD}
+    # Yük testinde (ADR-0019) 10 bağlantı 500 eşzamanlı sohbette kuyruk oluşturdu; 20 ile p95 hedefi tuttu.
+    hikari:
+      maximum-pool-size: ${API_DB_POOL_SIZE:20}
   flyway:
     user: meridian_owner
     password: ${DB_OWNER_PASSWORD}

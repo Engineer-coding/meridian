@@ -67,8 +67,8 @@
     },
     {
       "version": "v0.4.0",
-      "commit": "e66c6b9-dirty",
-      "date": "2026-11-07",
+      "commit": "531eef9-dirty",
+      "date": "2026-11-10",
       "golden": "v2",
       "questions": 165,
       "config": "vector",

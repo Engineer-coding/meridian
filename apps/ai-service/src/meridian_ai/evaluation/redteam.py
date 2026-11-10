@@ -411,6 +411,16 @@ async def main(argv: list[str]) -> int:
             await pool.close()
             rows = await run_all(db, embedder, lambda _: llm, scenarios)
 
+    # Model kapalıyken her deneme "failed" biter ve saldırı "durdu" sayılır; böyle bir rapor yazılmaz
+    # (Ollama kapalıyken bir koşu geçerli raporun üzerine yazdı).
+    failed = sum(1 for row in rows if row.get("status") in ("failed", "degraded"))
+    if failed > len(rows) // 10:
+        print(
+            f"{failed}/{len(rows)} deneme modelsiz bitti; model çalışıyor mu? Rapor yazılmadı.",
+            file=sys.stderr,
+        )
+        return 1
+
     report = {
         "name": args.name,
         "model": args.llm,

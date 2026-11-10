@@ -15,11 +15,11 @@ async def _configure(connection: AsyncConnection) -> None:
     await connection.commit()
 
 
-def create_pool(conninfo: str) -> AsyncConnectionPool:
+def create_pool(conninfo: str, max_size: int = 4) -> AsyncConnectionPool:
     return AsyncConnectionPool(
         conninfo,
         min_size=1,
-        max_size=4,
+        max_size=max_size,
         open=False,
         configure=_configure,
         name="meridian-ai",
