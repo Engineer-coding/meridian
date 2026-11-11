@@ -4,7 +4,16 @@ Bu proje [Semantic Versioning](https://semver.org) kullanır.
 Biçim: [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/).
 
 ## [Unreleased]
+
+## [0.6.0] - 2026-11-11
+İzleme, SLO alarmları ve yük testi. Bir soru web'den modele, kuyruktan da geçerek tek izde görünür; API
+kullanılabilirliği için yanma hızı alarmları ve Grafana paneli kodla tanımlıdır. Yük testinde 500 eşzamanlı
+sohbette tam cevap p95 7,4 sn, saniyede 68 cevap, 0 başarısız istek (sahte model, tek makine); bu,
+gerçek modelin kapasitesini değil, modelin çevresindeki sistemin kapasitesini ölçer. Cevap kalitesi
+değişmedi.
+
 ### Added
+- Kök README: bileşenler, sistem diyagramı, yerel kurulum, servis adresleri ve `make` komutları. Modül haritası (`docs/architecture/modules.md`) koddaki 13 modüle göre güncellendi.
 - Yük testi (ADR-0019, `make load`, `packages/load`): k6 ile 500 eşzamanlı sohbet ve 50 eşzamanlı indeksleme işi; sunucu ölçümleri Prometheus'tan. Son yapılandırmada tam cevap p95 7,4 sn, saniyede 68 cevap, 0 başarısız istek (sahte model, tek makine).
 - AI servisi için üretim imajı (`apps/ai-service/Dockerfile`) ve süreç sayısı ayarı (`HTTP_WORKERS`, Linux).
 - İzleme (ADR-0017): web, API ve AI servisi OTLP ile OpenTelemetry Collector'a yazar; bir soru tek izde görünür. İz kuyruktan da geçer (outbox `traceparent`, V8). Metrikler: HTTP RED, AI çağrısı, model süresi, ilk token, token, arama, indeksleme, cevap sonucu, ajan durumu. JSON loglar: her satırda iz ve kiracı kimliği. Gönderim `OTEL_EXPORT=true` ile açılır.
@@ -124,7 +133,8 @@ Faz 2 (çekirdek backend) kapısı geçildi: sözleşmedeki her kiracıya bağl�
 - MinIO yerine RustFS: MinIO topluluk Docker imajları yayından kalktı.
 - gitleaks-action yerine sürümü sabitlenmiş gitleaks imajı: action ilk commit'te aralığı çözemiyordu.
 
-[Unreleased]: https://github.com/Engineer-coding/meridian/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/Engineer-coding/meridian/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/Engineer-coding/meridian/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/Engineer-coding/meridian/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/Engineer-coding/meridian/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/Engineer-coding/meridian/compare/v0.2.0...v0.3.0
