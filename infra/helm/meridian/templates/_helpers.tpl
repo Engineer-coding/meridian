@@ -23,8 +23,10 @@ app.kubernetes.io/name: meridian
 app.kubernetes.io/component: {{ .component }}
 {{- end -}}
 
-{{/* Pod güvenlik bağlamı: root olmayan kullanıcı. */}}
+{{/* Pod varsayılanları: root olmayan kullanıcı; servis bağlantısı ortam değişkenleri kapalı
+(servisler compose adlarını taşır, POSTGRES_PORT=tcp://... gibi değişkenler uygulama ayarlarıyla çakışır). */}}
 {{- define "meridian.podSecurity" -}}
+enableServiceLinks: false
 securityContext:
   runAsNonRoot: true
   runAsUser: {{ .uid }}

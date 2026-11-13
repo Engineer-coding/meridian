@@ -37,3 +37,10 @@ tests:
       skipEmptyTemplates: true
     asserts:
       - hasDocuments: {count: 0}
+  - it: turns off service-link env vars, which collide with app settings (POSTGRES_PORT=tcp://...)
+    documentSelector:
+      path: kind
+      value: Deployment
+      matchMany: true
+    asserts:
+      - equal: {path: spec.template.spec.enableServiceLinks, value: false}

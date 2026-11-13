@@ -4,7 +4,7 @@ COMPOSE = docker compose -f infra/compose/compose.yaml --env-file .env
 
 PYTHON ?= python
 
-.PHONY: up down ps logs psql reset smoke contract-lint eval-validate api-test ai-test ai-run web-test web-e2e e2e-full web-run eval eval-smoke eval-answers eval-redteam obs-check load images helm-test
+.PHONY: up down ps logs psql reset smoke contract-lint eval-validate api-test ai-test ai-run web-test web-e2e e2e-full web-run eval eval-smoke eval-answers eval-redteam obs-check load images helm-test k8s-up k8s-dev k8s-down k8s-smoke
 
 up:
 	$(COMPOSE) up -d --wait
@@ -105,3 +105,18 @@ helm-test:
 	helm unittest $(CHART)
 	helm template meridian $(CHART) -f $(CHART)/values-local.yaml | $(KUBECONFORM)
 	helm template meridian $(CHART) -f $(CHART)/values-local.yaml -f $(CHART)/values-ci.yaml | $(KUBECONFORM)
+
+# Yerel Kubernetes (ADR-0009): kind + Argo CD. k8s-up dalı GitHub'dan çeker (push edilmiş olmalı);
+# k8s-dev aynı chart'ı çalışma ağacından kurar. Önce: make images.
+K8S_REVISION ?= $(shell git rev-parse --abbrev-ref HEAD)
+k8s-up:
+	bash infra/k8s/up.sh local argo $(K8S_REVISION)
+
+k8s-dev:
+	bash infra/k8s/up.sh local helm
+
+k8s-down:
+	bash infra/k8s/down.sh
+
+k8s-smoke:
+	bash infra/k8s/smoke.sh http://meridian.localtest.me alice alice
