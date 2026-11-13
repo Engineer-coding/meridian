@@ -15,8 +15,9 @@ import httpx2
 
 from meridian_ai.llm import LLMUnavailable, Message, usage_counter
 
-# Zincir yedeğe hızlı geçsin: SDK'nın varsayılan uzun yeniden denemeleri kullanıcıyı bekletir.
-_RETRIES = 1
+# Yeniden deneme zincirin işidir: SDK 429'da `retry-after` kadar (onlarca saniye) bekler,
+# zaman aşımlarını da tekrarlar; kullanıcı bu sürede yedek sağlayıcıyı bekler.
+_RETRIES = 0
 _TIMEOUT = httpx2.Timeout(30.0, connect=5.0)
 _THINKING: Any = {"type": "disabled"}
 
@@ -84,6 +85,9 @@ class AnthropicLLM:
                 final = await stream.get_final_message()
         except anthropic.APIError as e:
             raise self._unavailable(e) from e
+        except httpx2.HTTPError as e:
+            # Başlıklar geldikten sonraki kopma SDK tarafından sarılmaz.
+            raise LLMUnavailable(f"{self.name}: {type(e).__name__}") from e
         _count(final.usage)
         if final.stop_reason == "refusal":
             raise LLMUnavailable(f"{self.name}: refusal")
@@ -95,10 +99,17 @@ class AnthropicLLM:
         try:
             response = await client.messages.create(
                 **self._params(messages, max_tokens),
-                output_config={"effort": "low", "format": {"type": "json_schema", "schema": schema}},
+                # Yapılandırılmış çıktı kapalı nesne ister ve maxLength gibi kısıtları desteklemez;
+                # SDK bunları açıklamaya taşır. Çıktıyı çağıran yine doğrular (agent.Decision).
+                output_config={
+                    "effort": "low",
+                    "format": {"type": "json_schema", "schema": anthropic.transform_schema(schema)},
+                },
             )
         except anthropic.APIError as e:
             raise self._unavailable(e) from e
+        except httpx2.HTTPError as e:
+            raise LLMUnavailable(f"{self.name}: {type(e).__name__}") from e
         _count(response.usage)
         if response.stop_reason == "refusal":
             raise LLMUnavailable(f"{self.name}: refusal")

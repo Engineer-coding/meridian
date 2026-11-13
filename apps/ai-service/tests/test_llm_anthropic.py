@@ -1,11 +1,13 @@
 """Anthropic sağlayıcısı: gerçek SDK, sahte HTTP katmanı (httpx2 MockTransport) ile sınanır."""
 
+import asyncio
 import json
 from collections.abc import AsyncIterator, Callable
 
 import httpx2
 import pytest
 
+from meridian_ai.agent import decision_schema
 from meridian_ai.llm import LLMUnavailable, Message, UsageCounter, usage_counter
 from meridian_ai.llm_anthropic import AnthropicLLM, make_client
 
@@ -178,7 +180,10 @@ async def test_complete_json_sends_json_schema_format_and_returns_text() -> None
     finally:
         usage_counter.reset(token)
     assert text == '{"action":"finish"}'
-    assert seen[0]["output_config"]["format"] == {"type": "json_schema", "schema": schema}
+    assert seen[0]["output_config"]["format"] == {
+        "type": "json_schema",
+        "schema": schema | {"additionalProperties": False},
+    }
     assert "stream" not in seen[0] or seen[0]["stream"] is False
     assert (counter.prompt_tokens, counter.completion_tokens, counter.counted) == (50, 7, True)
 
@@ -187,3 +192,51 @@ async def test_complete_json_refusal_becomes_unavailable() -> None:
     provider = llm(lambda _: message_json(None, stop="refusal"))
     with pytest.raises(LLMUnavailable, match="refusal"):
         await provider.complete_json(USER, {"type": "object"}, max_tokens=50)
+
+
+# --- son gözden geçirme bulguları -----------------------------------------------------------------
+
+
+class _DropsAfter(httpx2.AsyncByteStream):
+    """Başlıklar ve ilk olaylar gelir, sonra bağlantı kopar."""
+
+    def __init__(self, body: bytes) -> None:
+        self._body = body
+
+    async def __aiter__(self):
+        yield self._body
+        raise httpx2.RemoteProtocolError("peer closed connection")
+
+
+async def test_transport_error_after_headers_becomes_unavailable() -> None:
+    head = "".join(f"event: {e['type']}\ndata: {json.dumps(e)}\n\n" for e in stream_events()[:2])
+    response = httpx2.Response(
+        200, headers={"content-type": "text/event-stream"}, stream=_DropsAfter(head.encode())
+    )
+    with pytest.raises(LLMUnavailable):
+        await collect(llm(lambda _: response).stream(USER, max_tokens=10))
+
+
+async def test_rate_limit_falls_through_without_waiting_for_retry_after() -> None:
+    calls: list[int] = []
+
+    def handler(request: httpx2.Request) -> httpx2.Response:
+        calls.append(1)
+        error = {"type": "error", "error": {"type": "rate_limit_error", "message": "slow down"}}
+        return httpx2.Response(429, headers={"retry-after": "30"}, json=error)
+
+    with pytest.raises(LLMUnavailable, match="429"):
+        await asyncio.wait_for(collect(llm(handler).stream(USER, max_tokens=10)), timeout=2)
+    assert len(calls) == 1
+
+
+async def test_complete_json_sends_agent_schema_in_structured_output_form() -> None:
+    seen: list[dict] = []
+    schema = decision_schema(["search_knowledge", "finish"], [])
+    await llm(recording(message_json('{"thought":"t","action":"finish"}'), seen)).complete_json(
+        USER, schema, max_tokens=200
+    )
+    sent = seen[0]["output_config"]["format"]["schema"]
+    assert sent["additionalProperties"] is False
+    assert all("maxLength" not in prop for prop in sent["properties"].values())
+    assert sent["properties"]["action"]["enum"] == ["search_knowledge", "finish"]
