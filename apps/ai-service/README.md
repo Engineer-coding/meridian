@@ -31,6 +31,7 @@ CPU'da çalışır ve yavaştır: dizüstü bir makinede parça başına ~2 sani
 | `POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_DB`, `DB_AI_USER`, `DB_AI_PASSWORD` | `127.0.0.1`, `5432`, `meridian`, `meridian_ai` |
 | `EMBEDDING_MODEL`, `EMBEDDING_CACHE_DIR`, `EMBEDDING_BATCH_SIZE` | `intfloat/multilingual-e5-large`, …, `16` |
 | `LLM_CHAIN`, `OLLAMA_URL` | `ollama/llama3.2:3b`, `http://127.0.0.1:11434` |
+| `ANTHROPIC_API_KEY` | boş; `LLM_CHAIN=anthropic/claude-haiku-5-5,ollama/llama3.2:3b` gibi bir zincirde kullanılır. Anahtar yoksa o sağlayıcı atlanır. Soru metni ve seçilen (PII maskeli) parçalar Anthropic'e gider. |
 | `ANSWER_SOURCES`, `ANSWER_MAX_TOKENS` | `3`, `300` |
 | `RERANKER`, `RERANK_CANDIDATES` | kapalı (`bge-m3`, `jina-v2`), `20` |
 | `AI_INTERNAL_TOKEN` | yok: iç uç her isteği reddeder |

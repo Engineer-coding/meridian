@@ -175,7 +175,12 @@ async def main(argv: list[str]) -> int:
     llm, http = None, None
     if args.answers:
         http = httpx.AsyncClient(timeout=httpx.Timeout(900.0))
-        chain = build_chain(args.llm, http, os.environ.get("OLLAMA_URL", "http://127.0.0.1:11434"))
+        chain = build_chain(
+            args.llm,
+            http,
+            os.environ.get("OLLAMA_URL", "http://127.0.0.1:11434"),
+            os.environ.get("ANTHROPIC_API_KEY", ""),
+        )
         llm = CachingLLM(chain, CACHE / "eval" / "completions.sqlite")
     rerankers = {
         short: CachingReranker(
