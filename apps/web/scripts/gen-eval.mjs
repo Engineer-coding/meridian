@@ -41,7 +41,7 @@ const data = {
     min: { ...thresholds.retrieval.min, ...thresholds.answers.min },
     max: thresholds.answers.max,
   },
-  releases: [...read("history.json"), current("answers", "v0.4.0"), current("answers-bge-m3", "v0.4.0 + bge-m3")],
+  releases: [...read("history.json"), current("answers", "v0.4.0"), current("answers-bge-m3", "v0.4.0 + bge-m3"), current("answers-haiku", "v0.7.0 · Haiku")],
 };
 const text = `${JSON.stringify(data, null, 2)}\n`;
 

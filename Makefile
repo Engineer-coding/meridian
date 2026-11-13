@@ -84,8 +84,8 @@ eval-smoke:
 # Kaynaklı cevap değerlendirmesi (Ollama, ADR-0008). Bu donanımda soru başına ~1,5 dk;
 # cevaplar ~/.cache/meridian/eval altında önbelleklenir.
 eval-answers:
-	cd apps/ai-service && PYTHONUTF8=1 uv run python -m meridian_ai.evaluation --answers --name $(NAME)
+	cd apps/ai-service && PYTHONUTF8=1 uv run python -m meridian_ai.evaluation --answers --name $(NAME) $(if $(LLM),--llm $(LLM))
 
 # Kırmızı takım seti gerçek modelle (ADR-0016). CPU'da saatler sürer; rapor depoya girer, CI kapısı denetler.
 eval-redteam:
-	cd apps/ai-service && PYTHONUTF8=1 uv run python -m meridian_ai.evaluation.redteam --name $(NAME)
+	cd apps/ai-service && PYTHONUTF8=1 uv run python -m meridian_ai.evaluation.redteam --name $(NAME) $(if $(LLM),--llm $(LLM))

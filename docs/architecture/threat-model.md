@@ -66,6 +66,19 @@ STRIDE: **S**poofing, **T**ampering, **R**epudiation, **I**nformation disclosure
 - Kurumsal SSO'nun tüm varyantları (yalnızca OIDC desteklenir).
 - Fiziksel saldırılar ve son kullanıcı cihaz güvenliği.
 
+## Barındırılan LLM'e giden veri
+
+`LLM_CHAIN` içinde `anthropic/<model>` varsa (demo: `claude-haiku-5-5`) aşağıdakiler makineden çıkar.
+Yalnızca `ollama/...` kullanılırsa hiçbir şey dışarı gitmez.
+
+| Alan | Gider mi | Not |
+|---|---|---|
+| Soru metni | Evet | Kullanıcının yazdığı haliyle; zararlı ve istem çıkaran istekler modele gitmeden durdurulur (T29) |
+| Seçilen kaynak parçaları (ilk 3) | Evet | İndekslemede PII maskelenmiştir (T9); talimat paragrafları çıkarılır (T18) |
+| Ajan araç sonuçları | Evet | Yalnızca ajan sayfasında; salt-okunur SQL sonuçları dahil |
+| Kullanıcı, kiracı, konuşma kimliği | Hayır | İstekte kimlik alanı yok |
+| Önceki konuşma mesajları | Hayır | Her cevap tek soruyla üretilir |
+| İz bağlamı (`traceparent`) | Evet | SDK'nın varsayılanı; içerik değil, yalnızca iz kimliği |
+
 ## Açık sorular
-- LLM sağlayıcıya hangi alanlar gidiyor? Veri akış tablosu Faz 4'te eklenecek.
 - API anahtarı hash algoritması ve rotasyon süresi Faz 2'de (ADR-0005) belirlenecek.
