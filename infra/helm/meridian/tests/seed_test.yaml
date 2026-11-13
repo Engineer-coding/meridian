@@ -1,0 +1,44 @@
+suite: seed
+templates:
+  - templates/seed.yaml
+values:
+  - ../values-local.yaml
+tests:
+  - it: runs once after install and upgrade as a hook job
+    documentSelector: {path: kind, value: Job}
+    asserts:
+      - equal: {path: spec.template.spec.restartPolicy, value: Never}
+      - equal: {path: spec.backoffLimit, value: 3}
+      - equal: {path: 'metadata.annotations["helm.sh/hook"]', value: "post-install,post-upgrade"}
+      - equal: {path: 'metadata.annotations["helm.sh/hook-delete-policy"]', value: before-hook-creation}
+      - equal: {path: 'spec.template.metadata.labels["app.kubernetes.io/component"]', value: seed}
+  - it: keeps a suspended CronJob with the same pod for manual reruns
+    documentSelector: {path: kind, value: CronJob}
+    asserts:
+      - equal: {path: spec.suspend, value: true}
+      - equal: {path: spec.jobTemplate.spec.template.spec.restartPolicy, value: Never}
+  - it: reads database credentials only from the secret
+    documentSelector: {path: kind, value: Job}
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: POSTGRES_PASSWORD
+            valueFrom: {secretKeyRef: {name: meridian-secrets, key: POSTGRES_PASSWORD}}
+      - notContains:
+          path: spec.template.spec.containers[0].env
+          content: {name: POSTGRES_PASSWORD, value: meridian_dev}
+  - it: passes the seed plan as JSON
+    documentSelector: {path: kind, value: Job}
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content: {name: SEED_TOKEN_URL, value: http://meridian.localtest.me/auth/realms/meridian/protocol/openid-connect/token}
+      - matchRegex:
+          path: spec.template.spec.containers[0].env[?(@.name == "SEED_PLAN")].value
+          pattern: '"slug":"acme-demo"'
+  - it: renders nothing when disabled
+    set:
+      seed.enabled: false
+    asserts:
+      - hasDocuments: {count: 0}

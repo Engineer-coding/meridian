@@ -10,3 +10,12 @@ image:
 # CI makinesinin belleği sınırlı; izleme yığını ayrı işlerde sınanıyor (make obs-check, e2e-full).
 observability:
   enabled: false
+
+# Sahte GitHub çekicisi her kaynağa aynı sabit belgeyi verir; tek kaynak yeter.
+seed:
+  sources:
+    - name: KVKK 6698
+      repository: Engineer-coding/meridian
+      branch: main
+      paths: [packages/eval/corpus/kvkk]
+  timeoutSeconds: 600
