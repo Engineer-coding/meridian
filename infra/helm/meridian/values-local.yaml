@@ -22,3 +22,23 @@ keycloak:
 observability:
   enabled: true
   sampling: 1.0
+
+# Demo kiracısı (seed işi): alice sahibi, bob izleyici. Kaynaklar küçük tutulur: CPU'da birkaç dakika.
+seed:
+  enabled: true
+  admin: alice
+  adminPassword: alice
+  tenant: {slug: acme-demo, name: Acme Demo}
+  collection: Belgeler
+  sources:
+    - name: KVKK 6698
+      repository: Engineer-coding/meridian
+      branch: main
+      paths: [packages/eval/corpus/kvkk]
+    - name: Kubernetes Pods
+      repository: kubernetes/website
+      branch: main
+      paths: [content/en/docs/concepts/workloads/pods]
+  viewers:
+    - {userId: bbbbbbbb-0000-4000-8000-0000000000b1, email: bob@beta.test}
+  timeoutSeconds: 1800

@@ -1,0 +1,79 @@
+{{- /* Seed pod'u: kanca Job'u ve elle yeniden çalıştırma CronJob'u aynı tanımı kullanır. */ -}}
+{{- define "meridian.seedPod" -}}
+{{- $root := .root -}}
+{{- $s := $root.Values.seed -}}
+metadata:
+  labels: {{- include "meridian.labels" (dict "root" $root "component" "seed") | nindent 4 }}
+spec:
+  restartPolicy: Never
+  {{- include "meridian.podSecurity" (dict "uid" 10001) | nindent 2 }}
+  containers:
+    - name: seed
+      image: {{ include "meridian.image" (dict "root" $root "repository" $root.Values.ai.repository) }}
+      imagePullPolicy: {{ $root.Values.image.pullPolicy }}
+      command: [python, /seed/seed.py]
+      {{- include "meridian.containerSecurity" $root | nindent 6 }}
+      env:
+        - {name: SEED_API_URL, value: "http://meridian-api:8080"}
+        - {name: SEED_TOKEN_URL, value: {{ printf "%s/protocol/openid-connect/token" (include "meridian.issuer" $root) }}}
+        - {name: SEED_PLAN, value: {{ .plan | toJson | quote }}}
+        - {name: POSTGRES_HOST, value: postgres}
+        {{- if $s.adminPassword }}
+        - {name: SEED_ADMIN_PASSWORD, value: {{ $s.adminPassword | quote }}}
+        {{- else }}
+        - name: SEED_ADMIN_PASSWORD
+          valueFrom: {secretKeyRef: {name: {{ $root.Values.secretName }}, key: {{ required "seed.adminPassword ya da seed.adminPasswordEnv gerekli" $s.adminPasswordEnv }}}}
+        {{- end }}
+        {{- range list "POSTGRES_DB" "POSTGRES_USER" "POSTGRES_PASSWORD" }}
+        {{- include "meridian.secretEnv" (dict "root" $root "name" .) | nindent 8 }}
+        {{- end }}
+      volumeMounts:
+        - {name: script, mountPath: /seed, readOnly: true}
+      resources:
+        requests: {cpu: 50m, memory: 64Mi}
+        limits: {memory: 256Mi}
+  volumes:
+    - name: script
+      configMap: {name: meridian-seed-script}
+{{- end -}}
+{{- if .Values.seed.enabled -}}
+{{- $c := dict "root" . "component" "seed" -}}
+{{- $s := .Values.seed -}}
+{{- $plan := dict "admin" $s.admin "tenant" $s.tenant "collection" $s.collection "sources" $s.sources "viewers" ($s.viewers | default list) "timeoutSeconds" ($s.timeoutSeconds | default 900) -}}
+{{- $pod := dict "root" . "plan" $plan -}}
+# Betik normal bir kaynak: hem kanca Job'u hem CronJob okur.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: meridian-seed-script
+  labels: {{- include "meridian.labels" $c | nindent 4 }}
+data:
+{{ (.Files.Glob "files/seed/seed.py").AsConfig | indent 2 }}
+---
+# Kurulum ve her güncellemeden sonra bir kez (Argo CD bunu PostSync kancası olarak çalıştırır).
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: meridian-seed
+  labels: {{- include "meridian.labels" $c | nindent 4 }}
+  annotations:
+    helm.sh/hook: post-install,post-upgrade
+    helm.sh/hook-delete-policy: before-hook-creation
+spec:
+  backoffLimit: 3
+  template: {{- include "meridian.seedPod" $pod | nindent 4 }}
+---
+# Elle yeniden çalıştırmak için: kubectl -n meridian create job seed-now --from=cronjob/meridian-seed
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: meridian-seed
+  labels: {{- include "meridian.labels" $c | nindent 4 }}
+spec:
+  suspend: true
+  schedule: "0 0 1 1 *"
+  jobTemplate:
+    spec:
+      backoffLimit: 3
+      template: {{- include "meridian.seedPod" $pod | nindent 8 }}
+{{- end }}

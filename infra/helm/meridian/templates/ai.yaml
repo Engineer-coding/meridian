@@ -53,6 +53,10 @@ spec:
             - name: ANTHROPIC_API_KEY
               valueFrom:
                 secretKeyRef: {name: {{ .Values.secretName }}, key: ANTHROPIC_API_KEY, optional: true}
+            # Kimliksiz GitHub API'si saatte 60 istek verir; büyük kaynaklar ya da sık kurulum için token.
+            - name: GITHUB_TOKEN
+              valueFrom:
+                secretKeyRef: {name: {{ .Values.secretName }}, key: GITHUB_TOKEN, optional: true}
             {{- include "meridian.otelEnv" . | nindent 12 }}
           volumeMounts:
             - {name: models, mountPath: /models}

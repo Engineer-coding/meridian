@@ -65,3 +65,12 @@ tests:
     asserts:
       - equal: {path: "spec.template.spec.containers[0].image", value: "meridian-ai-test:local"}
       - equal: {path: "spec.template.spec.containers[0].imagePullPolicy", value: Never}
+  - it: ai takes optional provider and GitHub tokens from the secret
+    template: templates/ai.yaml
+    documentSelector: {path: kind, value: Deployment}
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: GITHUB_TOKEN
+            valueFrom: {secretKeyRef: {name: meridian-secrets, key: GITHUB_TOKEN, optional: true}}
