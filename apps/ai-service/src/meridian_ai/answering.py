@@ -72,6 +72,9 @@ QUOTE_MATCH = 0.9
 MIN_QUOTE_CHARS = 12
 MIN_EXACT_CHARS = 6
 _NO_EVIDENCE = frozenset({"yok", "none", "bilmiyorum"})
+# Alıntı adayları: tırnak içindeki parçalar (düz ve kıvrık tırnak) ve satırlar.
+_QUOTED = re.compile(r'["“«]([^"”»\n]{6,})["”»]')
+_LINES = re.compile(r"\n")
 
 
 @dataclass(frozen=True)
@@ -142,8 +145,26 @@ def detect_language(text: str) -> str:
     return "tr" if words & _TURKISH_WORDS else "en"
 
 
+def _quote_candidates(quote: str) -> list[str]:
+    """Modelin çıktısı, içindeki tırnaklı parçalar ve satırları.
+
+    Barındırılan modeller alıntıyı çoğu zaman bir önsözle ("The sentence from the sources is:")
+    sarar ya da arkasına not ekler; yalnızca bütün çıktıyı aramak doğru alıntıyı da reddeder.
+    Her aday yine kaynakta geçmek zorundadır: önsöz uydurma bir alıntıyı kurtarmaz.
+    """
+    lines = [line for line in _LINES.split(quote) if line.strip()]
+    return [quote, *_QUOTED.findall(quote), *lines]
+
+
 def verify_quote(quote: str, sources: Sequence[Source]) -> int | None:
     """Alıntının (neredeyse) aynen geçtiği kaynağın numarası; hiçbirinde yoksa ``None``."""
+    for candidate in _quote_candidates(quote):
+        if (number := _verify_one(candidate, sources)) is not None:
+            return number
+    return None
+
+
+def _verify_one(quote: str, sources: Sequence[Source]) -> int | None:
     wanted = _normalize(quote)
     if len(wanted) < MIN_EXACT_CHARS or wanted in _NO_EVIDENCE:
         return None

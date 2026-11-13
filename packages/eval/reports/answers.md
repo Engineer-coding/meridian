@@ -1,6 +1,6 @@
 # Retrieval değerlendirmesi — answers
 
-- Tarih: 2026-11-13 · commit `2f61dee-dirty`
+- Tarih: 2026-11-13 · commit `28d8890-dirty`
 - Model: `intfloat/multilingual-e5-large` · parça ≤ 1200 karakter, örtüşme 150
 - Korpus: k8s@ef4f9c6cb538 (187 belge), kvkk@5f9e7fa79319 (1 belge) → 3093 parça
 - Altın set: 136 cevaplı / 165 soru (`packages/eval/golden/v2.jsonl`, sha256 `84ad10ae48b0`)
@@ -41,171 +41,171 @@
 - `k8s-173` sıralar [1, None] — ilk sonuç: content/en/docs/concepts/services-networking/dns-pod-service.md § DNS for Services and Pods > DNS resolution on Windows nodes
 - `k8s-186` sıralar [None, 2] — ilk sonuç: content/en/docs/concepts/policy/limit-range.md § Limit Ranges > LimitRange and admission checks for Pods
 
-## Kaynaklı cevap (`ollama/llama3.2:3b`, 3 kaynak)
+## Kaynaklı cevap (`anthropic/claude-haiku-5-5`, 3 kaynak)
 
 | Ölçüt | Değer |
 |---|---|
-| Cevapsız soruda "bilmiyorum" (yüksek iyi) | %93 |
-| Cevaplı soruda gereksiz "bilmiyorum" (düşük iyi) | %30 |
+| Cevapsız soruda "bilmiyorum" (yüksek iyi) | %100 |
+| Cevaplı soruda gereksiz "bilmiyorum" (düşük iyi) | %26 |
 | Altın kaynak bağlamda (üst sınır) | %93 |
-| Cevap en az bir kaynak gösteriyor | %93 |
-| Gösterilen kaynak altın kaynak | %80 |
-| Cevap doğru (anahtar kelime, tüm cevaplı sorular) | %61 |
-| Cevap doğru (model cevap verdiğinde) | %87 |
-| Var olmayan kaynak numarası | %1 |
-| Ortanca ilk token / toplam süre | 58.2 sn / 65.7 sn |
+| Cevap en az bir kaynak gösteriyor | %100 |
+| Gösterilen kaynak altın kaynak | %95 |
+| Cevap doğru (anahtar kelime, tüm cevaplı sorular) | %70 |
+| Cevap doğru (model cevap verdiğinde) | %94 |
+| Var olmayan kaynak numarası | %0 |
+| Ortanca ilk token / toplam süre | 1.7 sn / 1.9 sn |
 
 | Soru | Bilmiyorum | Kaynak | Altın kaynak gösterildi | Cevap |
 |---|---|---|---|---|
-| `kvkk-001` | evet | [] |  | BİLMİYORUM |
-| `kvkk-002` |  | [2] | ✓ | Hayır, sağlık verisi gibi özel nitelikli kişisel veriler, kişinin açık rızası olmadan başka bir şirkete aktarılamaz [2]. Bu tür verileri akt |
-| `kvkk-003` |  | [3] |  | Veri ihlalini Kurula bildirmek için otuz gün süre öngörülmüştür. Bu süre, tebliğden itibaren gecikmeksizin ve en geç otuz gün içinde yerine  |
-| `kvkk-004` |  | [1] | ✓ | Kişisel Verileri Koruma Kurulu dokuz üyeden oluşuyor ve beş üyesi Türkiye Büyük Millet Meclisi, dört üyesi Cumhurbaşkanı tarafından seçiliyo |
-| `kvkk-005` | evet | [] |  | BİLMİYORUM |
-| `kvkk-006` | evet | [] |  | BİLMİYORUM |
-| `kvkk-007` |  | [1] | ✓ | Veri güvenliği tedbirlerini almayan bir şirkete 5.000 Türk lirasından 100.000 Türk lirasına kadar idari para cezası verilebilir. Bu informat |
-| `kvkk-008` |  | [1] | ✓ | Kurulun, şikâyete cevabını vermediği tarihten itibaren altmış gün içinde başvuruya cevap verilmemesi hâlinde, ilgili kişi 60 gün içinde Kuru |
+| `kvkk-001` |  | [1] | ✓ | Veri sorumlusu, ilgili kişinin başvurusunu talebin niteliğine göre en kısa sürede ve en geç otuz gün içinde ücretsiz olarak sonuçlandırmalıd |
+| `kvkk-002` | evet | [] |  | BİLMİYORUM |
+| `kvkk-003` | evet | [] |  | BİLMİYORUM |
+| `kvkk-004` |  | [1] | ✓ | Kişisel Verileri Koruma Kurulu dokuz üyeden oluşur [1]. Kurulun beş üyesini Türkiye Büyük Millet Meclisi, dört üyesini ise Cumhurbaşkanı seç |
+| `kvkk-005` |  | [1] | ✓ | Kurul üyelerinin görev süresi dört yıldır [1]. Süresi biten üye yeniden seçilebilir [1]. |
+| `kvkk-006` |  | [1] | ✓ | Standart sözleşme, imzalanmasından itibaren beş iş günü içinde veri sorumlusu veya veri işleyen tarafından Kuruma bildirilir [1]. Bu süre, s |
+| `kvkk-007` | evet | [] |  | BİLMİYORUM |
+| `kvkk-008` | evet | [] |  | BİLMİYORUM |
 | `kvkk-009` | evet | [] |  | BİLMİYORUM |
-| `kvkk-010` |  | [1, 2] | ✓ | Veri güvenliği yükümlülükleri, Veri sorumlusu'nu a) Kişisel verilerin hukuka aykırı olarak işlenmesini önlemek, b) Kişisel verilere hukuka a |
+| `kvkk-010` | evet | [] |  | BİLMİYORUM |
 | `kvkk-011` | evet | [] |  | BİLMİYORUM |
 | `kvkk-012` | evet | [] |  | BİLMİYORUM |
-| `k8s-001` |  | [1, 3] | ✓ | The default type of a Kubernetes Service is `ClusterIP`, which exposes the Service on a cluster-internal IP, making it only reachable from w |
-| `k8s-002` |  | [1, 2] |  | If a container's liveness probe keeps failing, the kubelet kills the container and applies its restart policy, which may lead to cascading f |
+| `k8s-001` |  | [1, 2] | ✓ | The default type of a Kubernetes Service is `ClusterIP`, which exposes the Service on a cluster-internal IP so it is only reachable from wit |
+| `k8s-002` |  | [1, 2] |  | If a container's liveness probe keeps failing, the kubelet kills the container and subjects it to its restart policy once the failure thresh |
 | `k8s-003` | evet | [] |  | BİLMİYORUM |
-| `k8s-004` |  | [1, 2, 3] | ✓ | When creating a NodePort Service without specifying a port, Kubernetes allocates a port from the dynamic band (30086-32767) by default, as t |
-| `k8s-005` | evet | [] |  | BİLMİYORUM |
-| `k8s-006` |  | [1, 3] | ✓ | With default settings, up to 25% of desired Pods can be unavailable during the update process, which means that a maximum of 25% of the tota |
-| `k8s-007` |  | [1, 3] | ✓ | In a brand-new Kubernetes cluster, there are four initial namespaces: `default`, `kube-node-lease`, `kube-public`, and `kube-system` [1]. Th |
-| `k8s-008` |  | [1, 2] |  | By default, Secret objects are stored unencrypted in etcd, meaning they are not encrypted out of the box [1]. However, cluster administrator |
-| `k8s-009` |  | [1] | ✓ | A ConfigMap is not designed to hold large chunks of data and the data stored in a ConfigMap cannot exceed 1 MiB, so there is a size limit fo |
-| `k8s-010` |  | [1, 2] | ✓ | A Job will retry failing Pods up to 6 times before it is marked as failed by default, unless a backoff limit per index is specified, which w |
-| `k8s-011` | evet | [] |  | BİLMİYORUM |
-| `k8s-012` |  | [1, 2, 3] | ✓ | A StatefulSet requires a Headless Service to be responsible for its network identity, which must be created by the user, and this Service ca |
-| `k8s-013` | evet | [] |  | BİLMİYORUM |
+| `k8s-004` |  | [1, 2, 3] | ✓ | When you create a NodePort Service without specifying a port, Kubernetes allocates a port from the range set by the `--service-node-port-ran |
+| `k8s-005` |  | [2, 3] | ✓ | By default, a Pod's containers get 30 seconds to shut down gracefully after you delete it, since the default grace period is 30 seconds [2]. |
+| `k8s-006` | evet | [] |  | BİLMİYORUM |
+| `k8s-007` |  | [1, 3] | ✓ | A brand-new Kubernetes cluster starts with four initial namespaces: default, kube-node-lease, kube-public, and kube-system [1]. The kube-nod |
+| `k8s-008` | evet | [] |  | BİLMİYORUM |
+| `k8s-009` |  | [1] | ✓ | Yes, the data stored in a ConfigMap cannot exceed 1 MiB [1]. If you need to store settings larger than this, you may consider mounting a vol |
+| `k8s-010` |  | [1, 2] | ✓ | By default, `.spec.backoffLimit` is set to 6, so a Job retries failing Pods six times before it is considered failed [2]. Each pod failure c |
+| `k8s-011` |  | [1, 2, 3] | ✓ | No. In a Job's Pod template, only `Never` or `OnFailure` is allowed; `Always` is not permitted [2]. Also, the restart policy applies to the  |
+| `k8s-012` |  | [2] | ✓ | A StatefulSet requires a Headless Service to be responsible for the network identity of its Pods [2]. You are responsible for creating this  |
+| `k8s-013` |  | [1, 2, 3] | ✓ | The kubelet first evicts `BestEffort` or `Burstable` Pods whose usage exceeds their requests, ordered by Priority and then by how far their  |
 | `k8s-014` | evet | [] |  | BİLMİYORUM |
-| `k8s-015` | evet | [] |  | BİLMİYORUM |
+| `k8s-015` |  | [1, 2, 3] | ✓ | If the StorageClass doesn't specify a reclaimPolicy, it defaults to `Delete`, so the dynamically provisioned PersistentVolume inherits that  |
 | `k8s-016` | evet | [] |  | BİLMİYORUM |
 | `k8s-017` | evet | [] |  | BİLMİYORUM |
 | `k8s-018` | evet | [] |  | BİLMİYORUM |
-| `kvkk-101` | evet | [] |  | BİLMİYORUM |
-| `kvkk-103` |  | [] |  | Kurul toplantı yapabilmek için en az altı üyeyle toplanır ve üye tam sayısının salt çoğunluğuyla karar alır. |
-| `kvkk-104` | evet | [] |  | BİLMİYORUM |
+| `kvkk-101` |  | [1] | ✓ | Kişisel Verileri Koruma Kurumunun merkezi Ankara'dadır [1]. |
+| `kvkk-103` |  | [1] | ✓ | Kurul, başkan dâhil en az altı üye ile toplanır [1]. Kararlar, üye tam sayısının salt çoğunluğuyla alınır [1]. Kurul üyeleri çekimser oy kul |
+| `kvkk-104` |  | [1] | ✓ | Hayır, Kurul üyeleri çekimser oy kullanamaz [1]. Kanun, Kurulun en az altı üye ile toplanıp üye tam sayısının salt çoğunluğuyla karar alacağ |
 | `kvkk-105` | evet | [] |  | BİLMİYORUM |
-| `kvkk-106` | evet | [] |  | BİLMİYORUM |
-| `kvkk-107` |  | [1] | ✓ | Veri sorumlusu, Kurulun inceleme konusuyla ilgili istemiş olduğu bilgi ve belgeleri on beş gün içinde göndermek zorundadır. Bu süre, incelem |
-| `kvkk-108` |  | [] |  | Kurul verdiği giderme kararının veri sorumlusu tarafından tebliğden itibaren otuz gün içinde yerine getirilmesi gerekir. |
-| `kvkk-109` |  | [] |  | Veri işlemenin durdurulmasına karar verilebilir, telafisi güç veya imkânsız zararların doğması ve açıkça hukuka aykırılık olması hâlinde. (7 |
-| `kvkk-110` |  | [1] | ✓ | Açık rıza, bir konuya ilişkin bilgilendirilmeye dayanan ve özgür iradeyle açıklanan rızadır [1]. |
-| `kvkk-111` |  | [1] | ✓ | Veri işleyen, veri sorumlusunun verdiği yetkiye dayanarak onun adına kişisel verileri işleyen gerçek veya tüzel kişidir. Bu, veri sorumlusu  |
-| `kvkk-112` |  | [1, 2] | ✓ | Anonim hâle getirme, kişisel verilerin kimliği belirli veya belirlenebilir bir gerçek kişiyle ilişkilendirilemeyecek hâle getirilmesini ifad |
-| `kvkk-113` | evet | [] |  | BİLMİYORUM |
+| `kvkk-106` |  | [1] | ✓ | Hayır, Kurul toplantılarındaki görüşmeler aksi kararlaştırılmadıkça gizlidir [1]. Kurulda görüşülen işler tutanağa bağlanır ve kararlar ile  |
+| `kvkk-107` |  | [1] | ✓ | Veri sorumlusu, Kurulun istediği bilgi ve belgeleri on beş gün içinde göndermek zorundadır; devlet sırrı niteliğindeki bilgi ve belgeler bu  |
+| `kvkk-108` |  | [1, 2, 3] | ✓ | Kurulun giderme kararı, veri sorumlusuna tebliğden itibaren gecikmeksizin ve en geç otuz gün içinde yerine getirilmelidir [1]. Bu düzenleme, |
+| `kvkk-109` |  | [1] | ✓ | Kurul, şikâyet üzerine veya resen yapılan incelemede telafisi güç veya imkânsız zararların doğması ve açıkça hukuka aykırılık bulunması hâli |
+| `kvkk-110` |  | [1] | ✓ | Açık rıza, belirli bir konuya ilişkin, bilgilendirilmeye dayanan ve özgür iradeyle açıklanan rızadır [1]. |
+| `kvkk-111` |  | [1] | ✓ | Veri işleyen, veri sorumlusunun verdiği yetkiye dayanarak onun adına kişisel verileri işleyen gerçek veya tüzel kişidir [1]. |
+| `kvkk-112` |  | [1, 2] | ✓ | Anonymization means processing personal data so that, even when combined with other data, it can no longer be associated with an identified  |
+| `kvkk-113` |  | [1, 2] | ✓ | Kişisel veriler, ilgili mevzuatta öngörülen veya işlendikleri amaç için gerekli olan süre kadar muhafaza edilebilir [1]. Bu, kişisel veriler |
 | `kvkk-114` | evet | [] |  | BİLMİYORUM |
-| `kvkk-115` | evet | [] |  | BİLMİYORUM |
-| `kvkk-116` |  | [1] | ✓ | İşlenebilirlik sebebi ortadan kalkan kişisel verilerin silinmesi, yok edilmesi veya anonim hâle getirilmesi gerekir [1]. |
-| `kvkk-117` |  | [] |  | Yurt dışı aktarımı için yeterlilik kararını, Kurul verir ve bu karar Resmî Gazete’de yayımlanır. |
-| `kvkk-118` |  | [] |  | Yeterlilik kararı, en geç dört yılda bir değerlendirilir. |
-| `kvkk-119` |  | [1] | ✓ | Aidyntatma yükümlülüğü kapsamında ilgili kişiye; veri sorumlusunun ve varsa temsilcisinin kimliği, kişisel verilerin hangi amaçla işleneceği |
+| `kvkk-115` |  | [1, 2, 3] | ✓ | Evet, biyometrik veriler özel nitelikli kişisel veri sayılmaktadır [1]. Bu verilerin işlenmesi, kaynakta sayılan şartların (örneğin ilgili k |
+| `kvkk-116` |  | [1] | ✓ | İşlenmesini gerektiren sebepler ortadan kalkmış olsa da kişisel veriler, Kanun ve ilgili diğer kanun hükümlerine uygun olarak işlenmiş olmal |
+| `kvkk-117` |  | [1, 2] | ✓ | Yeterlilik kararı, Kurul tarafından verilir ve Resmî Gazete'de yayımlanır [1]. Kurul, gerektiğinde ilgili kurum ve kuruluşların görüşünü alı |
+| `kvkk-118` |  | [1, 2] | ✓ | Yeterlilik kararı, en geç dört yılda bir değerlendirilir [2]. Kurul, bu değerlendirme sonucunda veya gerekli gördüğü diğer hallerde kararı i |
+| `kvkk-119` |  | [1, 3] | ✓ | Veri sorumlusu, kişisel verilerin elde edilmesi sırasında ilgili kişiye veri sorumlusunun ve varsa temsilcisinin kimliğini, verilerin hangi  |
 | `kvkk-120` | evet | [] |  | BİLMİYORUM |
-| `kvkk-121` |  | [3] |  | Veri sorumlusu, kendi kurumunda kanuna uymayı sağlamak için gerekli denetimleri yapmak veya yaptırmak zorundadır [3]. |
+| `kvkk-121` |  | [1, 2] | ✓ | Veri sorumlusu, kendi kurum veya kuruluşunda bu Kanun hükümlerinin uygulanmasını sağlamak amacıyla gerekli denetimleri yapmak veya yaptırmak |
 | `kvkk-122` | evet | [] |  | BİLMİYORUM |
-| `kvkk-123` |  | [1] | ✓ | Başvuru için alınan ücret, veri sorumlusunun talebi reddettiği veya hatası nedeniyle alınır. Bu durumda, alınan ücret ilgili kişiye iade edi |
-| `kvkk-124` |  | [3] |  | Kişilik hakları ihlal edilen kişinin tazminat hakkı şikâyet yolu nedeniyle ortadan kalkmaz, ancak genel hükümlere göre tazminat hakkı saklı  |
-| `kvkk-125` |  | [1] | ✓ | Veri Sorumluları Sicilini, Başkanlık tarafından kamuya açık olarak tutulur [1]. |
-| `kvkk-126` | evet | [] |  | BİLMİYORUM |
-| `kvkk-127` |  | [1] | ✓ | Cezalandırılan kişi, 5237 sayılı Türk Ceza Kanununun 138 inci maddesine göre cezalandırılır. Bu, kişisel verileri silmeyen veya anonim hâle  |
-| `kvkk-128` |  | [1] | ✓ | Aydınlatma yükümlülüğünü yerine getirmeyenlere 5.000 Türk lirasından 100.000 Türk lirasına kadar idari para cezası verilir. Bu information [ |
-| `kvkk-129` |  | [1] | ✓ | Kurulun verdiği idari para cezalarına karşı, idare mahkemelerinde dava açılabilir. Bu information [1] kaynakından alınmıştır. |
-| `kvkk-130` |  | [1] | ✓ | Kurul üyesi olmak için en az dört yıllık lisans düzeyinde yükseköğrenim gerektiği belirtilmiştir. [1] |
+| `kvkk-123` |  | [1] | ✓ | Başvurunun veri sorumlusunun hatasından kaynaklanması hâlinde, alınan ücret ilgiliye iade edilir [1]. Ücret, işlemin ayrıca bir maliyeti ger |
+| `kvkk-124` | evet | [] |  | BİLMİYORUM |
+| `kvkk-125` |  | [1, 3] | ✓ | Veri Sorumluları Sicili, Kurulun gözetiminde Başkanlık tarafından kamuya açık olarak tutulur [1]. Başkanlık, bu görevi daire başkanlıkları a |
+| `kvkk-126` |  | [1] | ✓ | Kişisel verileri işleyen gerçek ve tüzel kişiler, veri işlemeye başlamadan önce Veri Sorumluları Siciline kaydolmak zorundadır [1]. Kurul, i |
+| `kvkk-127` |  | [1, 2] | ✓ | Kişisel verileri silmeyen veya anonim hâle getirmeyen kişi, 5237 sayılı Türk Ceza Kanunu'nun 138. maddesine göre cezalandırılır [1]. Bu yükü |
+| `kvkk-128` | evet | [] |  | BİLMİYORUM |
+| `kvkk-129` |  | [1] | ✓ | Kurulun verdiği idari para cezalarına karşı idare mahkemelerinde dava açılabilir [1]. Bu yol, 2/3/2024 tarihli 7499 sayılı Kanun'un 35. madd |
+| `kvkk-130` |  | [1] | ✓ | Kurul üyesi olabilmek için en az dört yıllık lisans düzeyinde yükseköğrenim görmüş olmak gerekir [1]. Ayrıca kurumun görev alanındaki konula |
 | `kvkk-131` | evet | [] |  | BİLMİYORUM |
-| `kvkk-132` | evet | [] |  | BİLMİYORUM |
-| `kvkk-133` |  | [] |  | Kurum başkanının yokluğunda ona vekalet eden İkinci Başkan'dır. [4] |
-| `kvkk-134` |  | [1] | ✓ | Kurumda en fazla yedi daire başkanlığı olabilir. Bu, dördüncü fıkrada sayılan görevleri daire başkanlıklarına olarak mentioned being done [1 |
-| `kvkk-135` |  | [3] |  | Başkan Yardımcısı atanmak için en az dört yıllık yükseköğretim kurumu mezunu, on yıl süreyle kamu hizmetinde bulunan kişiler arasından atanı |
-| `kvkk-136` |  | [1] | ✓ | Kişinin kendi ailesiyle ilgili işlediği veriler, Kişisel Verilerin Korunması Kanunu'nun Yedinci Bölüm – Çeşitli Hükümler – Madde 28 – İstisn |
-| `kvkk-137` |  | [1] | ✓ | Kurumun gelirleri genel bütçeden yapılacak hazine yardımları, kuruma ait taşınır ve taşınmazlardan elde edilen gelirler, alınan bağış ve yar |
+| `kvkk-132` |  | [1] | ✓ | Hayır, Kurul üyeleri özel bir kanuna dayanmadıkça Kuruldaki resmî görevlerinin dışında ticaretle uğraşamaz [1]. Aynı hüküm uyarınca üyeler r |
+| `kvkk-133` |  | [1] | ✓ | Kurum Başkanının yokluğunda İkinci Başkan, Başkana vekalet eder [1]. Kaynaklarda İkinci Başkan'ın atanma usulüne ilişkin ayrıntı bulunmamakt |
+| `kvkk-134` |  | [1] | ✓ | Kurumda daire başkanlıklarının sayısı yediyi geçemez [1]. Başkanlık, görevlerini daire başkanlıkları şeklinde teşkilatlanan hizmet birimleri |
+| `kvkk-135` | evet | [] |  | BİLMİYORUM |
+| `kvkk-136` |  | [1] | ✓ | Madde 28/1-a uyarınca, kişisel verilerin üçüncü kişilere verilmemek ve veri güvenliğine ilişkin yükümlülüklere uyulmak kaydıyla gerçek kişil |
+| `kvkk-137` |  | [1] | ✓ | Kurumun gelirleri arasında genel bütçeden yapılacak hazine yardımları, kuruma ait taşınır ve taşınmazlardan elde edilen gelirler, alınan bağ |
 | `kvkk-151` | evet | [] |  | BİLMİYORUM |
 | `kvkk-152` | evet | [] |  | BİLMİYORUM |
 | `kvkk-153` | evet | [] |  | BİLMİYORUM |
 | `kvkk-154` | evet | [] |  | BİLMİYORUM |
-| `kvkk-155` |  | [1] | ✓ | Silinmesi gereken kişisel verileri silmemenin dayanağı, 26/9/2004 tarihli ve 5237 sayılı Türk Ceza Kanununun 135 ila 140 ıncı madde hükümler |
-| `kvkk-156` | evet | [] |  | BİLMİYORUM |
-| `kvkk-157` |  | [3] |  | Özel nitelikli verileri işlerken alınması gereken önlemleri, Veri sorumlusu belirler [3]. Bu kanunun "Veri güvenliğine ilişkin yükümlülükler |
-| `kvkk-158` |  | [1] | ✓ | Veri güvenliği yükümlülüklerini, Veri Sorumlusu belirler. Veri Sorumlusu, kendi kurum veya kuruluşunda bu Kanun hükümlerinin uygulanmasını s |
+| `kvkk-155` | evet | [] |  | BİLMİYORUM |
+| `kvkk-156` |  | [1, 2, 3] | ✓ | Kurul, üyeleri arasından Başkan ve İkinci Başkanı seçer ve Kurulun Başkanı aynı zamanda Kurumun da başkanıdır [3]. Başkan, Kurul ve Kurumun  |
+| `kvkk-157` | evet | [] |  | BİLMİYORUM |
+| `kvkk-158` |  | [1] | ✓ | Veri güvenliğine ilişkin gerekli teknik ve idari tedbirleri alma yükümlülüğü veri sorumlusuna aittir [1]. Veri sorumlusu, kişisel verilerin  |
 | `kvkk-171` | evet | [] |  | BİLMİYORUM |
 | `kvkk-172` | evet | [] |  | BİLMİYORUM |
 | `kvkk-173` | evet | [] |  | BİLMİYORUM |
 | `kvkk-174` | evet | [] |  | BİLMİYORUM |
 | `kvkk-175` | evet | [] |  | BİLMİYORUM |
 | `kvkk-176` | evet | [] |  | BİLMİYORUM |
-| `kvkk-177` |  | [3] |  | Veri ihlali bildirim formunda, "a) Veri sorumlusu ve varsa temsilcisinin kimlik ve adres bilgileri" [3], "b) Kişisel verilerin hangi amaçla  |
+| `kvkk-177` | evet | [] |  | BİLMİYORUM |
 | `kvkk-178` | evet | [] |  | BİLMİYORUM |
-| `k8s-101` | evet | [] |  | BİLMİYORUM |
-| `k8s-102` |  | [1, 2] | ✓ | The HorizontalPodAutoscaler controller considers a Pod "not yet ready" if it's unready and transitioned to ready within a short, configurabl |
-| `k8s-103` |  | [1, 2] | ✓ | The default value for the `--horizontal-pod-autoscaler-cpu-initialization-period` option is 5 minutes [1]. This means that during this time  |
-| `k8s-104` |  | [2] | ✓ | The VPA Recommender analyzes current and historical resource usage data to identify trends, peak usage, and out-of-memory events [2]. It exa |
-| `k8s-105` |  | [1, 2, 3] | ✓ | A VerticalPodAutoscaler stores its recommendations in the `.status.recommendation` field of its resource object, which are calculated by the |
-| `k8s-106` |  | [1, 2] | ✓ | The group-template hierarchy supports a maximum depth of 4 levels, which means that there are four levels of nesting allowed in the Composit |
-| `k8s-107` |  | [1, 2, 3] | ✓ | The CompositePodGroup resource belongs to the `scheduling.k8s.io/v1alpha3` API group, which must be enabled for its use, as stated in source |
-| `k8s-108` |  | [1] | ✓ | A device plugin signals that it does not have a NUMA affinity preference for a given device by returning a nil TopologyInfo, indicating that |
-| `k8s-109` |  | [1, 2] | ✓ | A Deployment's `.spec.selector` cannot be changed after creation in `apps/v1`, as it is immutable once created, and any attempt to update it |
-| `k8s-110` |  | [1, 2] | ✓ | A bare Pod whose labels match an existing ReplicaSet's selector will be immediately acquired by that ReplicaSet [2]. This is because a Repli |
-| `k8s-111` |  | [1, 2] | ✓ | You should use a DaemonSet when it is important that a copy of a Pod always runs on all or certain hosts, as this provides node-level functi |
-| `k8s-112` |  | [1] | ✓ | The total number of individual attribute values per device (scalar fields plus all list elements combined) is limited to 48 [1]. When any de |
-| `k8s-113` |  | [2] | ✓ | Allocating a device with admin access is not exempt from device taints, as an admin must explicitly tolerate all taints to access tainted de |
-| `k8s-114` |  | [1] | ✓ | When updating `resourceclaims/driver`, node-local DRA drivers should use the **`associated-node:<verb>`** verb prefix, such as `associated-n |
-| `k8s-115` |  | [1, 2] | ✓ | Only one queueSort plugin may be enabled at a time, as stated in the Scheduling Framework > Interfaces > QueueSort section of source [1]. Th |
-| `k8s-116` | evet | [] |  | BİLMİYORUM |
-| `k8s-117` |  | [1, 2] | ✓ | If a Pod references a PodGroup that does not exist yet, the Pod remains pending until the entire group hierarchy exists in the cluster [1].  |
-| `k8s-118` |  | [] |  | Controllers must create objects in this order: first a `Workload` (1), then a `PodGroup` (2), and finally Pods that reference the `PodGroup` |
-| `k8s-119` |  | [1, 2, 3] | ✓ | To disable Memory QoS, set the `MemoryQoS` feature gate to `false`, ensure that `memoryReservationPolicy` is unset or set to `None`, and res |
-| `k8s-120` |  | [1] | ✓ | Incorrect implementation of liveness probes can lead to cascading failures, resulting in restarting a container under high load [1]. This ca |
-| `k8s-121` | evet | [] |  | BİLMİYORUM |
-| `k8s-122` |  | [1, 2] | ✓ | If a container has no CPU and memory limits, the downward API exposes the maximum allocatable value for CPU and memory based on the node all |
-| `k8s-123` | evet | [] |  | BİLMİYORUM |
-| `k8s-125` |  | [1] | ✓ | When a request violates a LimitRange, the API server returns an HTTP status code `403 Forbidden` and a message explaining the constraint tha |
-| `k8s-126` |  | [1, 2, 3] | ✓ | If a node's container runtime does not support the `v1` CRI API on Kubernetes 1.26 or later, the kubelet will fail to register and report an |
-| `k8s-127` |  | [1] | ✓ | A Windows Pod can only have 1 DNS suffix, which is the DNS suffix associated with that Pod's namespace (example: `mydns.svc.cluster.local`)  |
-| `k8s-129` | evet | [] |  | BİLMİYORUM |
-| `k8s-131` |  | [1, 3] | ✓ | The minimum Linux kernel version required for cgroup v2 is 5.8 or later, as stated in the requirements section of the cgroup v2 documentatio |
-| `k8s-132` |  | [1] | ✓ | A VolumeAttributesClass can define at most 512 parameters, as stated in the documentation for Volume Attributes Classes ([1]). This limit ap |
-| `k8s-133` |  | [1, 2] | ✓ | If the Eviction API only returns 429 or 500, you should try aborting or pausing the automated operation causing the issue and investigating  |
-| `k8s-134` |  | [2, 3] | ✓ | The `ownerReferences.blockOwnerDeletion` field controls whether specific dependents can block garbage collection from deleting their owner o |
-| `k8s-135` |  | [1] | ✓ | Kubernetes provides two main API kinds that can be used to store configuration: ConfigMap and Secret [1]. These mechanisms are designed to a |
+| `k8s-101` |  | [1] | ✓ | The aggregation layer proxies requests based on APIService objects: you register an APIService, which "claims" a URL path in the Kubernetes  |
+| `k8s-102` |  | [2] |  | The default value of `--horizontal-pod-autoscaler-initial-readiness-delay` is 30 seconds [2]. It defines a short delay after a Pod starts du |
+| `k8s-103` |  | [1, 2] | ✓ | The default of the `--horizontal-pod-autoscaler-cpu-initialization-period` option is 5 minutes [1]. It defines the time window after a Pod s |
+| `k8s-104` | evet | [] |  | BİLMİYORUM |
+| `k8s-105` |  | [1, 3] | ✓ | A VerticalPodAutoscaler stores its recommendations in the `.status.recommendation` field of the VPA resource [1]. In the Off update mode, th |
+| `k8s-106` |  | [1, 2] | ✓ | The maximum nesting depth of the group-template hierarchy is 4 levels [1][2]. |
+| `k8s-107` |  | [1] | ✓ | The CompositePodGroup resource belongs to the `scheduling.k8s.io/v1alpha3` API group [1]. Your cluster must have this API group enabled, alo |
+| `k8s-108` |  | [1] | ✓ | A device plugin that returns a nil TopologyInfo signals that it has no NUMA affinity preference for that device [1]. An empty list of NUMA n |
+| `k8s-109` |  | [1, 2, 3] | ✓ | No. In apps/v1, a Deployment's `.spec.selector` is immutable after creation and cannot be updated via `kubectl patch`, `kubectl edit`, `kube |
+| `k8s-110` |  | [2, 3] | ✓ | A bare Pod (one with no owner reference) whose labels match a ReplicaSet's selector will be immediately acquired by that ReplicaSet [3]. Bec |
+| `k8s-111` |  | [1, 3] | ✓ | Use a DaemonSet when a copy of a Pod must always run on all or certain nodes, especially when it provides node-level functionality that othe |
+| `k8s-112` |  | [1] | ✓ | The total number of individual attribute values per device, counting scalar fields and all list elements combined, is limited to 48 [1]. |
+| `k8s-113` |  | [2] | ✓ | No. Allocating a device with admin access is not exempt from taints; an admin using that mode must explicitly tolerate all taints to access  |
+| `k8s-114` |  | [1, 2] | ✓ | Node-local DRA drivers should use the `associated-node:` verb prefix (for example, `associated-node:update`), because the API server verifie |
+| `k8s-115` |  | [1, 2] | ✓ | Only one queueSort plugin may be enabled in the scheduler at a time [1][2]. Because any plugin using the queueSort extension point should be |
+| `k8s-116` |  | [1, 3] |  | The sources state that every PodGroup must declare a scheduling policy in its `spec.schedulingPolicy` field, which dictates how the schedule |
+| `k8s-117` |  | [1, 2] | ✓ | If a Pod references a PodGroup that does not yet exist, the Pod remains pending [1]. The scheduler automatically queues the Pod for scheduli |
+| `k8s-118` |  | [1, 2] | ✓ | Controllers must create the objects in this order: first the Workload, which is the scheduling policy template, then the PodGroup, which is  |
+| `k8s-119` |  | [1] | ✓ | To disable Memory QoS, set the `MemoryQoS` feature gate to `false`, ensure `memoryReservationPolicy` is unset or set to `None`, and restart  |
+| `k8s-120` |  | [1, 2, 3] | ✓ | If liveness probes are implemented incorrectly, it can lead to cascading failures: containers may restart under high load, client requests c |
+| `k8s-121` |  | [1, 2] | ✓ | A Pod with setHostnameAsFQDN whose FQDN is longer than 64 characters fails to start and remains in Pending status (ContainerCreating in kube |
+| `k8s-122` | evet | [] |  | BİLMİYORUM |
+| `k8s-123` |  | [1] | ✓ | A new Pod has a `metadata.generation` of 1, which the system sets automatically [1]. Every later update to mutable fields in the Pod's spec  |
+| `k8s-125` |  | [1] | ✓ | The API server returns HTTP status code 403 Forbidden, along with a message explaining the violated constraint [1]. |
+| `k8s-126` |  | [1, 2] | ✓ | The kubelet will not register the node if the container runtime does not support the v1 CRI API on Kubernetes v1.26 and later [2]. During an |
+| `k8s-127` |  | [1] | ✓ | A Windows Pod can have only one DNS suffix, which is the DNS suffix associated with that Pod's namespace (for example, `default.svc.cluster. |
+| `k8s-129` |  | [1] | ✓ | DNS and route settings for Windows containers are stored in the Windows registry database rather than as files inside `/etc` as on Linux [1] |
+| `k8s-131` |  | [1] | ✓ | The minimum Linux kernel version required for cgroup v2 is 5.8 or later [1]. |
+| `k8s-132` |  | [1] | ✓ | A VolumeAttributesClass can define at most 512 parameters, and their total length including keys and values cannot exceed 256 KiB [1]. |
+| `k8s-133` | evet | [] |  | BİLMİYORUM |
+| `k8s-134` |  | [1, 2, 3] | ✓ | The `ownerReference.blockOwnerDeletion` field, when set to `true`, makes a dependent block foreground deletion of its owner, and only depend |
+| `k8s-135` |  | [1] | ✓ | Kubernetes mainly provides ConfigMap and Secret for storing configuration that Pods or other components can load and use [1]. The special-us |
 | `k8s-136` | evet | [] |  | BİLMİYORUM |
-| `k8s-137` |  | [1, 2] |  | When `internalTrafficPolicy` is set to `Local`, kube-proxy only uses node local endpoints for cluster internal traffic, effectively making p |
-| `k8s-138` | evet | [] |  | BİLMİYORUM |
-| `k8s-139` |  | [1, 3] | ✓ | You can specify the [RuntimeClass](/docs/concepts/containers/runtime-class/) for a Pod to make sure that Kubernetes runs those containers us |
-| `k8s-140` |  | [1, 2] | ✓ | The first steps towards enabling custom Topology Aware Routing heuristics were included in the 1.27 release of Kubernetes, which is a limite |
-| `k8s-142` |  | [1] | ✓ | The `ExtendedResourceToleration` admission controller automatically adds tolerations for extended resources, ensuring that pods requesting s |
-| `k8s-145` |  | [1] | ✓ | Gateway API has four stable API kinds: GatewayClass, Gateway, HTTPRoute, and GRPCRoute [1]. These kinds are interdependent and have relation |
-| `k8s-146` |  | [2, 3] | ✓ | When authentication fails, the request is rejected with HTTP status code 401 [2]. This means that the API server returns a 401 error respons |
-| `k8s-148` |  | [1, 2] | ✓ | The `kubernetes.io/pv-protection` finalizer prevents accidental deletion of `PersistentVolume` objects when they are in use by a Pod, ensuri |
-| `k8s-149` | evet | [] |  | BİLMİYORUM |
-| `k8s-150` |  | [1, 2] | ✓ | The maximum length of list items in `compositePodGroupTemplates` and `podGroupTemplates` is 8, as stated by both [1] and [2], which specify  |
-| `k8s-151` |  | [1, 2] | ✓ | In-tree controllers set `DisableDeclarativeValidation` to avoid checking the same fields twice during validation, allowing the `Validate` ca |
-| `k8s-161` |  | [2] | ✓ | Bir Pod kaynak isteği LimitRange'i ihlal ederse API sunucusu 403 Forbidden status kodunu döner. Bu durum, bir LimitRange'in kısıtlamalarını  |
-| `k8s-162` |  | [1] | ✓ | Cgroup v2 için en düşük Linux çekirdek sürümü 5.8'dir. [1] |
-| `k8s-163` |  | [1] | ✓ | Windows üzerinde çalışan bir Pod, en fazla 3 DNS sunucusuna sahip olabilir. Bu sunucular, Pod'un namespace'ine bağlı olan tek bir DNS sunucu |
-| `k8s-164` |  | [1] | ✓ | Gateway API'de dört stable API türü vardır: GatewayClass, Gateway, HTTPRoute ve GRPCRoute. Bu türler, organizasyonun rol-oriented doğası içi |
-| `k8s-165` |  | [1] |  | Kimlik doğrulama başarısız olursa API sunucusu 401 HTTP kodunu döner. Bu kod, "Yönetici yetkisi unavailable" anlamına gelir ve API sunucusun |
-| `k8s-166` | evet | [] |  | BİLMİYORUM |
-| `k8s-167` |  | [1] |  | Bir Pod'un başvurduğu PodGroup henüz yoksa, o Pod pending olarak kalır. [1] |
-| `k8s-168` | evet | [] |  | BİLMİYORUM |
-| `k8s-171` |  | [1, 2] | ✓ | The group-template hierarchy supports a maximum depth of 4 levels [1] and is strictly capped at a maximum of 8 items in lists such as `compo |
+| `k8s-137` |  | [1, 2] |  | Setting `.spec.internalTrafficPolicy` to `Local` makes kube-proxy use only node-local endpoints for cluster-internal traffic [1]. For Pods o |
+| `k8s-138` |  | [1, 2, 3] | ✓ | The default value of `internalTrafficPolicy` is `Cluster`; when it is not set, Kubernetes considers all endpoints [3]. Setting it to `Local` |
+| `k8s-139` |  | [1, 3] | ✓ | You can use a RuntimeClass to specify the particular container runtime that Kubernetes should use for a Pod [3]. A RuntimeClass lets you run |
+| `k8s-140` |  | [1] | ✓ | The first steps to enable custom heuristics were included in the 1.27 release [1]. This was a limited implementation that may not yet cover  |
+| `k8s-142` |  | [1, 2] | ✓ | The ExtendedResourceToleration admission controller automatically adds the correct toleration to pods that request an extended resource, so  |
+| `k8s-145` |  | [1] | ✓ | Gateway API has four stable API kinds: GatewayClass, Gateway, HTTPRoute, and GRPCRoute [1]. GatewayClass defines a set of gateways with comm |
+| `k8s-146` |  | [2] | ✓ | When authentication fails, the API server rejects the request with HTTP status code 401 [2]. |
+| `k8s-148` |  | [1, 2] | ✓ | The kubernetes.io/pv-protection finalizer prevents accidental deletion of a PersistentVolume object while it is in use by a Pod [2]. When so |
+| `k8s-149` |  | [1, 3] | ✓ | No. Once an object has a deletion timestamp, you can remove existing finalizers but you cannot add a new one [3]. The API server also reject |
+| `k8s-150` |  | [1, 2] | ✓ | The question asks about a "maximum length" for list items, but the sources describe a maximum number of items, not a length. Every `composit |
+| `k8s-151` |  | [1] | ✓ | In-tree controllers set `DisableDeclarativeValidation` because the API server already runs declarative validation on the embedded building b |
+| `k8s-161` |  | [1, 2] | ✓ | API sunucusu, bir Pod'un LimitRange kısıtını ihlal eden isteğini HTTP `403 Forbidden` durum kodu ve ihlal edilen kısıtı açıklayan bir mesajl |
+| `k8s-162` |  | [1] | ✓ | cgroup v2 için en düşük Linux çekirdek sürümü 5.8'dir [1]. Bu gereksinimin yanında işletim sistemi dağıtımının cgroup v2'yi etkinleştirmiş o |
+| `k8s-163` |  | [1] | ✓ | Windows üzerinde çalışan bir Pod yalnızca tek bir DNS sonekine sahip olabilir; bu sonek, Pod'un namespace'ine ait olan sonektir (örneğin `de |
+| `k8s-164` |  | [1] | ✓ | Gateway API'de dört kararlı API türü vardır: GatewayClass, Gateway, HTTPRoute ve GRPCRoute [1]. |
+| `k8s-165` |  | [3] | ✓ | Kimlik doğrulama başarısız olursa, istek reddedilir ve API sunucusu HTTP 401 durum kodunu döner [3]. |
+| `k8s-166` |  | [1] | ✓ | Bir VolumeAttributesClass için en fazla 512 parametre tanımlanabilir [1]. Parametrelerin ve anahtar-değerlerinin toplam uzunluğu ise 256 KiB |
+| `k8s-167` |  | [1] |  | Bir Pod'un başvurduğu PodGroup henüz yoksa Pod beklemede (pending) kalır ve zamanlama başlamaz [1]. Ayrıca PodGroup'un üst CompositePodGroup |
+| `k8s-168` |  | [1, 2] | ✓ | `internalTrafficPolicy` alanının varsayılan değeri `Cluster`'dır; kaynaklara göre bu alan ayarlanmadığında da Kubernetes tüm endpoint'leri d |
+| `k8s-171` | evet | [] |  | BİLMİYORUM |
 | `k8s-172` | evet | [] |  | BİLMİYORUM |
 | `k8s-173` | evet | [] |  | BİLMİYORUM |
-| `k8s-174` |  | [1, 2, 3] | ✓ | A PodGroup must have a `spec.schedulingPolicy` field defined before it can use a podGroupTemplateRef, and this policy would be copied from t |
+| `k8s-174` | evet | [] |  | BİLMİYORUM |
 | `k8s-175` | evet | [] |  | BİLMİYORUM |
-| `k8s-176` |  | [1, 2, 3] | ✓ | The `kubernetes.io/pv-protection` finalizer protects a PersistentVolume by preventing accidental deletion of the object when it is in use by |
-| `k8s-177` |  | [2, 3] |  | The Resource manager uses the Topology Manager's data to make resource assignment decisions [2]. A device plugin sends its `TopologyInfo` st |
-| `k8s-178` |  | [1] |  | A workload should be a DaemonSet when it needs to run as a system daemon on a specific node and provide facilities that are local to that no |
-| `k8s-179` |  | [1, 3] | ✓ | The total length of the parameters object including its keys and values cannot exceed 256 KiB for VolumeAttributesClass parameters, as state |
-| `k8s-180` |  | [1, 2] | ✓ | The kubelet requires that the container runtime supports the `v1` CRI API for cgroup v2 to work, which is a requirement since Kubernetes ver |
-| `k8s-181` |  | [1, 2] | ✓ | The four stable Gateway API kinds are GatewayClass, Gateway, HTTPRoute, and GRPCRoute [1]. The Service Internal Traffic Policy has two setti |
-| `k8s-182` |  | [1, 2, 3] |  | When a resize is deferred, in progress, or infeasible, VPA mode always waits and retries — it never evicts the Pod, regardless of how long t |
-| `k8s-183` |  | [2, 3] | ✓ | The total number of individual attribute values per device is limited to 48, which includes scalar fields and list-type elements combined [2 |
-| `k8s-184` |  | [2, 3] | ✓ | If you notice stuck evictions, try waiting a while or directly deleting the Pod from your cluster control plane instead of using the Evictio |
-| `k8s-185` |  | [1, 3] | ✓ | Bir Service'in iç trafik politikası Local olduğunda, kube-proxy only node local endpoints'i kullanır (Kaynak: [1]). Varsayılan değer Cluster |
+| `k8s-176` |  | [2] | ✓ | Source [2] describes `kubernetes.io/pv-protection`, which prevents accidental deletion of PersistentVolume objects while a Pod uses them [2] |
+| `k8s-177` |  | [1, 2] | ✓ | The Device Manager, a kubelet component, consults with the Topology Manager using topology information provided by device plugins to make re |
+| `k8s-178` |  | [1, 2, 3] | ✓ | A workload should be a DaemonSet when it provides facilities local to a specific node, such as a driver or node-level service, and it must r |
+| `k8s-179` |  | [1] | ✓ | A VolumeAttributesClass can define at most 512 parameters, and the total length of its parameters object, including keys and values, cannot  |
+| `k8s-180` |  | [1, 2] | ✓ | For cgroup v2, the kubelet needs the OS to enable cgroup v2, a Linux kernel 5.8 or later, a container runtime that supports cgroup v2 (e.g., |
+| `k8s-181` |  | [1, 3] | ✓ | The stable Gateway API kinds are GatewayClass, Gateway, HTTPRoute, and GRPCRoute [1]. With internalTrafficPolicy set to Local, kube-proxy on |
+| `k8s-182` | evet | [] |  | BİLMİYORUM |
+| `k8s-183` |  | [1, 2, 3] | ✓ | The total number of individual attribute values per device, counting scalar fields and all list elements together, is limited to 48, and whe |
+| `k8s-184` | evet | [] |  | BİLMİYORUM |
+| `k8s-185` |  | [1, 3] | ✓ | Bir Service'in `internalTrafficPolicy` değeri `Local` olduğunda kube-proxy yalnızca aynı node üzerindeki (node local) endpoint'lere yönlendi |
 | `k8s-186` | evet | [] |  | BİLMİYORUM |
 | `k8s-187` | evet | [] |  | BİLMİYORUM |
 | `k8s-191` | evet | [] |  | BİLMİYORUM |

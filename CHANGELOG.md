@@ -7,10 +7,11 @@ Biçim: [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/).
 
 ### Added
 - Anthropic sağlayıcısı (`llm_anthropic.py`, ADR-0008): `LLM_CHAIN=anthropic/claude-haiku-5-5,ollama/llama3.2:3b` gibi zincirler, anahtar `ANTHROPIC_API_KEY`. Anahtar yoksa ya da sağlayıcı ilk token'dan önce düşerse (hata, 429, kopma, `refusal`) zincir sıradakine geçer; düşünme kapalı, yeniden denemeyi zincir yapar. Ajan kararları yapılandırılmış çıktıyla.
-- Claude Haiku 5.5 ölçümü (altın set v2, `llama3.2:3b` ile karşılaştırmalı): ortanca toplam süre 65,7 sn → 1,5 sn; cevap verdiğinde doğru %87 → %94; altın kaynağa atıf %80 → %96; gereksiz "bilmiyorum" %30 → %42; cevaplı sorularda doğru %61 → %54. İki cevap eşiği aşıldığı için kanonik cevap raporu `llama3.2:3b` kalır, Haiku raporu `answers-haiku` olarak panelde. Kırmızı takımda başarılı saldırı 2 → 1; kanonik kırmızı takım raporu artık Haiku.
+- Claude Haiku 5.5 ölçümü (altın set v2): ortanca toplam süre 65,7 sn → 1,9 sn; cevaplı sorularda doğru %63 → %70; cevap verdiğinde doğru %87 → %94; altın kaynağa atıf %81 → %95; gereksiz "bilmiyorum" %27 → %26. Tüm eşikler geçti; kanonik cevap ve kırmızı takım raporları artık Haiku, `llama3.2:3b` raporları `*-llama32` adıyla panelde. Kırmızı takımda başarılı saldırı 2 (ikisi de belgeyle yerleştirilen yanlış bilgi).
 - Tehdit modeline barındırılan LLM'e giden veri tablosu.
 
 ### Changed
+- Kanıt doğrulaması (`verify_quote`) modelin çıktısındaki tırnaklı parçaları ve satırları da dener: barındırılan modeller doğru alıntıyı önsözle sarıyor ya da arkasına not ekliyordu. Haiku'da gereksiz "bilmiyorum" %42 → %26; `llama3.2:3b`'de %30 → %27, doğru %61 → %63. Uydurma alıntı yine reddedilir.
 - Raporların parmak izi `llm_anthropic.py`'yi de kapsar; `make eval-answers` ve `make eval-redteam` `LLM=` değişkeni alır.
 
 ## [0.6.0] - 2026-11-11

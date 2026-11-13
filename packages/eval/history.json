@@ -25,5 +25,28 @@
       "invalid_citation_rate": 0.0,
       "median_total_seconds": 41.2
     }
+  },
+  {
+    "version": "v0.4.0",
+    "commit": "531eef9-dirty",
+    "date": "2026-11-10",
+    "golden": "v2",
+    "questions": 165,
+    "config": "vector",
+    "retrieval": {
+      "recall@3": 0.8971,
+      "recall@5": 0.9191,
+      "mrr": 0.8157
+    },
+    "answers": {
+      "correct": 0.61,
+      "correct_when_answered": 0.874,
+      "abstain_when_unanswerable": 0.931,
+      "abstain_when_answerable": 0.301,
+      "gold_in_context": 0.934,
+      "gold_cited": 0.8,
+      "invalid_citation_rate": 0.006,
+      "median_total_seconds": 65.7
+    }
   }
 ]

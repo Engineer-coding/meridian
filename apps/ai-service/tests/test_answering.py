@@ -382,6 +382,25 @@ def test_short_quotes_count_only_when_they_appear_verbatim() -> None:
     assert verify_quote("NONE", sources) is None
 
 
+def test_quote_wrapped_in_a_preamble_is_verified() -> None:
+    sources = [Source(1, HITS[1]), Source(2, HITS[0])]
+    quote = "Veri sorumlusu başvuruyu en geç otuz gün içinde sonuçlandırır."
+    assert verify_quote(f'The sentence from the sources is:\n\n"{quote}"', sources) == 2
+    assert verify_quote(f"Kaynak [2]'den: “{quote}”", sources) == 2
+
+
+def test_quote_followed_by_commentary_is_verified() -> None:
+    sources = [Source(1, HITS[1]), Source(2, HITS[0])]
+    quote = "Veri sorumlusu başvuruyu en geç otuz gün içinde sonuçlandırır."
+    assert verify_quote(f"{quote}\n\nNote: this sentence is copied verbatim from source [2].", sources) == 2
+
+
+def test_preamble_does_not_rescue_an_invented_or_missing_quote() -> None:
+    sources = [Source(1, HITS[1]), Source(2, HITS[0])]
+    assert verify_quote('The sources state: "Veri ihlali Kurula 72 saat içinde bildirilir."', sources) is None
+    assert verify_quote("No sentence in the sources answers this.\n\nNONE", sources) is None
+
+
 def test_markdown_link_targets_do_not_break_verification() -> None:
     source = hit(
         "StatefulSet", "StatefulSets currently require a [Headless Service](/docs/x/#headless) to work."
