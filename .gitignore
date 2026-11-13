@@ -43,3 +43,4 @@ test-results/
 *.tsbuildinfo
 # Yük testi süreç logları büyük ve yereldir; özetler ve rapor depoya girer.
 packages/load/reports/logs/
+.superpowers/
