@@ -168,6 +168,30 @@ def test_chain_specification() -> None:
         build_chain("openai/gpt", httpx.AsyncClient(), "http://x")
 
 
+def test_build_chain_understands_anthropic_prefix() -> None:
+    chain = build_chain(
+        "anthropic/claude-haiku-5-5, ollama/llama3.2:3b", httpx.AsyncClient(), "http://x", "k"
+    )
+    assert chain.name == "anthropic/claude-haiku-5-5 → ollama/llama3.2:3b"
+
+
+def test_build_chain_rejects_anthropic_without_model() -> None:
+    with pytest.raises(ValueError, match="desteklenmeyen"):
+        build_chain("anthropic/", httpx.AsyncClient(), "http://x", "k")
+
+
+async def test_anthropic_without_key_is_unavailable_and_chain_falls_back() -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.url.host == "ollama.test"
+        return ndjson({"message": {"content": "yerel"}}, {"done": True})
+
+    http = httpx.AsyncClient(transport=httpx.MockTransport(handler))
+    chain = build_chain("anthropic/claude-haiku-5-5, ollama/tiny", http, "http://ollama.test", "")
+
+    assert await collect(chain.stream([Message("user", "?")], max_tokens=5)) == "yerel"
+    assert chain.last_used == "ollama/tiny"
+
+
 # --- kaynaklı cevap ----------------------------------------------------------------------------
 
 

@@ -1,6 +1,6 @@
 # Retrieval değerlendirmesi — answers
 
-- Tarih: 2026-11-10 · commit `531eef9-dirty`
+- Tarih: 2026-11-13 · commit `5c48dd9-dirty`
 - Model: `intfloat/multilingual-e5-large` · parça ≤ 1200 karakter, örtüşme 150
 - Korpus: k8s@ef4f9c6cb538 (187 belge), kvkk@5f9e7fa79319 (1 belge) → 3093 parça
 - Altın set: 136 cevaplı / 165 soru (`packages/eval/golden/v2.jsonl`, sha256 `84ad10ae48b0`)

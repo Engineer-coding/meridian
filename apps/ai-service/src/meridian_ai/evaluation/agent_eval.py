@@ -161,7 +161,12 @@ async def main(argv: list[str]) -> int:
     budget = Budget()
 
     async with httpx.AsyncClient(timeout=httpx.Timeout(600.0)) as http:
-        llm = build_chain(args.llm, http, os.environ.get("OLLAMA_URL", "http://127.0.0.1:11434"))
+        llm = build_chain(
+            args.llm,
+            http,
+            os.environ.get("OLLAMA_URL", "http://127.0.0.1:11434"),
+            os.environ.get("ANTHROPIC_API_KEY", ""),
+        )
         with database.ephemeral() as db:
             await runner.run(db, corpora, questions, embedder)
             [(tenant,)] = runner._query(

@@ -403,7 +403,12 @@ async def main(argv: list[str]) -> int:
     scenarios = [s for s in load_set() if not args.only or s["id"].startswith(args.only)]
     scan = corpus_scan(await corpus.load(CACHE / "eval", github_token=os.environ.get("GITHUB_TOKEN")))
     async with httpx.AsyncClient(timeout=httpx.Timeout(600.0)) as http:
-        llm = build_chain(args.llm, http, os.environ.get("OLLAMA_URL", "http://127.0.0.1:11434"))
+        llm = build_chain(
+            args.llm,
+            http,
+            os.environ.get("OLLAMA_URL", "http://127.0.0.1:11434"),
+            os.environ.get("ANTHROPIC_API_KEY", ""),
+        )
         with database.ephemeral() as db:
             pool = create_pool(db.conninfo("meridian_ai"))
             await pool.open(wait=True)

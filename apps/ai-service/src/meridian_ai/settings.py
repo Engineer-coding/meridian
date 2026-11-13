@@ -45,6 +45,8 @@ class Settings(BaseSettings):
     # sağlayıcının yerine sıradaki denenir. CPU'da her parça ~30 sn ekler; bağlam küçük tutulur.
     llm_chain: str = "ollama/llama3.2:3b"
     ollama_url: str = "http://127.0.0.1:11434"
+    # Zincirde anthropic/<model> varsa kullanılır; boşsa o sağlayıcı kullanılamaz sayılır, servis açılır.
+    anthropic_api_key: SecretStr = SecretStr("")
     # Ajan kararları için ayrı zincir; boşsa llm_chain kullanılır. Cevap ölçümlerini etkilemez.
     agent_llm_chain: str = ""
     answer_sources: int = Field(default=3, ge=1, le=10)

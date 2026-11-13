@@ -71,7 +71,8 @@ def create_app(
 
     # CPU'da ilk token dakikalar sürebilir: okuma süresi genel istemciden çok daha uzun.
     llm_http = httpx.AsyncClient(timeout=httpx.Timeout(300.0, connect=5.0))
-    llm = TracedLLM(llm or build_chain(settings.llm_chain, llm_http, settings.ollama_url))
+    anthropic_key = settings.anthropic_api_key.get_secret_value()
+    llm = TracedLLM(llm or build_chain(settings.llm_chain, llm_http, settings.ollama_url, anthropic_key))
     reranker = (
         CrossEncoderReranker(MODELS[settings.reranker], settings.embedding_cache_dir)
         if settings.reranker
@@ -89,7 +90,7 @@ def create_app(
     )
 
     agent_llm = (
-        TracedLLM(build_chain(settings.agent_llm_chain, llm_http, settings.ollama_url))
+        TracedLLM(build_chain(settings.agent_llm_chain, llm_http, settings.ollama_url, anthropic_key))
         if settings.agent_llm_chain
         else llm
     )

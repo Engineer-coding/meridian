@@ -1,6 +1,6 @@
 """LLM sağlayıcı soyutlaması ve yedek zinciri (ADR-0008).
 
-Cevap üretimi yalnızca ``LLM`` arayüzünü bilir; sağlayıcı (Ollama, ileride Claude/OpenAI)
+Cevap üretimi yalnızca ``LLM`` arayüzünü bilir; sağlayıcı (Ollama, Anthropic)
 yapılandırmayla seçilir. Zincirdeki sağlayıcı ilk token'dan önce düşerse sıradakine geçilir;
 hepsi düşerse çağıran "yalnızca kaynaklar" moduna iner.
 """
@@ -188,14 +188,27 @@ class FallbackLLM:
         raise LLMUnavailable("tüm sağlayıcılar kullanılamıyor: " + "; ".join(failures))
 
 
-def build_chain(spec: str, client: httpx.AsyncClient, ollama_url: str) -> FallbackLLM:
-    """``"ollama/llama3.2:3b, ollama/llama3.2:1b"`` → sırayla denenecek sağlayıcılar."""
+def build_chain(
+    spec: str, client: httpx.AsyncClient, ollama_url: str, anthropic_api_key: str = ""
+) -> FallbackLLM:
+    """``"anthropic/claude-haiku-5-5, ollama/llama3.2:3b"`` → sırayla denenecek sağlayıcılar.
+
+    Anthropic anahtarı boşsa servis yine açılır; o sağlayıcı her çağrıda kullanılamaz sayılır.
+    """
+    # Döngüsel içe aktarmayı önlemek için burada: llm_anthropic bu modülün tiplerini kullanır.
+    from meridian_ai.llm_anthropic import AnthropicLLM, make_client
+
     providers: list[LLM] = []
+    anthropic_client = None
     for item in filter(None, (part.strip() for part in spec.split(","))):
         kind, _, model = item.partition("/")
         match kind:
             case "ollama" if model:
                 providers.append(OllamaLLM(client, ollama_url, model))
+            case "anthropic" if model:
+                if anthropic_api_key and anthropic_client is None:
+                    anthropic_client = make_client(anthropic_api_key)
+                providers.append(AnthropicLLM(anthropic_client, model))
             case _:
                 raise ValueError(f"desteklenmeyen LLM sağlayıcısı: {item!r}")
     return FallbackLLM(providers)
