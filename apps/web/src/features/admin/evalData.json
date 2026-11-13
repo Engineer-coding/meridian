@@ -67,8 +67,8 @@
     },
     {
       "version": "v0.4.0",
-      "commit": "2f61dee-dirty",
-      "date": "2026-11-13",
+      "commit": "531eef9-dirty",
+      "date": "2026-11-10",
       "golden": "v2",
       "questions": 165,
       "config": "vector",
@@ -112,8 +112,8 @@
       }
     },
     {
-      "version": "v0.7.0 · Haiku",
-      "commit": "2f61dee-dirty",
+      "version": "v0.7.0 · llama3.2:3b",
+      "commit": "28d8890-dirty",
       "date": "2026-11-13",
       "golden": "v2",
       "questions": 165,
@@ -124,14 +124,37 @@
         "mrr": 0.8157
       },
       "answers": {
-        "correct": 0.544,
-        "correct_when_answered": 0.937,
-        "abstain_when_unanswerable": 1,
-        "abstain_when_answerable": 0.419,
+        "correct": 0.632,
+        "correct_when_answered": 0.869,
+        "abstain_when_unanswerable": 0.931,
+        "abstain_when_answerable": 0.272,
         "gold_in_context": 0.934,
-        "gold_cited": 0.962,
+        "gold_cited": 0.808,
+        "invalid_citation_rate": 0.006,
+        "median_total_seconds": 65.7
+      }
+    },
+    {
+      "version": "v0.7.0 · Haiku",
+      "commit": "28d8890-dirty",
+      "date": "2026-11-13",
+      "golden": "v2",
+      "questions": 165,
+      "config": "vector",
+      "retrieval": {
+        "recall@3": 0.8971,
+        "recall@5": 0.9191,
+        "mrr": 0.8157
+      },
+      "answers": {
+        "correct": 0.699,
+        "correct_when_answered": 0.941,
+        "abstain_when_unanswerable": 1,
+        "abstain_when_answerable": 0.257,
+        "gold_in_context": 0.934,
+        "gold_cited": 0.95,
         "invalid_citation_rate": 0,
-        "median_total_seconds": 1.5
+        "median_total_seconds": 1.9
       }
     }
   ]

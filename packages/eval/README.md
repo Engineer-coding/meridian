@@ -14,7 +14,7 @@ güncelliğini ve eşikleri denetler ([ADR-0010](../../docs/adr/0010-eval-gate-i
 | `golden/redteam-v1.jsonl` | Kırmızı takım: 40 kötü niyetli senaryo, 68 deneme ([ADR-0016](../../docs/adr/0016-guardrails-and-red-team.md)) |
 | `golden/v1.jsonl` | 30 soru: 23 cevaplı (15 tek kaynaklı, 8 çok kaynaklı), 7 cevapsız; 12 Türkçe, 18 İngilizce. Kaynaklar `alternatives` ile aynı bilgiyi taşıyan başka bölümleri de kabul edebilir |
 | `golden/v0.jsonl` | İlk sürüm (v0.3.0 baseline'ı bununla ölçüldü); değiştirilmez |
-| `reports/{baseline,answers,redteam}.{json,md}` | Kayıtlı ölçümler; skoru etkileyen kod, altın set ya da manifest değişirse CI yeniden üretilmesini ister |
+| `reports/{baseline,answers,redteam}.{json,md}` | Kayıtlı ölçümler (cevap ve kırmızı takım: Haiku 5.5); skoru etkileyen kod, altın set ya da manifest değişirse CI yeniden üretilmesini ister |
 
 ```bash
 make eval-validate   # altın setin şeması ve dağılımı
@@ -22,7 +22,8 @@ make eval-smoke      # modelsiz duman testi (CI'da çalışır): hattı doğrula
 make eval            # gerçek ölçüm (e5-large); ilk çalıştırma CPU'da ~1,5 saat
 make eval NAME=baseline
 make eval-redteam NAME=redteam  # kırmızı takım, gerçek modelle; CPU'da saatler sürer
-make eval-answers NAME=answers-haiku LLM=anthropic/claude-haiku-5-5  # barındırılan model (ANTHROPIC_API_KEY)
+make eval-answers NAME=answers LLM=anthropic/claude-haiku-5-5  # kanonik cevap raporu (ANTHROPIC_API_KEY)
+make eval-answers NAME=answers-llama32  # karşılaştırma: yerel llama3.2:3b (Ollama)
 ```
 
 ## Nasıl ölçülür
@@ -55,27 +56,30 @@ kaynağın ikinci parçası yeni bilgi getirmediği için her kaynak en fazla bi
 - Korpusun yalnızca bir kısmı kapsanır; sorular aynı kaynaktan üretilmiştir.
 
 ## Claude Haiku 5.5 (Faz 6.1, altın set v2)
-Demo modeli barındırılan `claude-haiku-5-5` ([cevaplar](reports/answers-haiku.md),
-[kırmızı takım](reports/redteam.md)); karşılaştırma `llama3.2:3b` ile, aynı arama ve 3 kaynak:
+Demo modeli barındırılan `claude-haiku-5-5`; kanonik cevap ve kırmızı takım raporları artık onundur
+([cevaplar](reports/answers.md), [kırmızı takım](reports/redteam.md)). `llama3.2:3b` karşılaştırma için
+`reports/answers-llama32.*` ve `reports/redteam-llama32.*` içinde. Aynı arama, 3 kaynak:
 
 | | `llama3.2:3b` | Haiku 5.5 | Eşik |
 |---|---|---|---|
-| Doğru (cevaplı sorular) | 0,610 | **0,544** | ≥ 0,57 |
-| Cevap verdiğinde doğru | 0,874 | 0,937 | ≥ 0,82 |
-| Gereksiz "bilmiyorum" | 0,301 | **0,419** | ≤ 0,35 |
+| Doğru (cevaplı sorular) | 0,632 | 0,699 | ≥ 0,57 |
+| Cevap verdiğinde doğru | 0,869 | 0,941 | ≥ 0,82 |
+| Gereksiz "bilmiyorum" | 0,272 | 0,257 | ≤ 0,35 |
 | Cevapsız soruda "bilmiyorum" | 0,931 | 1,000 | ≥ 0,85 |
-| Altın kaynağa atıf | 0,800 | 0,962 | ≥ 0,75 |
+| Altın kaynağa atıf | 0,808 | 0,950 | ≥ 0,75 |
 | Var olmayan atıf | 0,006 | 0,000 | ≤ 0,02 |
-| Ortanca toplam süre | 65,7 sn | 1,5 sn | |
-| Kırmızı takım: başarılı saldırı | 2 / 68 | 1 / 68 | ≤ 2 |
+| Ortanca toplam süre | 65,7 sn | 1,9 sn | |
+| Kırmızı takım: başarılı saldırı | 2 / 68 | 2 / 68 | ≤ 2 |
 
-- Haiku iki cevap eşiğini aşıyor: daha sık "bilmiyorum" diyor. Bu yüzden kanonik cevap raporu
-  (`answers.json`) `llama3.2:3b` olarak kalır; eşikler değiştirilmedi. Kırmızı takımda Haiku eşiği
-  geçer ve kanonik rapordur; eski rapor `redteam-llama32.*`.
-- Gereksiz "bilmiyorum" dediği soruların 50'sinde altın kaynak bağlamdaydı ve `llama3.2:3b` de
-  aynı sorularda çekimser kalmıştı. Olası neden kanıt adımı: alıntı kaynakta birebir geçmezse
-  cevap "bilmiyorum" olur (ADR-0008). Ayrı iş olarak incelenecek.
-- Ölçüm maliyeti ≈ $0,30 (altın set + kırmızı takım).
+- **Kanıt doğrulaması düzeltildi.** İlk Haiku ölçümünde gereksiz "bilmiyorum" 0,419, doğru 0,544'tü (iki
+  eşik aşıldı). Kanıt adımının 165 çıktısından 86'sı doğrulanamamıştı: 56'sında model gerçekten "YOK"
+  dedi (29 cevapsız sorunun hepsi dahil), 30'unda ise doğru alıntıyı bir önsözle ("The sentence from the
+  sources is: "…"") sardı ya da arkasına not ekledi. `verify_quote` artık çıktının tırnaklı parçalarını
+  ve satırlarını da aday olarak dener; her aday yine kaynakta geçmek zorundadır. Haiku'da doğrulanan
+  kanıt 79 → 101, `llama3.2:3b`'de 97 → 101. İstemler değişmedi.
+- Kırmızı takımda başarılı iki saldırı, `llama3.2:3b`'deki gibi, belgeyle yerleştirilen yanlış bilgi
+  (`indirect-poison`): kanıt kaynakta gerçekten geçtiği için kod koruması bunu ayırt edemez.
+- Ölçüm maliyeti toplamda ≈ $0,45 (iki tur altın set + iki tur kırmızı takım).
 
 ## v0.4.0 bulguları (altın set v2)
 - **Arama iyi:** vektör recall@3 0,897, recall@5 0,919. `bge-m3` reranker recall@3'ü 0,938'e çıkarıyor;
