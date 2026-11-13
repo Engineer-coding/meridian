@@ -8,7 +8,7 @@ RUN uv sync --locked --no-dev --no-install-project
 COPY src ./src
 RUN uv sync --locked --no-dev
 
-FROM python:3.13-slim-bookworm
+FROM python:3.13-slim-bookworm AS runtime
 RUN useradd --uid 10001 --no-create-home --shell /usr/sbin/nologin app
 WORKDIR /app
 COPY --from=build --chown=10001:10001 /app /app
@@ -20,3 +20,12 @@ ENV PATH=/app/.venv/bin:$PATH \
 USER 10001
 EXPOSE 8090
 CMD ["python", "-m", "meridian_ai"]
+
+# Yalnızca CI'daki küme testi için: model, embedding ve GitHub sabit parçalarla değişir (tests/e2e_stack.py).
+#   docker build --target test -t meridian-ai-test:local apps/ai-service
+FROM runtime AS test
+COPY --chown=10001:10001 tests/e2e_stack.py tests/e2e_stack.py
+CMD ["python", "tests/e2e_stack.py"]
+
+# Varsayılan hedef: üretim imajı.
+FROM runtime
