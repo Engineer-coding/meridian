@@ -1,0 +1,53 @@
+{{- $c := dict "root" . "component" "rabbitmq" -}}
+# RabbitMQ (ADR-0004, ADR-0011): kuyruk topolojisini uygulamalar kurar. 15692: Prometheus metrikleri.
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: rabbitmq
+  labels: {{- include "meridian.labels" $c | nindent 4 }}
+spec:
+  serviceName: rabbitmq
+  replicas: 1
+  selector:
+    matchLabels: {{- include "meridian.selector" $c | nindent 6 }}
+  template:
+    metadata:
+      labels: {{- include "meridian.labels" $c | nindent 8 }}
+    spec:
+      {{- include "meridian.podSecurity" (dict "uid" 999) | nindent 6 }}
+      containers:
+        - name: rabbitmq
+          image: {{ .Values.rabbitmq.image }}
+          {{- include "meridian.containerSecurity" . | nindent 10 }}
+          ports:
+            - {name: amqp, containerPort: 5672}
+            - {name: metrics, containerPort: 15692}
+          env:
+            - name: RABBITMQ_DEFAULT_USER
+              valueFrom: {secretKeyRef: {name: {{ .Values.secretName }}, key: RABBITMQ_USER}}
+            - name: RABBITMQ_DEFAULT_PASS
+              valueFrom: {secretKeyRef: {name: {{ .Values.secretName }}, key: RABBITMQ_PASSWORD}}
+          volumeMounts:
+            - {name: data, mountPath: /var/lib/rabbitmq}
+          readinessProbe:
+            exec: {command: [rabbitmq-diagnostics, -q, ping]}
+            periodSeconds: 10
+            timeoutSeconds: 8
+          resources: {{- toYaml .Values.rabbitmq.resources | nindent 12 }}
+  volumeClaimTemplates:
+    - metadata: {name: data}
+      spec:
+        accessModes: [ReadWriteOnce]
+        resources:
+          requests: {storage: {{ .Values.rabbitmq.storage }}}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq
+  labels: {{- include "meridian.labels" $c | nindent 4 }}
+spec:
+  selector: {{- include "meridian.selector" $c | nindent 4 }}
+  ports:
+    - {name: amqp, port: 5672, targetPort: amqp}
+    - {name: metrics, port: 15692, targetPort: metrics}

@@ -1,0 +1,24 @@
+# Yerel kind kümesi (make k8s-up). HTTP; yalnızca bu makinede, geliştirme kullanıcılarıyla.
+appUrl: http://meridian.localtest.me
+
+ai:
+  # Anahtar Secret'ta varsa Haiku, yoksa host'taki Ollama (Docker Desktop: host.docker.internal).
+  llmChain: anthropic/claude-haiku-5-5,ollama/llama3.2:3b
+  ollamaUrl: http://host.docker.internal:11434
+
+keycloak:
+  directGrants: true
+  # Geliştirme realm'indeki kullanıcılar (infra/helm/meridian/files/keycloak/meridian-realm.json).
+  users:
+    - id: aaaaaaaa-0000-4000-8000-0000000000a1
+      username: alice
+      email: alice@acme.test
+      password: alice
+    - id: bbbbbbbb-0000-4000-8000-0000000000b1
+      username: bob
+      email: bob@beta.test
+      password: bob
+
+observability:
+  enabled: true
+  sampling: 1.0

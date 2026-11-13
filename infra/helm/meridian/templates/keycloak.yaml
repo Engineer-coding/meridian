@@ -1,0 +1,99 @@
+{{- $c := dict "root" . "component" "keycloak" -}}
+{{- $app := trimSuffix "/" .Values.appUrl -}}
+{{- /* Realm: istemciler geliştirme realm'inden (compose ile ortak), kullanıcılar ve adresler değerlerden. */ -}}
+{{- $realm := .Files.Get "files/keycloak/meridian-realm.json" | fromJson -}}
+{{- $clients := list -}}
+{{- range $realm.clients -}}
+{{- $client := deepCopy . -}}
+{{- if eq $client.clientId "meridian-web" -}}
+{{- $_ := set $client "redirectUris" (list (printf "%s/*" $app)) -}}
+{{- $_ := set $client "webOrigins" (list $app) -}}
+{{- end -}}
+{{- if eq $client.clientId "meridian-dev-cli" -}}
+{{- $_ := set $client "directAccessGrantsEnabled" $.Values.keycloak.directGrants -}}
+{{- end -}}
+{{- $clients = append $clients $client -}}
+{{- end -}}
+{{- $users := list -}}
+{{- range .Values.keycloak.users -}}
+{{- $password := .password -}}
+{{- if not $password -}}
+{{- $password = printf "${%s}" (required "keycloak.users[].password ya da passwordEnv gerekli" .passwordEnv) -}}
+{{- end -}}
+{{- $users = append $users (dict "id" .id "username" .username "email" .email "emailVerified" true "enabled" true "firstName" .username "lastName" "Meridian" "credentials" (list (dict "type" "password" "value" $password "temporary" false))) -}}
+{{- end -}}
+{{- $_ := set $realm "clients" $clients -}}
+{{- $_ := set $realm "users" $users -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: keycloak-realm
+  labels: {{- include "meridian.labels" $c | nindent 4 }}
+data:
+  meridian-realm.json: |
+{{ toPrettyJson $realm | indent 4 }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak
+  labels: {{- include "meridian.labels" $c | nindent 4 }}
+spec:
+  replicas: 1
+  # dev-file veritabanı tek pod içindir; realm her açılışta yeniden içe aktarılır.
+  strategy: {type: Recreate}
+  selector:
+    matchLabels: {{- include "meridian.selector" $c | nindent 6 }}
+  template:
+    metadata:
+      labels: {{- include "meridian.labels" $c | nindent 8 }}
+      annotations:
+        checksum/realm: {{ toJson $realm | sha256sum }}
+    spec:
+      {{- include "meridian.podSecurity" (dict "uid" 1000) | nindent 6 }}
+      containers:
+        - name: keycloak
+          image: {{ .Values.keycloak.image }}
+          args: [start, --db=dev-file, --import-realm]
+          {{- include "meridian.containerSecurity" . | nindent 10 }}
+          ports:
+            - {name: http, containerPort: 8080}
+            - {name: management, containerPort: 9000}
+          env:
+            - {name: KC_HOSTNAME, value: {{ printf "%s/auth" $app | quote }}}
+            - {name: KC_HTTP_RELATIVE_PATH, value: /auth}
+            - {name: KC_HTTP_ENABLED, value: "true"}
+            - {name: KC_PROXY_HEADERS, value: xforwarded}
+            - {name: KC_HEALTH_ENABLED, value: "true"}
+            - {name: KC_BOOTSTRAP_ADMIN_USERNAME, value: admin}
+            - name: KC_BOOTSTRAP_ADMIN_PASSWORD
+              valueFrom: {secretKeyRef: {name: {{ .Values.secretName }}, key: KEYCLOAK_ADMIN_PASSWORD}}
+            {{- range .Values.keycloak.users }}
+            {{- with .passwordEnv }}
+            - name: {{ . }}
+              valueFrom: {secretKeyRef: {name: {{ $.Values.secretName }}, key: {{ . }}}}
+            {{- end }}
+            {{- end }}
+          volumeMounts:
+            - {name: realm, mountPath: /opt/keycloak/data/import, readOnly: true}
+          startupProbe:
+            httpGet: {path: /auth/health/started, port: management}
+            periodSeconds: 5
+            failureThreshold: 60
+          readinessProbe:
+            httpGet: {path: /auth/health/ready, port: management}
+            periodSeconds: 10
+          resources: {{- toYaml .Values.keycloak.resources | nindent 12 }}
+      volumes:
+        - name: realm
+          configMap: {name: keycloak-realm}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: keycloak
+  labels: {{- include "meridian.labels" $c | nindent 4 }}
+spec:
+  selector: {{- include "meridian.selector" $c | nindent 4 }}
+  ports:
+    - {name: http, port: 8080, targetPort: http}

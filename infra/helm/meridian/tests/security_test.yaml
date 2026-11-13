@@ -1,0 +1,39 @@
+suite: security
+templates:
+  - templates/api.yaml
+  - templates/ai.yaml
+  - templates/web.yaml
+  - templates/postgres.yaml
+  - templates/redis.yaml
+  - templates/rabbitmq.yaml
+  - templates/keycloak.yaml
+  - templates/observability.yaml
+values:
+  - ../values-local.yaml
+tests:
+  - it: runs every workload as non-root with a memory limit
+    documentSelector:
+      path: kind
+      value: Deployment
+      matchMany: true
+    asserts:
+      - equal: {path: spec.template.spec.securityContext.runAsNonRoot, value: true}
+      - isNotNullOrEmpty: {path: "spec.template.spec.containers[0].resources.limits.memory"}
+      - equal: {path: "spec.template.spec.containers[0].securityContext.allowPrivilegeEscalation", value: false}
+  - it: runs every stateful workload as non-root with a memory limit
+    templates: [templates/postgres.yaml, templates/rabbitmq.yaml]
+    documentSelector:
+      path: kind
+      value: StatefulSet
+      matchMany: true
+    asserts:
+      - equal: {path: spec.template.spec.securityContext.runAsNonRoot, value: true}
+      - isNotNullOrEmpty: {path: "spec.template.spec.containers[0].resources.limits.memory"}
+  - it: never renders a Secret
+    documentSelector:
+      path: kind
+      value: Secret
+      matchMany: true
+      skipEmptyTemplates: true
+    asserts:
+      - hasDocuments: {count: 0}

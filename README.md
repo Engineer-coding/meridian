@@ -69,7 +69,7 @@ cd apps/web && cp .env.example .env.local && npm ci && npm run dev
 ```
 
 Web arayüzü http://localhost:3000 adresindedir. Yerel kullanıcılar
-[`infra/compose/keycloak/meridian-realm.json`](infra/compose/keycloak/meridian-realm.json) içindedir.
+[`infra/helm/meridian/files/keycloak/meridian-realm.json`](infra/helm/meridian/files/keycloak/meridian-realm.json) içindedir.
 İlk indekslemede embedding modeli (~2,2 GB) indirilir ve CPU'da yavaş çalışır.
 
 | Servis | Adres |

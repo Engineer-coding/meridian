@@ -1,0 +1,35 @@
+suite: keycloak
+templates:
+  - templates/keycloak.yaml
+values:
+  - ../values-local.yaml
+tests:
+  - it: serves under /auth with the public hostname
+    documentSelector: {path: kind, value: Deployment}
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content: {name: KC_HOSTNAME, value: http://meridian.localtest.me/auth}
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content: {name: KC_HTTP_RELATIVE_PATH, value: /auth}
+  - it: builds the realm from values with fixed user ids and the web redirect
+    documentSelector: {path: kind, value: ConfigMap}
+    asserts:
+      - matchRegex:
+          path: data["meridian-realm.json"]
+          pattern: '"redirectUris":\s*\[\s*"http://meridian.localtest.me/\*"\s*\]'
+      - matchRegex:
+          path: data["meridian-realm.json"]
+          pattern: '"id":\s*"bbbbbbbb-0000-4000-8000-0000000000b1"'
+      - notMatchRegex:
+          path: data["meridian-realm.json"]
+          pattern: 'localhost:3000'
+  - it: disables the password grant client when directGrants is false
+    documentSelector: {path: kind, value: ConfigMap}
+    set:
+      keycloak.directGrants: false
+    asserts:
+      - matchRegex:
+          path: data["meridian-realm.json"]
+          pattern: '"clientId":\s*"meridian-dev-cli"[^}]*"directAccessGrantsEnabled":\s*false'

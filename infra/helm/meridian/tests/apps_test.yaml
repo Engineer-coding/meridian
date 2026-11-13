@@ -1,0 +1,67 @@
+suite: applications
+templates:
+  - templates/api.yaml
+  - templates/ai.yaml
+  - templates/web.yaml
+values:
+  - ../values-local.yaml
+tests:
+  - it: api validates tokens against the public issuer and reaches the ai service
+    template: templates/api.yaml
+    documentSelector: {path: kind, value: Deployment}
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI
+            value: http://meridian.localtest.me/auth/realms/meridian
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content: {name: MERIDIAN_AI_URL, value: "http://meridian-ai:8090"}
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DB_APP_PASSWORD
+            valueFrom: {secretKeyRef: {name: meridian-secrets, key: DB_APP_PASSWORD}}
+  - it: web uses the public issuer and the app url
+    template: templates/web.yaml
+    documentSelector: {path: kind, value: Deployment}
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content: {name: OIDC_ISSUER, value: http://meridian.localtest.me/auth/realms/meridian}
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content: {name: APP_URL, value: http://meridian.localtest.me}
+  - it: ai accepts MCP requests for the public host and keeps models on a volume
+    template: templates/ai.yaml
+    documentSelector: {path: kind, value: Deployment}
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content: {name: MCP_ALLOWED_HOSTS, value: '["meridian.localtest.me","meridian.localtest.me:*"]'}
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content: {name: EMBEDDING_CACHE_DIR, value: /models}
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content: {name: models, mountPath: /models}
+  - it: images come from the configured registry and tag
+    template: templates/api.yaml
+    documentSelector: {path: kind, value: Deployment}
+    set:
+      image.registry: ghcr.io/engineer-coding/
+      image.tag: sha-abc1234
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: ghcr.io/engineer-coding/meridian-api:sha-abc1234
+  - it: ci swaps the ai image for the test image
+    template: templates/ai.yaml
+    documentSelector: {path: kind, value: Deployment}
+    values:
+      - ../values-local.yaml
+      - ../values-ci.yaml
+    asserts:
+      - equal: {path: "spec.template.spec.containers[0].image", value: "meridian-ai-test:local"}
+      - equal: {path: "spec.template.spec.containers[0].imagePullPolicy", value: Never}

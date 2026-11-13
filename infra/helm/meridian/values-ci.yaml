@@ -1,0 +1,12 @@
+# CI'daki kind kümesi: values-local.yaml'ın üstüne. Model, embedding ve GitHub sabit parçalarla (tests/e2e_stack.py).
+ai:
+  repository: meridian-ai-test
+  llmChain: ""
+  ollamaUrl: ""
+
+image:
+  pullPolicy: Never
+
+# CI makinesinin belleği sınırlı; izleme yığını ayrı işlerde sınanıyor (make obs-check, e2e-full).
+observability:
+  enabled: false

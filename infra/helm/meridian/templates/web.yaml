@@ -1,0 +1,46 @@
+{{- $c := dict "root" . "component" "web" -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: meridian-web
+  labels: {{- include "meridian.labels" $c | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {{- include "meridian.selector" $c | nindent 6 }}
+  template:
+    metadata:
+      labels: {{- include "meridian.labels" $c | nindent 8 }}
+    spec:
+      {{- include "meridian.podSecurity" (dict "uid" 10001) | nindent 6 }}
+      containers:
+        - name: web
+          image: {{ include "meridian.image" (dict "root" . "repository" .Values.web.repository) }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- include "meridian.containerSecurity" . | nindent 10 }}
+          ports:
+            - {name: http, containerPort: 3000}
+          env:
+            - {name: APP_URL, value: {{ trimSuffix "/" .Values.appUrl | quote }}}
+            - {name: API_URL, value: "http://meridian-api:8080"}
+            - {name: OIDC_ISSUER, value: {{ include "meridian.issuer" . }}}
+            - {name: OIDC_CLIENT_ID, value: meridian-web}
+            {{- include "meridian.secretEnv" (dict "root" . "name" "SESSION_SECRET") | nindent 12 }}
+            {{- include "meridian.otelEnv" . | nindent 12 }}
+          readinessProbe:
+            httpGet: {path: /signed-out, port: http}
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: {path: /signed-out, port: http}
+            periodSeconds: 20
+          resources: {{- toYaml .Values.web.resources | nindent 12 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: meridian-web
+  labels: {{- include "meridian.labels" $c | nindent 4 }}
+spec:
+  selector: {{- include "meridian.selector" $c | nindent 4 }}
+  ports:
+    - {name: http, port: 3000, targetPort: http}

@@ -1,0 +1,92 @@
+# Ortamdan bağımsız varsayılanlar. Ortam farkları values-<ortam>.yaml dosyalarındadır (ADR-0009).
+
+# Tarayıcının gördüğü adres. Web "/", Keycloak "/auth", MCP "/mcp" altında; issuer: <appUrl>/auth/realms/meridian.
+appUrl: http://meridian.localtest.me
+
+image:
+  # Boş: yerel imajlar (meridian-api:local). GHCR için "ghcr.io/engineer-coding/".
+  registry: ""
+  tag: local
+  pullPolicy: IfNotPresent
+
+# Gizli değerler chart'ta yok; kurulum betiği bu Secret'ı oluşturur (infra/k8s/secrets.sh).
+secretName: meridian-secrets
+
+ingress:
+  # Traefik'in kurulu olduğu namespace: NetworkPolicy ingress denetleyicisine buradan izin verir.
+  controllerNamespace: traefik
+  entryPoints: [web]
+
+networkPolicies:
+  enabled: true
+
+api:
+  repository: meridian-api
+  dbPoolSize: 20
+  resources:
+    requests: {cpu: 250m, memory: 512Mi}
+    limits: {memory: 1Gi}
+
+ai:
+  repository: meridian-ai
+  # Virgülle ayrılmış sağlayıcı zinciri (ADR-0008). Boş: imajın varsayılanı.
+  llmChain: ""
+  ollamaUrl: ""
+  modelCacheSize: 5Gi
+  resources:
+    requests: {cpu: 250m, memory: 1Gi}
+    limits: {memory: 4Gi}
+
+web:
+  repository: meridian-web
+  resources:
+    requests: {cpu: 100m, memory: 192Mi}
+    limits: {memory: 512Mi}
+
+postgres:
+  image: pgvector/pgvector:pg17
+  storage: 5Gi
+  resources:
+    requests: {cpu: 100m, memory: 256Mi}
+    limits: {memory: 1Gi}
+
+redis:
+  image: redis:7.4-alpine
+  resources:
+    requests: {cpu: 50m, memory: 64Mi}
+    limits: {memory: 256Mi}
+
+rabbitmq:
+  image: rabbitmq:4.1-management
+  storage: 2Gi
+  resources:
+    requests: {cpu: 100m, memory: 256Mi}
+    limits: {memory: 768Mi}
+
+keycloak:
+  image: quay.io/keycloak/keycloak:26.8.0
+  # meridian-dev-cli istemcisinin parola akışı (seed işi ve yük testi kullanır). Herkese açık ortamda kapalı.
+  directGrants: false
+  # Realm kullanıcıları. Kimlikler sabit: üyelikler Keycloak yeniden başlayınca da geçerli kalır.
+  # password: düz parola (yalnızca yerel); passwordEnv: Keycloak'ın ortamındaki değişken adı (Secret'tan gelir).
+  users: []
+  resources:
+    requests: {cpu: 250m, memory: 512Mi}
+    limits: {memory: 1Gi}
+
+observability:
+  enabled: false
+  # İz örnekleme oranı (ADR-0017): yerelde 1.0, paylaşılan ortamda düşürülür.
+  sampling: 1.0
+  images:
+    collector: otel/opentelemetry-collector-contrib:0.163.2
+    tempo: grafana/tempo:2.10.10
+    prometheus: prom/prometheus:v3.15.1
+    loki: grafana/loki:3.7.9
+    grafana: grafana/grafana:13.2.4
+  resources:
+    requests: {cpu: 50m, memory: 128Mi}
+    limits: {memory: 512Mi}
+
+seed:
+  enabled: false

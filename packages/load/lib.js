@@ -4,7 +4,7 @@ import { check, fail, sleep } from "k6";
 
 export const API = __ENV.API_URL || "http://host.docker.internal:18080";
 const KEYCLOAK = __ENV.KEYCLOAK_URL || "http://host.docker.internal:18180";
-// Yerel geliştirme kullanıcısı ve istemcisi (infra/compose/keycloak/meridian-realm.json). Yalnızca yerel ortam.
+// Yerel geliştirme kullanıcısı ve istemcisi (infra/helm/meridian/files/keycloak/meridian-realm.json). Yalnızca yerel ortam.
 const USER = __ENV.LOAD_USER || "alice";
 
 export function login() {

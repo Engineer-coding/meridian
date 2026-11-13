@@ -1,0 +1,40 @@
+suite: network policies
+templates:
+  - templates/networkpolicies.yaml
+values:
+  - ../values-local.yaml
+tests:
+  - it: lets only api pods and the ingress controller reach ai
+    documentSelector: {path: metadata.name, value: meridian-ai}
+    asserts:
+      - equal:
+          path: spec.podSelector.matchLabels
+          value: {app.kubernetes.io/component: ai}
+      - equal:
+          path: spec.ingress[0].from
+          value:
+            - podSelector: {matchLabels: {app.kubernetes.io/component: api}}
+            - namespaceSelector: {matchLabels: {kubernetes.io/metadata.name: traefik}}
+  - it: lets only api, ai and the seed job reach postgres
+    documentSelector: {path: metadata.name, value: postgres}
+    asserts:
+      - equal:
+          path: spec.ingress[0].from
+          value:
+            - podSelector: {matchLabels: {app.kubernetes.io/component: api}}
+            - podSelector: {matchLabels: {app.kubernetes.io/component: ai}}
+            - podSelector: {matchLabels: {app.kubernetes.io/component: seed}}
+  - it: lets only api and ai reach rabbitmq, plus prometheus for metrics
+    documentSelector: {path: metadata.name, value: rabbitmq}
+    asserts:
+      - equal:
+          path: spec.ingress[0].from
+          value:
+            - podSelector: {matchLabels: {app.kubernetes.io/component: api}}
+            - podSelector: {matchLabels: {app.kubernetes.io/component: ai}}
+            - podSelector: {matchLabels: {app.kubernetes.io/component: prometheus}}
+  - it: can be turned off
+    set:
+      networkPolicies.enabled: false
+    asserts:
+      - hasDocuments: {count: 0}

@@ -4,7 +4,7 @@ COMPOSE = docker compose -f infra/compose/compose.yaml --env-file .env
 
 PYTHON ?= python
 
-.PHONY: up down ps logs psql reset smoke contract-lint eval-validate api-test ai-test ai-run web-test web-e2e e2e-full web-run eval eval-smoke eval-answers eval-redteam obs-check load images
+.PHONY: up down ps logs psql reset smoke contract-lint eval-validate api-test ai-test ai-run web-test web-e2e e2e-full web-run eval eval-smoke eval-answers eval-redteam obs-check load images helm-test
 
 up:
 	$(COMPOSE) up -d --wait
@@ -96,3 +96,12 @@ images:
 	docker build -t meridian-ai:local apps/ai-service
 	docker build --target test -t meridian-ai-test:local apps/ai-service
 	docker build -t meridian-web:local apps/web
+
+# Helm chart: lint, birim testleri (helm-unittest) ve şema doğrulaması (kubeconform; Traefik CRD'leri katalogdan).
+CHART := infra/helm/meridian
+KUBECONFORM := kubeconform -strict -summary -schema-location default 	-schema-location 'https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json'
+helm-test:
+	helm lint $(CHART) -f $(CHART)/values-local.yaml
+	helm unittest $(CHART)
+	helm template meridian $(CHART) -f $(CHART)/values-local.yaml | $(KUBECONFORM)
+	helm template meridian $(CHART) -f $(CHART)/values-local.yaml -f $(CHART)/values-ci.yaml | $(KUBECONFORM)

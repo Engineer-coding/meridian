@@ -1,0 +1,36 @@
+{{- if .Values.networkPolicies.enabled -}}
+{{- /*
+Kim kime ulaşabilir (tehdit T19). Yalnızca gelen trafik kısıtlanır; çıkış açık (DNS, GitHub, model sağlayıcısı).
+Pod'lar Keycloak'a ingress üzerinden gider (CoreDNS yönlendirmesi), bu yüzden Keycloak yalnızca Traefik'ten erişilir.
+*/ -}}
+{{- $traefik := dict "namespaceSelector" (dict "matchLabels" (dict "kubernetes.io/metadata.name" .Values.ingress.controllerNamespace)) -}}
+{{- $rules := list
+  (dict "name" "meridian-ai" "target" "ai" "from" (list "api") "traefik" true)
+  (dict "name" "meridian-api" "target" "api" "from" (list "web" "ai" "seed") "traefik" false)
+  (dict "name" "meridian-web" "target" "web" "from" (list) "traefik" true)
+  (dict "name" "keycloak" "target" "keycloak" "from" (list) "traefik" true)
+  (dict "name" "postgres" "target" "postgres" "from" (list "api" "ai" "seed") "traefik" false)
+  (dict "name" "rabbitmq" "target" "rabbitmq" "from" (list "api" "ai" "prometheus") "traefik" false)
+  (dict "name" "redis" "target" "redis" "from" (list "api") "traefik" false)
+-}}
+{{- range $rules }}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .name }}
+  labels: {{- include "meridian.labels" (dict "root" $ "component" .target) | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels: {app.kubernetes.io/component: {{ .target }}}
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        {{- range .from }}
+        - podSelector: {matchLabels: {app.kubernetes.io/component: {{ . }}}}
+        {{- end }}
+        {{- if .traefik }}
+        - {{- toYaml $traefik | nindent 10 }}
+        {{- end }}
+{{- end }}
+{{- end }}

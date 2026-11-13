@@ -1,0 +1,33 @@
+suite: ingress
+templates:
+  - templates/ingressroute.yaml
+values:
+  - ../values-local.yaml
+tests:
+  - it: routes /auth to keycloak, /mcp to ai and everything else to web on the appUrl host
+    asserts:
+      - isKind: {of: IngressRoute}
+      - equal:
+          path: spec.routes[0].match
+          value: Host(`meridian.localtest.me`) && PathPrefix(`/auth`)
+      - equal: {path: "spec.routes[0].services[0].name", value: keycloak}
+      - equal: {path: "spec.routes[0].services[0].port", value: 8080}
+      - equal:
+          path: spec.routes[1].match
+          value: Host(`meridian.localtest.me`) && PathPrefix(`/mcp`)
+      - equal: {path: "spec.routes[1].services[0].name", value: meridian-ai}
+      - equal: {path: "spec.routes[1].services[0].port", value: 8090}
+      - equal:
+          path: spec.routes[2].match
+          value: Host(`meridian.localtest.me`)
+      - equal: {path: "spec.routes[2].services[0].name", value: meridian-web}
+      - lengthEqual: {path: spec.routes, count: 3}
+  - it: follows appUrl and its scheme
+    set:
+      appUrl: https://meridian.1.2.3.4.sslip.io
+      ingress.entryPoints: [websecure]
+    asserts:
+      - equal:
+          path: spec.routes[2].match
+          value: Host(`meridian.1.2.3.4.sslip.io`)
+      - equal: {path: spec.entryPoints, value: [websecure]}
