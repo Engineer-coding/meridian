@@ -15,6 +15,7 @@ Sürüm geçmişi ve ölçülen sonuçlar [CHANGELOG.md](CHANGELOG.md) içindedi
 | [`packages/eval`](packages/eval) | JSONL, rapor | Altın set, kırmızı takım seti, değerlendirme raporları ve eşikler |
 | [`packages/load`](packages/load/README.md) | k6 | Yük testi senaryoları ve raporlar |
 | [`infra/compose`](infra/compose) | Docker Compose | Yerel altyapı ve izleme |
+| [`infra/helm`](infra/helm/meridian), [`infra/gitops`](infra/gitops), [`infra/k8s`](infra/k8s) | Helm, Argo CD, kind | Kubernetes'e dağıtım ve duman testi ([ADR-0009](docs/adr/0009-gitops-deployment.md)) |
 | [`docs`](docs) | Markdown | [ADR'ler](docs/adr/README.md), [mimari](docs/architecture), [tehdit modeli](docs/architecture/threat-model.md), [runbook'lar](docs/runbooks) |
 
 ```mermaid
@@ -86,6 +87,37 @@ Web arayüzü http://localhost:3000 adresindedir. Yerel kullanıcılar
 Tüm portlar yalnızca `127.0.0.1` üzerinde açılır. İzleri, metrikleri ve logları toplayıcıya göndermek
 için `.env` içinde `OTEL_EXPORT=true` yapın ([ADR-0017](docs/adr/0017-observability.md)).
 
+## Kubernetes'te çalıştırma
+
+Aynı Helm chart'ı ([`infra/helm/meridian`](infra/helm/meridian)) yerel bir kind kümesine Argo CD ile kurulur
+([ADR-0009](docs/adr/0009-gitops-deployment.md)). Ek gereksinimler: [kind](https://kind.sigs.k8s.io), kubectl,
+[helm](https://helm.sh); sürümler [`infra/versions.env`](infra/versions.env) içinde. 80 numaralı port boş olmalı.
+
+```bash
+make images
+```
+
+```bash
+make k8s-up
+```
+
+Argo CD chart'ı GitHub'daki daldan okur: dal push edilmiş olmalıdır (`K8S_REVISION=<dal ya da commit>`).
+Push etmeden denemek için `make k8s-up` yerine:
+
+```bash
+make k8s-dev
+```
+
+Uygulama http://meridian.localtest.me adresindedir (`alice`/`alice`, `bob`/`bob`). Kurulumun sonunda seed işi
+`acme-demo` kiracısını, KVKK ve Kubernetes Pods kaynaklarını kurar; ilk indekslemede embedding modeli indirilir.
+Cevaplar kökteki `.env` dosyasında `ANTHROPIC_API_KEY` varsa Claude Haiku'yla, yoksa host'taki Ollama'yla üretilir.
+Grafana dışarıya açık değildir: `kubectl -n meridian port-forward svc/grafana 3001:3000`. Seed'i yeniden
+çalıştırmak: `kubectl -n meridian create job seed-now --from=cronjob/meridian-seed`.
+
+```bash
+make k8s-down
+```
+
 ## Testler ve kontroller
 
 | Komut | İş |
@@ -100,13 +132,15 @@ için `.env` içinde `OTEL_EXPORT=true` yapın ([ADR-0017](docs/adr/0017-observa
 | `make eval-smoke` | Modelsiz değerlendirme hattı duman testi |
 | `make eval`, `make eval-answers`, `make eval-redteam` | Gerçek modelle ölçüm (uzun sürer, [ADR-0010](docs/adr/0010-eval-gate-in-ci.md)) |
 | `make load` | k6 yük testi ([ADR-0019](docs/adr/0019-load-test.md)) |
+| `make helm-test` | Helm chart: lint, birim testleri (helm-unittest), şema doğrulaması (kubeconform) |
+| `make k8s-smoke` | Kümedeki kurulumun duman testi |
 
-CI ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) bunların modelsiz olanlarını ve gitleaks taramasını çalıştırır.
+CI ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) bunların modelsiz olanlarını, kind kümesine Argo CD ile kurulumu ve gitleaks taramasını çalıştırır.
 
 ## Durum
 
-Henüz yok: dağıtım (Helm, Terraform, GitOps; [ADR-0009](docs/adr/README.md) planlandı), web ve dosya
-yükleme kaynak çekicileri. Küçük yerel modelle cevap kalitesi canlı kullanım için yeterli değildir; ölçümler
+Henüz yok: canlı demo ortamı (Terraform, TLS; [ADR-0009](docs/adr/0009-gitops-deployment.md) Faz 6.3), web ve
+dosya yükleme kaynak çekicileri. Küçük yerel modelle cevap kalitesi canlı kullanım için yeterli değildir; ölçümler
 [CHANGELOG.md](CHANGELOG.md) ve [`packages/eval/reports`](packages/eval/reports) içindedir.
 
 Üçüncü taraf içerik: [NOTICE.md](NOTICE.md).

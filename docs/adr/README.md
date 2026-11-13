@@ -15,7 +15,7 @@ Kabul edilmiş bir ADR değiştirilmez; yerine yeni bir ADR yazılır ve eskisin
 | 0006 | Streaming: SSE ve WebSocket | Planlandı |
 | [0007](0007-hybrid-retrieval-and-reranking.md) | Hibrit retrieval ve reranking seçimi (ablasyon verisiyle) | Kabul edildi |
 | [0008](0008-llm-provider-and-fallback.md) | LLM sağlayıcı soyutlaması, yedek zinciri ve doğrulanmış kanıtla cevap | Kabul edildi |
-| 0009 | GitOps ile dağıtım | Planlandı |
+| [0009](0009-gitops-deployment.md) | GitOps ile dağıtım: Helm, Argo CD, kind ve açılıp kapanan demo | Kabul edildi |
 | [0010](0010-eval-gate-in-ci.md) | Değerlendirme kapısının CI'daki yeri | Kabul edildi |
 | [0011](0011-consumer-retry-dlq.md) | Kuyruk tüketicisi: yeniden deneme, DLQ ve teslim garantisi | Kabul edildi |
 | [0012](0012-indexing-pipeline.md) | İndeksleme hattı ve embedding modeli (v0) | Kabul edildi |

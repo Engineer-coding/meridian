@@ -92,6 +92,13 @@ if [ "$MODE" = argo ]; then
   render_app "$ROOT/infra/gitops/$ENV/meridian.yaml" | kubectl apply -f - >/dev/null
   kubectl -n argocd wait application/meridian --for=jsonpath='{.status.sync.status}'=Synced --timeout=900s
   kubectl -n argocd wait application/meridian --for=jsonpath='{.status.health.status}'=Healthy --timeout=900s
+  # Seed bir PostSync kancası: uygulama sağlıklı görünürken indeksleme sürüyor olabilir.
+  if kubectl -n "$NS" get cronjob meridian-seed >/dev/null 2>&1; then
+    log "seed işi bekleniyor (indeksleme)"
+    for _ in $(seq 1 60); do kubectl -n "$NS" get job meridian-seed >/dev/null 2>&1 && break; sleep 5; done
+    kubectl -n "$NS" wait --for=condition=complete job/meridian-seed --timeout=1800s \
+      || die "seed işi bitmedi: kubectl -n $NS logs job/meridian-seed"
+  fi
 else
   log "Meridian (helm, çalışma ağacı)"
   helm upgrade --install meridian "$ROOT/infra/helm/meridian" -n "$NS" "${values[@]}" --wait --timeout 15m
