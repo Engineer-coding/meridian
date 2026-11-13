@@ -1,0 +1,7 @@
+# Kökten derlenen API imajı yalnızca sözleşmeyi ve API kaynağını görür.
+*
+!packages/api-contract/**
+!apps/api/mvnw
+!apps/api/pom.xml
+!apps/api/.mvn/**
+!apps/api/src/**

@@ -4,7 +4,7 @@ COMPOSE = docker compose -f infra/compose/compose.yaml --env-file .env
 
 PYTHON ?= python
 
-.PHONY: up down ps logs psql reset smoke contract-lint eval-validate api-test ai-test ai-run web-test web-e2e e2e-full web-run eval eval-smoke eval-answers eval-redteam obs-check load
+.PHONY: up down ps logs psql reset smoke contract-lint eval-validate api-test ai-test ai-run web-test web-e2e e2e-full web-run eval eval-smoke eval-answers eval-redteam obs-check load images
 
 up:
 	$(COMPOSE) up -d --wait
@@ -89,3 +89,10 @@ eval-answers:
 # Kırmızı takım seti gerçek modelle (ADR-0016). CPU'da saatler sürer; rapor depoya girer, CI kapısı denetler.
 eval-redteam:
 	cd apps/ai-service && PYTHONUTF8=1 uv run python -m meridian_ai.evaluation.redteam --name $(NAME) $(if $(LLM),--llm $(LLM))
+
+# Üretim imajları (Faz 6, ADR-0009); kind kümesi bu yerel etiketleri yükler.
+images:
+	docker build -f apps/api/Dockerfile -t meridian-api:local .
+	docker build -t meridian-ai:local apps/ai-service
+	docker build --target test -t meridian-ai-test:local apps/ai-service
+	docker build -t meridian-web:local apps/web

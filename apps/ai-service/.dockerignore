@@ -3,3 +3,4 @@
 .pytest_cache
 .ruff_cache
 tests
+!tests/e2e_stack.py
