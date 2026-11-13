@@ -1,0 +1,115 @@
+{{- if .Values.observability.enabled -}}
+{{- /*
+İzleme yığını (ADR-0017, ADR-0018): yapılandırma dosyaları compose ile ortak (files/), servis adları da compose'daki gibi.
+Veri geçicidir (emptyDir): kalıcı izleme bu chart'ın işi değil. Grafana dışarıya açık değil: kubectl port-forward svc/grafana 3001:3000.
+*/ -}}
+{{- $o := .Values.observability -}}
+{{- $components := list
+  (dict "name" "otel-collector" "image" $o.images.collector "uid" 10001
+        "args" (list "--config=/etc/otelcol/collector.yaml")
+        "ports" (list (dict "name" "otlp-http" "port" 4318) (dict "name" "otlp-grpc" "port" 4317) (dict "name" "metrics" "port" 8889))
+        "files" (dict "otel-config" (dict "glob" "files/otel/*" "path" "/etc/otelcol"))
+        "data" "")
+  (dict "name" "tempo" "image" $o.images.tempo "uid" 10001
+        "args" (list "-config.file=/etc/tempo/tempo.yaml")
+        "ports" (list (dict "name" "http" "port" 3200) (dict "name" "otlp-grpc" "port" 4317))
+        "files" (dict "tempo-config" (dict "glob" "files/tempo/*" "path" "/etc/tempo"))
+        "data" "/var/tempo")
+  (dict "name" "prometheus" "image" $o.images.prometheus "uid" 65534
+        "args" (list "--config.file=/etc/prometheus/prometheus.yml" "--storage.tsdb.retention.time=2d")
+        "ports" (list (dict "name" "http" "port" 9090))
+        "files" (dict "prometheus-config" (dict "glob" "files/prometheus/prometheus.yml" "path" "/etc/prometheus")
+                      "prometheus-rules" (dict "glob" "files/prometheus/rules/*" "path" "/etc/prometheus/rules"))
+        "data" "/prometheus")
+  (dict "name" "loki" "image" $o.images.loki "uid" 10001
+        "args" (list "-config.file=/etc/loki/loki.yaml")
+        "ports" (list (dict "name" "http" "port" 3100))
+        "files" (dict "loki-config" (dict "glob" "files/loki/*" "path" "/etc/loki"))
+        "data" "/loki")
+  (dict "name" "grafana" "image" $o.images.grafana "uid" 472
+        "args" (list)
+        "ports" (list (dict "name" "http" "port" 3000))
+        "files" (dict "grafana-datasources" (dict "glob" "files/grafana/provisioning/datasources/*" "path" "/etc/grafana/provisioning/datasources")
+                      "grafana-providers" (dict "glob" "files/grafana/provisioning/dashboards/*" "path" "/etc/grafana/provisioning/dashboards")
+                      "grafana-dashboards" (dict "glob" "files/grafana/dashboards/*" "path" "/var/lib/grafana/dashboards"))
+        "data" "/var/lib/grafana/data")
+-}}
+{{- range $comp := $components }}
+{{- $c := dict "root" $ "component" $comp.name }}
+{{- range $cm, $f := $comp.files }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $cm }}
+  labels: {{- include "meridian.labels" $c | nindent 4 }}
+data:
+{{ ($.Files.Glob $f.glob).AsConfig | indent 2 }}
+{{- end }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $comp.name }}
+  labels: {{- include "meridian.labels" $c | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {{- include "meridian.selector" $c | nindent 6 }}
+  template:
+    metadata:
+      labels: {{- include "meridian.labels" $c | nindent 8 }}
+    spec:
+      {{- include "meridian.podSecurity" (dict "uid" $comp.uid) | nindent 6 }}
+      containers:
+        - name: {{ $comp.name }}
+          image: {{ $comp.image }}
+          {{- with $comp.args }}
+          args: {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- include "meridian.containerSecurity" $ | nindent 10 }}
+          ports:
+            {{- range $comp.ports }}
+            - {name: {{ .name }}, containerPort: {{ .port }}}
+            {{- end }}
+          {{- if eq $comp.name "grafana" }}
+          env:
+            - {name: GF_AUTH_ANONYMOUS_ENABLED, value: "true"}
+            - {name: GF_AUTH_ANONYMOUS_ORG_ROLE, value: Viewer}
+            - {name: GF_ANALYTICS_REPORTING_ENABLED, value: "false"}
+            - {name: GF_USERS_DEFAULT_LANGUAGE, value: tr-TR}
+            - {name: GF_PATHS_DATA, value: /var/lib/grafana/data}
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              valueFrom: {secretKeyRef: {name: {{ $.Values.secretName }}, key: GRAFANA_ADMIN_PASSWORD}}
+          {{- end }}
+          volumeMounts:
+            {{- range $cm, $f := $comp.files }}
+            - {name: {{ $cm }}, mountPath: {{ $f.path }}, readOnly: true}
+            {{- end }}
+            {{- with $comp.data }}
+            - {name: data, mountPath: {{ . }}}
+            {{- end }}
+          resources: {{- toYaml $o.resources | nindent 12 }}
+      volumes:
+        {{- range $cm, $f := $comp.files }}
+        - name: {{ $cm }}
+          configMap: {name: {{ $cm }}}
+        {{- end }}
+        {{- if $comp.data }}
+        - name: data
+          emptyDir: {}
+        {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $comp.name }}
+  labels: {{- include "meridian.labels" $c | nindent 4 }}
+spec:
+  selector: {{- include "meridian.selector" $c | nindent 4 }}
+  ports:
+    {{- range $comp.ports }}
+    - {name: {{ .name }}, port: {{ .port }}, targetPort: {{ .name }}}
+    {{- end }}
+{{- end }}
+{{- end }}

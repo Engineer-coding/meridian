@@ -47,7 +47,7 @@ async function signIn(browser: Browser, username: string): Promise<Page> {
   const context = await browser.newContext({ locale: "tr-TR", baseURL: "http://localhost:3200" });
   const page = await context.newPage();
   await page.goto("/");
-  // Gerçek Keycloak formu; kullanıcılar infra/compose/keycloak/meridian-realm.json içindedir.
+  // Gerçek Keycloak formu; kullanıcılar infra/helm/meridian/files/keycloak/meridian-realm.json içindedir.
   await expect(page).toHaveURL(/localhost:18180/);
   await page.locator("#username").fill(username);
   await page.locator("#password").fill(username);

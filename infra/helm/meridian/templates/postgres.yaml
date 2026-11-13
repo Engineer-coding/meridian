@@ -1,0 +1,64 @@
+{{- $c := dict "root" . "component" "postgres" -}}
+# PostgreSQL + pgvector. Başlangıç betikleri compose ile ortaktır (files/postgres/init): roller ve eklentiler.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-init
+  labels: {{- include "meridian.labels" $c | nindent 4 }}
+data:
+{{ (.Files.Glob "files/postgres/init/*").AsConfig | indent 2 }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+  labels: {{- include "meridian.labels" $c | nindent 4 }}
+spec:
+  serviceName: postgres
+  replicas: 1
+  selector:
+    matchLabels: {{- include "meridian.selector" $c | nindent 6 }}
+  template:
+    metadata:
+      labels: {{- include "meridian.labels" $c | nindent 8 }}
+    spec:
+      {{- include "meridian.podSecurity" (dict "uid" 999) | nindent 6 }}
+      containers:
+        - name: postgres
+          image: {{ .Values.postgres.image }}
+          {{- include "meridian.containerSecurity" . | nindent 10 }}
+          ports:
+            - {name: postgres, containerPort: 5432}
+          env:
+            # Disk kökü lost+found içerebilir; veri bir alt dizinde.
+            - {name: PGDATA, value: /var/lib/postgresql/data/pgdata}
+            {{- range list "POSTGRES_DB" "POSTGRES_USER" "POSTGRES_PASSWORD" "DB_OWNER_PASSWORD" "DB_APP_PASSWORD" "DB_RELAY_PASSWORD" "DB_AI_PASSWORD" }}
+            {{- include "meridian.secretEnv" (dict "root" $ "name" .) | nindent 12 }}
+            {{- end }}
+          volumeMounts:
+            - {name: data, mountPath: /var/lib/postgresql/data}
+            - {name: init, mountPath: /docker-entrypoint-initdb.d, readOnly: true}
+          readinessProbe:
+            exec:
+              command: [sh, -c, 'pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"']
+            periodSeconds: 5
+          resources: {{- toYaml .Values.postgres.resources | nindent 12 }}
+      volumes:
+        - name: init
+          configMap: {name: postgres-init}
+  volumeClaimTemplates:
+    - metadata: {name: data}
+      spec:
+        accessModes: [ReadWriteOnce]
+        resources:
+          requests: {storage: {{ .Values.postgres.storage }}}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  labels: {{- include "meridian.labels" $c | nindent 4 }}
+spec:
+  selector: {{- include "meridian.selector" $c | nindent 4 }}
+  ports:
+    - {name: postgres, port: 5432, targetPort: postgres}

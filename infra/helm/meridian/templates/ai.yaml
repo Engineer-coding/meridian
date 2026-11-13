@@ -1,0 +1,83 @@
+{{- $c := dict "root" . "component" "ai" -}}
+{{- $host := include "meridian.host" . -}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: meridian-ai-models
+  labels: {{- include "meridian.labels" $c | nindent 4 }}
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests: {storage: {{ .Values.ai.modelCacheSize }}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: meridian-ai
+  labels: {{- include "meridian.labels" $c | nindent 4 }}
+spec:
+  replicas: 1
+  # Model önbelleği tek yazarlı bir disk: yeni pod eskisi kapanınca açılır.
+  strategy: {type: Recreate}
+  selector:
+    matchLabels: {{- include "meridian.selector" $c | nindent 6 }}
+  template:
+    metadata:
+      labels: {{- include "meridian.labels" $c | nindent 8 }}
+    spec:
+      {{- include "meridian.podSecurity" (dict "uid" 10001) | nindent 6 }}
+      containers:
+        - name: ai
+          image: {{ include "meridian.image" (dict "root" . "repository" .Values.ai.repository) }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- include "meridian.containerSecurity" . | nindent 10 }}
+          ports:
+            - {name: http, containerPort: 8090}
+          env:
+            - {name: HTTP_PORT, value: "8090"}
+            - {name: POSTGRES_HOST, value: postgres}
+            - {name: RABBITMQ_HOST, value: rabbitmq}
+            - {name: API_URL, value: "http://meridian-api:8080"}
+            - name: MCP_ALLOWED_HOSTS
+              value: {{ printf "[%q,%q]" $host (printf "%s:*" $host) | squote }}
+            - {name: EMBEDDING_CACHE_DIR, value: /models}
+            {{- with .Values.ai.llmChain }}
+            - {name: LLM_CHAIN, value: {{ . | quote }}}
+            {{- end }}
+            {{- with .Values.ai.ollamaUrl }}
+            - {name: OLLAMA_URL, value: {{ . | quote }}}
+            {{- end }}
+            {{- range list "DB_AI_PASSWORD" "RABBITMQ_USER" "RABBITMQ_PASSWORD" "AI_INTERNAL_TOKEN" }}
+            {{- include "meridian.secretEnv" (dict "root" $ "name" .) | nindent 12 }}
+            {{- end }}
+            - name: ANTHROPIC_API_KEY
+              valueFrom:
+                secretKeyRef: {name: {{ .Values.secretName }}, key: ANTHROPIC_API_KEY, optional: true}
+            {{- include "meridian.otelEnv" . | nindent 12 }}
+          volumeMounts:
+            - {name: models, mountPath: /models}
+          # İlk açılışta embedding modeli indirilebilir; hazır olma kontrolü bunu bekler.
+          startupProbe:
+            httpGet: {path: /health/live, port: http}
+            periodSeconds: 5
+            failureThreshold: 60
+          readinessProbe:
+            httpGet: {path: /health/ready, port: http}
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: {path: /health/live, port: http}
+            periodSeconds: 20
+          resources: {{- toYaml .Values.ai.resources | nindent 12 }}
+      volumes:
+        - name: models
+          persistentVolumeClaim: {claimName: meridian-ai-models}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: meridian-ai
+  labels: {{- include "meridian.labels" $c | nindent 4 }}
+spec:
+  selector: {{- include "meridian.selector" $c | nindent 4 }}
+  ports:
+    - {name: http, port: 8090, targetPort: http}
