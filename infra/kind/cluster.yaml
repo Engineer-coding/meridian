@@ -1,0 +1,11 @@
+# Yerel küme (make k8s-up, ADR-0009): tek düğüm; host'un 80/443 portları Traefik'e gider.
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+name: meridian
+nodes:
+  - role: control-plane
+    labels:
+      ingress-ready: "true"
+    extraPortMappings:
+      - {containerPort: 80, hostPort: 80, listenAddress: "127.0.0.1", protocol: TCP}
+      - {containerPort: 443, hostPort: 443, listenAddress: "127.0.0.1", protocol: TCP}

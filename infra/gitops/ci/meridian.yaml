@@ -1,0 +1,20 @@
+# CI'daki kind kümesi: yerel değerler + sahte model, embedding ve GitHub (values-ci.yaml).
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: meridian
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Engineer-coding/meridian.git
+    targetRevision: REVISION
+    path: infra/helm/meridian
+    helm:
+      valueFiles: [values-local.yaml, values-ci.yaml]
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: meridian
+  syncPolicy:
+    automated: {prune: true, selfHeal: true}
+    syncOptions: [CreateNamespace=true]

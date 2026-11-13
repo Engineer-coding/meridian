@@ -1,0 +1,20 @@
+# Yerel kind kümesi: chart repodaki daldan senkronlanır (GitOps). REVISION, infra/k8s/up.sh tarafından doldurulur.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: meridian
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Engineer-coding/meridian.git
+    targetRevision: REVISION
+    path: infra/helm/meridian
+    helm:
+      valueFiles: [values-local.yaml]
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: meridian
+  syncPolicy:
+    automated: {prune: true, selfHeal: true}
+    syncOptions: [CreateNamespace=true]

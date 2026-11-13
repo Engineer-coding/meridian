@@ -1,0 +1,11 @@
+# Traefik (k3s ile aynı ingress denetleyicisi). kind'da host'un 80/443 portlarına düğüm üzerinden bağlanır.
+deployment: {replicas: 1}
+nodeSelector: {ingress-ready: "true"}
+tolerations:
+  - {key: node-role.kubernetes.io/control-plane, operator: Exists, effect: NoSchedule}
+ports:
+  web: {hostPort: 80}
+  websecure: {hostPort: 443}
+service: {type: ClusterIP}
+ingressRoute:
+  dashboard: {enabled: false}
