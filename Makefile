@@ -49,9 +49,9 @@ web-e2e:
 E2E_COMPOSE = docker compose -f infra/compose/compose.e2e.yaml --env-file .env.example
 # Prometheus kuralları ve alarm testleri (ADR-0018): eşikler sentetik seriyle sınanır.
 obs-check:
-	docker run --rm -v "$(CURDIR)/infra/compose/prometheus:/p" -w /p/tests --entrypoint promtool prom/prometheus:v3.15.1 check rules ../rules/slo.yml
-	docker run --rm -v "$(CURDIR)/infra/compose/prometheus:/p" -w /p/tests --entrypoint promtool prom/prometheus:v3.15.1 test rules slo_test.yml
-	docker run --rm -v "$(CURDIR)/infra/compose/prometheus:/p" -w /p --entrypoint promtool prom/prometheus:v3.15.1 check config prometheus.yml
+	docker run --rm -v "$(CURDIR)/infra/helm/meridian/files/prometheus:/p" -w /p/tests --entrypoint promtool prom/prometheus:v3.15.1 check rules ../rules/slo.yml
+	docker run --rm -v "$(CURDIR)/infra/helm/meridian/files/prometheus:/p" -w /p/tests --entrypoint promtool prom/prometheus:v3.15.1 test rules slo_test.yml
+	docker run --rm -v "$(CURDIR)/infra/helm/meridian/files/prometheus:/p" -w /p --entrypoint promtool prom/prometheus:v3.15.1 check config prometheus.yml
 
 # Yük testi (packages/load): SCENARIO=chat (500 eşzamanlı sohbet) ya da indexing (50 eşzamanlı iş).
 load:

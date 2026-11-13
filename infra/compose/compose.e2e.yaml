@@ -10,7 +10,7 @@ services:
     ports: !override
       - "127.0.0.1:15432:5432"
     volumes: !override
-      - ./postgres/init:/docker-entrypoint-initdb.d:ro
+      - ../helm/meridian/files/postgres/init:/docker-entrypoint-initdb.d:ro
     tmpfs:
       - /var/lib/postgresql/data
 
@@ -52,7 +52,7 @@ services:
     ports: !override
       - "127.0.0.1:13201:3200"
     volumes: !override
-      - ./tempo/tempo.yaml:/etc/tempo/tempo.yaml:ro
+      - ../helm/meridian/files/tempo/tempo.yaml:/etc/tempo/tempo.yaml:ro
     tmpfs:
       - /var/tempo:uid=10001,gid=10001
 
@@ -63,8 +63,8 @@ services:
     ports: !override
       - "127.0.0.1:19090:9090"
     volumes: !override
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      - ./prometheus/rules:/etc/prometheus/rules:ro
+      - ../helm/meridian/files/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ../helm/meridian/files/prometheus/rules:/etc/prometheus/rules:ro
 
   loki:
     extends:
@@ -73,7 +73,7 @@ services:
     ports: !override
       - "127.0.0.1:13100:3100"
     volumes: !override
-      - ./loki/loki.yaml:/etc/loki/loki.yaml:ro
+      - ../helm/meridian/files/loki/loki.yaml:/etc/loki/loki.yaml:ro
     tmpfs:
       - /loki:uid=10001,gid=10001
 
