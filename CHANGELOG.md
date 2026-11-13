@@ -9,8 +9,14 @@ Biçim: [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/).
 - Anthropic sağlayıcısı (`llm_anthropic.py`, ADR-0008): `LLM_CHAIN=anthropic/claude-haiku-5-5,ollama/llama3.2:3b` gibi zincirler, anahtar `ANTHROPIC_API_KEY`. Anahtar yoksa ya da sağlayıcı ilk token'dan önce düşerse (hata, 429, kopma, `refusal`) zincir sıradakine geçer; düşünme kapalı, yeniden denemeyi zincir yapar. Ajan kararları yapılandırılmış çıktıyla.
 - Claude Haiku 5.5 ölçümü (altın set v2): ortanca toplam süre 65,7 sn → 1,9 sn; cevaplı sorularda doğru %63 → %70; cevap verdiğinde doğru %87 → %94; altın kaynağa atıf %81 → %95; gereksiz "bilmiyorum" %27 → %26. Tüm eşikler geçti; kanonik cevap ve kırmızı takım raporları artık Haiku, `llama3.2:3b` raporları `*-llama32` adıyla panelde. Kırmızı takımda başarılı saldırı 2 (ikisi de belgeyle yerleştirilen yanlış bilgi).
 - Tehdit modeline barındırılan LLM'e giden veri tablosu.
+- Kubernetes'e dağıtım (ADR-0009): Helm chart'ı (`infra/helm/meridian`; üç uygulama, PostgreSQL+pgvector, Redis, RabbitMQ, Keycloak, isteğe bağlı izleme yığını), Traefik ile tek adres (web `/`, Keycloak `/auth`, MCP `/mcp`), NetworkPolicy'ler. `make k8s-up` kind kümesini Argo CD ile repodaki daldan kurar; `make k8s-dev` aynı chart'ı çalışma ağacından kurar; `make k8s-smoke` adresi, issuer'ı (tarayıcıdan ve pod'dan), ağ politikasını, izleyicinin soru sormasını, Keycloak yeniden başlamasını ve seed'in tekrar çalışmasını denetler. Yerel adres `http://meridian.localtest.me` (`alice`/`bob`).
+- Seed işi: demo kiracısı, koleksiyon, GitHub kaynakları ve izleyici üyelikleri; tekrar çalıştırmak güvenli, başarısız kaynakları yeniden kuyruğa koyar.
+- Üretim imajları: `apps/api/Dockerfile`, `apps/web/Dockerfile` (Next.js standalone), AI servisi için CI'a özel `test` hedefi; `images` iş akışı main ve sürüm etiketlerinde GHCR'a gönderir (`ghcr.io/engineer-coding/meridian-{api,ai,web}`). `make images`.
+- CI: `helm` (lint, helm-unittest, kubeconform) ve `k8s` (kind + Argo CD + duman testi; sahte model ve GitHub) işleri; elle tetikleme (`workflow_dispatch`).
+- Tehdit T19 uygulandı: AI servisinin iç ucu ağ politikasıyla ayrıldı.
 
 ### Changed
+- İzleme, Postgres başlangıç ve geliştirme realm'i dosyaları `infra/compose/` altından `infra/helm/meridian/files/` altına taşındı; compose oradan bağlar. Araç sürümleri `infra/versions.env` içinde.
 - Kanıt doğrulaması (`verify_quote`) modelin çıktısındaki tırnaklı parçaları ve satırları da dener: barındırılan modeller doğru alıntıyı önsözle sarıyor ya da arkasına not ekliyordu. Haiku'da gereksiz "bilmiyorum" %42 → %26; `llama3.2:3b`'de %30 → %27, doğru %61 → %63. Uydurma alıntı yine reddedilir.
 - Raporların parmak izi `llm_anthropic.py`'yi de kapsar; `make eval-answers` ve `make eval-redteam` `LLM=` değişkeni alır.
 
