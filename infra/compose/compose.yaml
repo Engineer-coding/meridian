@@ -15,7 +15,7 @@ services:
       - "127.0.0.1:5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
-      - ./postgres/init:/docker-entrypoint-initdb.d:ro
+      - ../helm/meridian/files/postgres/init:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 5s
@@ -92,7 +92,7 @@ services:
       - "127.0.0.1:4317:4317"
       - "127.0.0.1:4318:4318"
     volumes:
-      - ./otel/collector.yaml:/etc/otelcol/collector.yaml:ro
+      - ../helm/meridian/files/otel/collector.yaml:/etc/otelcol/collector.yaml:ro
     depends_on:
       - tempo
       - loki
@@ -104,7 +104,7 @@ services:
     ports:
       - "127.0.0.1:3201:3200"
     volumes:
-      - ./tempo/tempo.yaml:/etc/tempo/tempo.yaml:ro
+      - ../helm/meridian/files/tempo/tempo.yaml:/etc/tempo/tempo.yaml:ro
       - tempodata:/var/tempo
     # İmajda kabuk ve wget yok; hazır olma http://127.0.0.1:3201/ready ile görülür.
 
@@ -116,8 +116,8 @@ services:
     ports:
       - "127.0.0.1:9090:9090"
     volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      - ./prometheus/rules:/etc/prometheus/rules:ro
+      - ../helm/meridian/files/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ../helm/meridian/files/prometheus/rules:/etc/prometheus/rules:ro
       - promdata:/prometheus
 
   loki:
@@ -126,7 +126,7 @@ services:
     ports:
       - "127.0.0.1:3100:3100"
     volumes:
-      - ./loki/loki.yaml:/etc/loki/loki.yaml:ro
+      - ../helm/meridian/files/loki/loki.yaml:/etc/loki/loki.yaml:ro
       - lokidata:/loki
 
   # Paneller ve veri kaynakları dosyadan gelir (ADR-0018); elle yapılan değişiklik kalıcı değildir.
@@ -141,8 +141,8 @@ services:
     ports:
       - "127.0.0.1:3001:3000"
     volumes:
-      - ./grafana/provisioning:/etc/grafana/provisioning:ro
-      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - ../helm/meridian/files/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ../helm/meridian/files/grafana/dashboards:/var/lib/grafana/dashboards:ro
     depends_on:
       - prometheus
       - loki
