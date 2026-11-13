@@ -67,7 +67,7 @@
     },
     {
       "version": "v0.4.0",
-      "commit": "5c48dd9-dirty",
+      "commit": "2f61dee-dirty",
       "date": "2026-11-13",
       "golden": "v2",
       "questions": 165,
@@ -109,6 +109,29 @@
         "gold_cited": 0.878,
         "invalid_citation_rate": 0.006,
         "median_total_seconds": 64.8
+      }
+    },
+    {
+      "version": "v0.7.0 · Haiku",
+      "commit": "2f61dee-dirty",
+      "date": "2026-11-13",
+      "golden": "v2",
+      "questions": 165,
+      "config": "vector",
+      "retrieval": {
+        "recall@3": 0.8971,
+        "recall@5": 0.9191,
+        "mrr": 0.8157
+      },
+      "answers": {
+        "correct": 0.544,
+        "correct_when_answered": 0.937,
+        "abstain_when_unanswerable": 1,
+        "abstain_when_answerable": 0.419,
+        "gold_in_context": 0.934,
+        "gold_cited": 0.962,
+        "invalid_citation_rate": 0,
+        "median_total_seconds": 1.5
       }
     }
   ]

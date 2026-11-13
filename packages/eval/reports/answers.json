@@ -1,7 +1,7 @@
 {
   "name": "answers",
   "created_at": "2026-11-13",
-  "git_commit": "5c48dd9-dirty",
+  "git_commit": "2f61dee-dirty",
   "embedding": {
     "model": "intfloat/multilingual-e5-large"
   },
@@ -14,7 +14,7 @@
     "sha256": "84ad10ae48b078e00e0616583f1248a70616b026f35247ee0f8723730ce1d2bf"
   },
   "manifest_sha256": "b75736c0fd687f691db54fbdfa3f914bb8f6c6712711633e556bf5d9cc7195ee",
-  "fingerprint": "10bdf6ae1e14089530246d19a97d700e67f978fb2fb1feebc344406364815005",
+  "fingerprint": "7d1245d28a66651a4fbf8903a65f2cea4cb415fa51da3bc0deaf47b987337ab4",
   "corpora": [
     {
       "id": "k8s",
@@ -30,7 +30,7 @@
   "index": {
     "documents": 187,
     "chunks": 3093,
-    "seconds": 16.5
+    "seconds": 11.8
   },
   "questions": {
     "total": 165,
@@ -361,7 +361,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 15 – Şikâyet üzerine veya resen incelemenin usul ve esasları"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.073
+        "search_seconds": 0.068
       },
       {
         "id": "kvkk-002",
@@ -376,7 +376,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 9 – Kişisel verilerin yurt dışına aktarılması"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.069
+        "search_seconds": 0.064
       },
       {
         "id": "kvkk-003",
@@ -388,7 +388,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 15 – Şikâyet üzerine veya resen incelemenin usul ve esasları"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.068
+        "search_seconds": 0.066
       },
       {
         "id": "kvkk-004",
@@ -402,7 +402,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 19 – Kişisel Verileri Koruma Kurumu"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.066
+        "search_seconds": 0.065
       },
       {
         "id": "kvkk-005",
@@ -430,7 +430,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Üçüncü Bölüm – Haklar ve Yükümlülükler > Madde 12 – Veri güvenliğine ilişkin yükümlülükler"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.066
+        "search_seconds": 0.067
       },
       {
         "id": "kvkk-007",
@@ -444,7 +444,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 15 – Şikâyet üzerine veya resen incelemenin usul ve esasları"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.065
+        "search_seconds": 0.068
       },
       {
         "id": "kvkk-008",
@@ -458,7 +458,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 15 – Şikâyet üzerine veya resen incelemenin usul ve esasları"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.066
+        "search_seconds": 0.07
       },
       {
         "id": "kvkk-009",
@@ -473,7 +473,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 15 – Şikâyet üzerine veya resen incelemenin usul ve esasları"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.065
+        "search_seconds": 0.077
       },
       {
         "id": "kvkk-010",
@@ -488,7 +488,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 9 – Kişisel verilerin yurt dışına aktarılması"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.066
+        "search_seconds": 0.07
       },
       {
         "id": "kvkk-011",
@@ -500,7 +500,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 27 – Personele ve özlük haklarına ilişkin hükümler"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.081
+        "search_seconds": 0.088
       },
       {
         "id": "kvkk-012",
@@ -512,7 +512,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 27 – Personele ve özlük haklarına ilişkin hükümler"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.079
+        "search_seconds": 0.087
       },
       {
         "id": "k8s-001",
@@ -526,7 +526,7 @@
           "content/en/docs/concepts/services-networking/cluster-ip-allocation.md § Service ClusterIP allocation"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.086
+        "search_seconds": 0.089
       },
       {
         "id": "k8s-002",
@@ -541,7 +541,7 @@
           "content/en/docs/concepts/workloads/pods/probes.md § Liveness, Readiness, and Startup Probes > Types of probe > Liveness probe"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.086
+        "search_seconds": 0.091
       },
       {
         "id": "k8s-003",
@@ -553,7 +553,7 @@
           "content/en/docs/concepts/security/multi-tenancy.md § Multi-tenancy > Implementations > Virtual control plane per tenant"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.081
+        "search_seconds": 0.112
       },
       {
         "id": "k8s-004",
@@ -595,7 +595,7 @@
           "content/en/docs/concepts/workloads/controllers/deployment.md § Deployments > Updating a Deployment"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.086
+        "search_seconds": 0.081
       },
       {
         "id": "k8s-007",
@@ -609,7 +609,7 @@
           "content/en/docs/concepts/architecture/leases.md § Leases > Node heartbeats"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.085
+        "search_seconds": 0.081
       },
       {
         "id": "k8s-008",
@@ -623,7 +623,7 @@
           "content/en/docs/concepts/security/security-checklist.md § Security Checklist > Secrets"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.084
+        "search_seconds": 0.089
       },
       {
         "id": "k8s-009",
@@ -637,7 +637,7 @@
           "content/en/docs/concepts/configuration/configmap.md § ConfigMaps > ConfigMaps and Pods"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.088
+        "search_seconds": 0.095
       },
       {
         "id": "k8s-010",
@@ -651,7 +651,7 @@
           "content/en/docs/concepts/workloads/controllers/job.md § Jobs > Handling Pod and container failures > Pod failure policy"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.085
+        "search_seconds": 0.086
       },
       {
         "id": "k8s-011",
@@ -665,7 +665,7 @@
           "content/en/docs/concepts/workloads/controllers/job.md § Jobs > Job termination and cleanup"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.083
+        "search_seconds": 0.086
       },
       {
         "id": "k8s-012",
@@ -680,7 +680,7 @@
           "content/en/docs/concepts/workloads/controllers/statefulset.md § StatefulSets > Using StatefulSets"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.083
+        "search_seconds": 0.088
       },
       {
         "id": "k8s-013",
@@ -695,7 +695,7 @@
           "content/en/docs/concepts/scheduling-eviction/pod-priority-preemption.md § Pod Priority and Preemption > Interactions between Pod priority and quality of service"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.08
+        "search_seconds": 0.087
       },
       {
         "id": "k8s-014",
@@ -710,7 +710,7 @@
           "content/en/docs/concepts/services-networking/network-policies.md § Network Policies > The NetworkPolicy resource"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.088
+        "search_seconds": 0.083
       },
       {
         "id": "k8s-015",
@@ -725,7 +725,7 @@
           "content/en/docs/concepts/storage/storage-classes.md § Storage Classes > StorageClass objects"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.089
+        "search_seconds": 0.085
       },
       {
         "id": "k8s-016",
@@ -737,7 +737,7 @@
           "content/en/docs/concepts/overview/components.md § Kubernetes Components > Core Components > Control Plane Components"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.09
+        "search_seconds": 0.084
       },
       {
         "id": "k8s-017",
@@ -749,7 +749,7 @@
           "content/en/docs/concepts/workloads/pods/user-namespaces.md § User Namespaces > ID count for each of Pods"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.095
+        "search_seconds": 0.082
       },
       {
         "id": "k8s-018",
@@ -761,7 +761,7 @@
           "content/en/docs/concepts/configuration/secret.md § Secrets > Working with Secrets > Using Secrets as files from a Pod"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.098
+        "search_seconds": 0.079
       },
       {
         "id": "kvkk-101",
@@ -775,7 +775,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 21 – Kişisel Verileri Koruma Kurulu"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.088
+        "search_seconds": 0.08
       },
       {
         "id": "kvkk-103",
@@ -789,7 +789,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 21 – Kişisel Verileri Koruma Kurulu"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.115
+        "search_seconds": 0.079
       },
       {
         "id": "kvkk-104",
@@ -803,7 +803,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 21 – Kişisel Verileri Koruma Kurulu"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.092
+        "search_seconds": 0.079
       },
       {
         "id": "kvkk-105",
@@ -817,7 +817,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 15 – Şikâyet üzerine veya resen incelemenin usul ve esasları"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.103
+        "search_seconds": 0.079
       },
       {
         "id": "kvkk-106",
@@ -831,7 +831,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 21 – Kişisel Verileri Koruma Kurulu"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.098
+        "search_seconds": 0.078
       },
       {
         "id": "kvkk-107",
@@ -845,7 +845,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 14 – Kurula şikâyet"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.088
+        "search_seconds": 0.081
       },
       {
         "id": "kvkk-108",
@@ -859,7 +859,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 15 – Şikâyet üzerine veya resen incelemenin usul ve esasları"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.1
+        "search_seconds": 0.078
       },
       {
         "id": "kvkk-109",
@@ -873,7 +873,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 23 – Kurulun çalışma esasları"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.09
+        "search_seconds": 0.08
       },
       {
         "id": "kvkk-110",
@@ -887,7 +887,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 5 – Kişisel verilerin işlenme şartları"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.098
+        "search_seconds": 0.077
       },
       {
         "id": "kvkk-111",
@@ -901,7 +901,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 5 – Kişisel verilerin işlenme şartları"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.106
+        "search_seconds": 0.081
       },
       {
         "id": "kvkk-112",
@@ -915,7 +915,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Beşinci Bölüm – Suçlar ve Kabahatler > Madde 17 – Suçlar"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.109
+        "search_seconds": 0.078
       },
       {
         "id": "kvkk-113",
@@ -929,7 +929,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Yedinci Bölüm – Çeşitli Hükümler > Madde 28 – İstisnalar"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.109
+        "search_seconds": 0.083
       },
       {
         "id": "kvkk-114",
@@ -943,7 +943,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 9 – Kişisel verilerin yurt dışına aktarılması"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.129
+        "search_seconds": 0.079
       },
       {
         "id": "kvkk-115",
@@ -957,7 +957,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 6 – Özel nitelikli kişisel verilerin işlenme şartları"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.108
+        "search_seconds": 0.082
       },
       {
         "id": "kvkk-116",
@@ -971,7 +971,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Yedinci Bölüm – Çeşitli Hükümler > Madde 28 – İstisnalar"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.107
+        "search_seconds": 0.081
       },
       {
         "id": "kvkk-117",
@@ -985,7 +985,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 9 – Kişisel verilerin yurt dışına aktarılması"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.109
+        "search_seconds": 0.085
       },
       {
         "id": "kvkk-118",
@@ -999,7 +999,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 15 – Şikâyet üzerine veya resen incelemenin usul ve esasları"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.108
+        "search_seconds": 0.08
       },
       {
         "id": "kvkk-119",
@@ -1013,7 +1013,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Beşinci Bölüm – Suçlar ve Kabahatler > Madde 18 – Kabahatler"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.1
+        "search_seconds": 0.081
       },
       {
         "id": "kvkk-120",
@@ -1027,7 +1027,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Yedinci Bölüm – Çeşitli Hükümler > Madde 28 – İstisnalar"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.097
+        "search_seconds": 0.089
       },
       {
         "id": "kvkk-121",
@@ -1041,7 +1041,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 13 – Veri sorumlusuna başvuru"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.098
+        "search_seconds": 0.08
       },
       {
         "id": "kvkk-122",
@@ -1055,7 +1055,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 8 – Kişisel verilerin aktarılması"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.105
+        "search_seconds": 0.082
       },
       {
         "id": "kvkk-123",
@@ -1069,7 +1069,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 15 – Şikâyet üzerine veya resen incelemenin usul ve esasları"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.122
+        "search_seconds": 0.078
       },
       {
         "id": "kvkk-124",
@@ -1083,7 +1083,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 27 – Personele ve özlük haklarına ilişkin hükümler"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.114
+        "search_seconds": 0.082
       },
       {
         "id": "kvkk-125",
@@ -1097,7 +1097,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 25 – Başkanlığın oluşumu ve görevleri"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.121
+        "search_seconds": 0.08
       },
       {
         "id": "kvkk-126",
@@ -1111,7 +1111,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 13 – Veri sorumlusuna başvuru"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.127
+        "search_seconds": 0.082
       },
       {
         "id": "kvkk-127",
@@ -1125,7 +1125,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Yedinci Bölüm – Çeşitli Hükümler > Madde 28 – İstisnalar"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.129
+        "search_seconds": 0.078
       },
       {
         "id": "kvkk-128",
@@ -1139,7 +1139,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Üçüncü Bölüm – Haklar ve Yükümlülükler > Madde 10 – Veri sorumlusunun aydınlatma yükümlülüğü"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.132
+        "search_seconds": 0.078
       },
       {
         "id": "kvkk-129",
@@ -1153,7 +1153,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 15 – Şikâyet üzerine veya resen incelemenin usul ve esasları"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.129
+        "search_seconds": 0.083
       },
       {
         "id": "kvkk-130",
@@ -1167,7 +1167,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 21 – Kişisel Verileri Koruma Kurulu"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.122
+        "search_seconds": 0.078
       },
       {
         "id": "kvkk-131",
@@ -1181,7 +1181,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 21 – Kişisel Verileri Koruma Kurulu"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.122
+        "search_seconds": 0.08
       },
       {
         "id": "kvkk-132",
@@ -1195,7 +1195,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 24 – Başkan"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.104
+        "search_seconds": 0.082
       },
       {
         "id": "kvkk-133",
@@ -1209,7 +1209,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 24 – Başkan"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.101
+        "search_seconds": 0.077
       },
       {
         "id": "kvkk-134",
@@ -1223,7 +1223,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 21 – Kişisel Verileri Koruma Kurulu"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.1
+        "search_seconds": 0.078
       },
       {
         "id": "kvkk-135",
@@ -1237,7 +1237,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 27 – Personele ve özlük haklarına ilişkin hükümler"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.1
+        "search_seconds": 0.08
       },
       {
         "id": "kvkk-136",
@@ -1251,7 +1251,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 6 – Özel nitelikli kişisel verilerin işlenme şartları"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.101
+        "search_seconds": 0.08
       },
       {
         "id": "kvkk-137",
@@ -1265,7 +1265,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 25 – Başkanlığın oluşumu ve görevleri"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.09
+        "search_seconds": 0.08
       },
       {
         "id": "kvkk-151",
@@ -1280,7 +1280,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 16 – Veri Sorumluları Sicili"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.095
+        "search_seconds": 0.077
       },
       {
         "id": "kvkk-152",
@@ -1295,7 +1295,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Beşinci Bölüm – Suçlar ve Kabahatler > Madde 18 – Kabahatler"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.095
+        "search_seconds": 0.079
       },
       {
         "id": "kvkk-153",
@@ -1310,7 +1310,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Beşinci Bölüm – Suçlar ve Kabahatler > Madde 18 – Kabahatler"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.112
+        "search_seconds": 0.08
       },
       {
         "id": "kvkk-154",
@@ -1325,7 +1325,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 15 – Şikâyet üzerine veya resen incelemenin usul ve esasları"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.103
+        "search_seconds": 0.081
       },
       {
         "id": "kvkk-155",
@@ -1340,7 +1340,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Yedinci Bölüm – Çeşitli Hükümler > Madde 28 – İstisnalar"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.117
+        "search_seconds": 0.077
       },
       {
         "id": "kvkk-156",
@@ -1355,7 +1355,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 21 – Kişisel Verileri Koruma Kurulu"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.108
+        "search_seconds": 0.081
       },
       {
         "id": "kvkk-157",
@@ -1370,7 +1370,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Üçüncü Bölüm – Haklar ve Yükümlülükler > Madde 12 – Veri güvenliğine ilişkin yükümlülükler"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.102
+        "search_seconds": 0.082
       },
       {
         "id": "kvkk-158",
@@ -1385,7 +1385,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Birinci Bölüm – Amaç, Kapsam ve Tanımlar > Madde 3 – Tanımlar"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.097
+        "search_seconds": 0.079
       },
       {
         "id": "kvkk-171",
@@ -1397,7 +1397,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 21 – Kişisel Verileri Koruma Kurulu"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.093
+        "search_seconds": 0.08
       },
       {
         "id": "kvkk-172",
@@ -1409,7 +1409,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Birinci Bölüm – Amaç, Kapsam ve Tanımlar > Madde 3 – Tanımlar"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.089
+        "search_seconds": 0.078
       },
       {
         "id": "kvkk-173",
@@ -1421,7 +1421,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 8 – Kişisel verilerin aktarılması"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.093
+        "search_seconds": 0.08
       },
       {
         "id": "kvkk-174",
@@ -1433,7 +1433,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 15 – Şikâyet üzerine veya resen incelemenin usul ve esasları"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.099
+        "search_seconds": 0.084
       },
       {
         "id": "kvkk-175",
@@ -1445,7 +1445,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 6 – Özel nitelikli kişisel verilerin işlenme şartları"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.098
+        "search_seconds": 0.082
       },
       {
         "id": "kvkk-176",
@@ -1457,7 +1457,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 25 – Başkanlığın oluşumu ve görevleri"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.101
+        "search_seconds": 0.086
       },
       {
         "id": "kvkk-177",
@@ -1469,7 +1469,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 16 – Veri Sorumluları Sicili"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.102
+        "search_seconds": 0.091
       },
       {
         "id": "kvkk-178",
@@ -1481,7 +1481,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 21 – Kişisel Verileri Koruma Kurulu"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.11
+        "search_seconds": 0.091
       },
       {
         "id": "k8s-101",
@@ -1495,7 +1495,7 @@
           "content/en/docs/concepts/architecture/mixed-version-proxy.md § Mixed Version Proxy > Mixed version proxying > How it works under the hood"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.097
+        "search_seconds": 0.092
       },
       {
         "id": "k8s-102",
@@ -1509,7 +1509,7 @@
           "content/en/docs/concepts/workloads/autoscaling/horizontal-pod-autoscale.md § Horizontal Pod Autoscaling > Configurable scaling behavior > Default behavior"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.101
+        "search_seconds": 0.089
       },
       {
         "id": "k8s-103",
@@ -1537,7 +1537,7 @@
           "content/en/docs/concepts/workloads/autoscaling/vertical-pod-autoscale.md § Vertical Pod Autoscaling > Update modes"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.088
+        "search_seconds": 0.093
       },
       {
         "id": "k8s-105",
@@ -1551,7 +1551,7 @@
           "content/en/docs/concepts/workloads/autoscaling/vertical-pod-autoscale.md § Vertical Pod Autoscaling > Update modes > Off"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.086
+        "search_seconds": 0.092
       },
       {
         "id": "k8s-106",
@@ -1565,7 +1565,7 @@
           "content/en/docs/concepts/workloads/compositepodgroup-api/_index.md § CompositePodGroup API"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.087
+        "search_seconds": 0.091
       },
       {
         "id": "k8s-107",
@@ -1579,7 +1579,7 @@
           "content/en/docs/concepts/workloads/compositepodgroup-api/_index.md § CompositePodGroup API > API structure"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.082
+        "search_seconds": 0.09
       },
       {
         "id": "k8s-108",
@@ -1593,7 +1593,7 @@
           "content/en/docs/concepts/extend-kubernetes/compute-storage-net/device-plugins.md § Device Plugins > Monitoring device plugin resources > `GetAllocatableResources` gRPC endpoint"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.085
+        "search_seconds": 0.091
       },
       {
         "id": "k8s-109",
@@ -1607,7 +1607,7 @@
           "content/en/docs/concepts/workloads/controllers/deployment.md § Deployments > Updating a Deployment > Label selector updates"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.084
+        "search_seconds": 0.091
       },
       {
         "id": "k8s-110",
@@ -1621,7 +1621,7 @@
           "content/en/docs/concepts/workloads/controllers/replicaset.md § ReplicaSet > How a ReplicaSet works"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.096
+        "search_seconds": 0.092
       },
       {
         "id": "k8s-111",
@@ -1635,7 +1635,7 @@
           "content/en/docs/concepts/workloads/controllers/replicaset.md § ReplicaSet > When to use a ReplicaSet"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.106
+        "search_seconds": 0.091
       },
       {
         "id": "k8s-112",
@@ -1649,7 +1649,7 @@
           "content/en/docs/concepts/resource-management/dynamic-resource-allocation/dra-api.md § DRA API Objects > List type attributes"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.099
+        "search_seconds": 0.095
       },
       {
         "id": "k8s-113",
@@ -1663,7 +1663,7 @@
           "content/en/docs/concepts/resource-management/dynamic-resource-allocation/device-taints.md § Device Taints and Tolerations > Device taints and tolerations > Taints set by an admin"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.105
+        "search_seconds": 0.102
       },
       {
         "id": "k8s-114",
@@ -1677,7 +1677,7 @@
           "content/en/docs/concepts/resource-management/dynamic-resource-allocation/dra-features.md § DRA Features > Optional node operations > Operational considerations > In-place driver updates"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.108
+        "search_seconds": 0.094
       },
       {
         "id": "k8s-115",
@@ -1691,7 +1691,7 @@
           "content/en/docs/concepts/scheduling-eviction/scheduling-framework.md § Scheduling Framework > Plugin configuration"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.099
+        "search_seconds": 0.089
       },
       {
         "id": "k8s-116",
@@ -1705,7 +1705,7 @@
           "content/en/docs/concepts/workloads/workload-api/policies.md § PodGroup Scheduling Policies > Setting policies via PodGroupTemplates"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.093
+        "search_seconds": 0.088
       },
       {
         "id": "k8s-117",
@@ -1719,7 +1719,7 @@
           "content/en/docs/concepts/resource-management/dynamic-resource-allocation/dra-api.md § DRA API Objects > DRA terminology > ResourceClaims and ResourceClaimTemplates > Workload ResourceClaims"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.095
+        "search_seconds": 0.091
       },
       {
         "id": "k8s-118",
@@ -1733,7 +1733,7 @@
           "content/en/docs/concepts/workloads/workload-api/_index.md § Workload API"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.099
+        "search_seconds": 0.089
       },
       {
         "id": "k8s-119",
@@ -1747,7 +1747,7 @@
           "content/en/docs/concepts/workloads/pods/pod-qos.md § Pod Quality of Service Classes > Memory QoS with cgroup v2 > System requirements"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.103
+        "search_seconds": 0.084
       },
       {
         "id": "k8s-120",
@@ -1761,7 +1761,7 @@
           "content/en/docs/concepts/workloads/pods/pod-lifecycle.md § Pod Lifecycle > Container probes > Liveness probe"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.097
+        "search_seconds": 0.084
       },
       {
         "id": "k8s-121",
@@ -1775,7 +1775,7 @@
           "content/en/docs/concepts/services-networking/dns-pod-service.md § DNS for Services and Pods > Pods > Pod's setHostnameAsFQDN field"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.1
+        "search_seconds": 0.082
       },
       {
         "id": "k8s-122",
@@ -1789,7 +1789,7 @@
           "content/en/docs/concepts/workloads/pods/downward-api.md § Downward API"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.1
+        "search_seconds": 0.088
       },
       {
         "id": "k8s-123",
@@ -1803,7 +1803,7 @@
           "content/en/docs/concepts/workloads/pods/_index.md § Pods > Pod update and replacement > Pod generation > Indirect Status Updates"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.114
+        "search_seconds": 0.088
       },
       {
         "id": "k8s-125",
@@ -1817,7 +1817,7 @@
           "content/en/docs/concepts/cluster-administration/flow-control.md § API Priority and Fairness > Resources > PriorityLevelConfiguration"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.102
+        "search_seconds": 0.083
       },
       {
         "id": "k8s-126",
@@ -1831,7 +1831,7 @@
           "content/en/docs/concepts/containers/cri.md § Container Runtime Interface (CRI)"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.092
+        "search_seconds": 0.083
       },
       {
         "id": "k8s-127",
@@ -1845,7 +1845,7 @@
           "content/en/docs/concepts/services-networking/dns-pod-service.md § DNS for Services and Pods > Pods > Pod's DNS Policy"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.09
+        "search_seconds": 0.082
       },
       {
         "id": "k8s-129",
@@ -1859,7 +1859,7 @@
           "content/en/docs/concepts/storage/windows-storage.md § Windows Storage > Persistent storage"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.087
+        "search_seconds": 0.08
       },
       {
         "id": "k8s-131",
@@ -1873,7 +1873,7 @@
           "content/en/docs/concepts/architecture/cgroups.md § About cgroup v2 > Using cgroup v2 > Linux Distribution cgroup v2 support"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.091
+        "search_seconds": 0.08
       },
       {
         "id": "k8s-132",
@@ -1887,7 +1887,7 @@
           "content/en/docs/concepts/storage/storage-classes.md § Storage Classes > Parameters"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.09
+        "search_seconds": 0.079
       },
       {
         "id": "k8s-133",
@@ -1901,7 +1901,7 @@
           "content/en/docs/concepts/scheduling-eviction/api-eviction.md § API-initiated Eviction > Calling the Eviction API"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.122
+        "search_seconds": 0.081
       },
       {
         "id": "k8s-134",
@@ -1915,7 +1915,7 @@
           "content/en/docs/concepts/architecture/garbage-collection.md § Garbage Collection > Cascading deletion > Foreground cascading deletion"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.105
+        "search_seconds": 0.08
       },
       {
         "id": "k8s-135",
@@ -1929,7 +1929,7 @@
           "content/en/docs/concepts/overview/kubernetes-api.md § The Kubernetes API"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.121
+        "search_seconds": 0.089
       },
       {
         "id": "k8s-136",
@@ -1943,7 +1943,7 @@
           "content/en/docs/concepts/cluster-administration/node-autoscaling.md § Node Autoscaling > Autoscalers > Autoscaler implementations > Implementation comparison"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.14
+        "search_seconds": 0.091
       },
       {
         "id": "k8s-137",
@@ -1957,7 +1957,7 @@
           "content/en/docs/concepts/services-networking/service-traffic-policy.md § Service Internal Traffic Policy > How it works"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.133
+        "search_seconds": 0.092
       },
       {
         "id": "k8s-138",
@@ -1971,7 +1971,7 @@
           "content/en/docs/concepts/services-networking/service-traffic-policy.md § Service Internal Traffic Policy > How it works"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.124
+        "search_seconds": 0.084
       },
       {
         "id": "k8s-139",
@@ -1985,7 +1985,7 @@
           "content/en/docs/concepts/workloads/pods/advanced-pod-config.md § Advanced Pod Configuration > RuntimeClasses"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.114
+        "search_seconds": 0.083
       },
       {
         "id": "k8s-140",
@@ -1999,7 +1999,7 @@
           "content/en/docs/concepts/services-networking/topology-aware-routing.md § Topology Aware Routing > Enabling Topology Aware Routing"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.113
+        "search_seconds": 0.08
       },
       {
         "id": "k8s-142",
@@ -2013,7 +2013,7 @@
           "content/en/docs/concepts/security/security-checklist.md § Security Checklist > Admission controllers"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.111
+        "search_seconds": 0.083
       },
       {
         "id": "k8s-145",
@@ -2027,7 +2027,7 @@
           "content/en/docs/concepts/services-networking/gateway.md § Gateway API > Design principles"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.127
+        "search_seconds": 0.08
       },
       {
         "id": "k8s-146",
@@ -2041,7 +2041,7 @@
           "content/en/docs/concepts/security/controlling-access.md § Controlling Access to the Kubernetes API > Authorization"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.115
+        "search_seconds": 0.079
       },
       {
         "id": "k8s-148",
@@ -2055,7 +2055,7 @@
           "content/en/docs/concepts/storage/persistent-volumes.md § Persistent Volumes > Lifecycle of a volume and claim > PersistentVolume deletion protection finalizer"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.1
+        "search_seconds": 0.081
       },
       {
         "id": "k8s-149",
@@ -2069,7 +2069,7 @@
           "content/en/docs/concepts/overview/working-with-objects/finalizers.md § Finalizers > How finalizers work"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.098
+        "search_seconds": 0.085
       },
       {
         "id": "k8s-150",
@@ -2083,7 +2083,7 @@
           "content/en/docs/concepts/workloads/workload-api/_index.md § Workload API > API structure > PodGroupTemplates"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.1
+        "search_seconds": 0.081
       },
       {
         "id": "k8s-151",
@@ -2097,7 +2097,7 @@
           "content/en/docs/concepts/scheduling-eviction/node-declared-features.md § Node Declared Features > How it works"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.107
+        "search_seconds": 0.081
       },
       {
         "id": "k8s-161",
@@ -2111,7 +2111,7 @@
           "content/en/docs/concepts/workloads/autoscaling/vertical-pod-autoscale.md § Vertical Pod Autoscaling > LimitRange resources"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.104
+        "search_seconds": 0.082
       },
       {
         "id": "k8s-162",
@@ -2125,7 +2125,7 @@
           "content/en/docs/concepts/architecture/cgroups.md § About cgroup v2 > Using cgroup v2 > Linux Distribution cgroup v2 support"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.103
+        "search_seconds": 0.079
       },
       {
         "id": "k8s-163",
@@ -2139,7 +2139,7 @@
           "content/en/docs/concepts/windows/intro.md § Windows containers in Kubernetes > Compatibility and limitations > API compatibility > Field compatibility for Pod specifications"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.111
+        "search_seconds": 0.081
       },
       {
         "id": "k8s-164",
@@ -2153,7 +2153,7 @@
           "content/en/docs/concepts/services-networking/gateway.md § Gateway API > Design principles"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.098
+        "search_seconds": 0.084
       },
       {
         "id": "k8s-165",
@@ -2167,7 +2167,7 @@
           "content/en/docs/concepts/security/controlling-access.md § Controlling Access to the Kubernetes API > Authentication"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.091
+        "search_seconds": 0.084
       },
       {
         "id": "k8s-166",
@@ -2181,7 +2181,7 @@
           "content/en/docs/concepts/storage/storage-classes.md § Storage Classes > Parameters"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.09
+        "search_seconds": 0.081
       },
       {
         "id": "k8s-167",
@@ -2195,7 +2195,7 @@
           "content/en/docs/concepts/workloads/podgroup-api/_index.md § PodGroup API > API structure > Status"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.09
+        "search_seconds": 0.079
       },
       {
         "id": "k8s-168",
@@ -2209,7 +2209,7 @@
           "content/en/docs/concepts/services-networking/service-traffic-policy.md § Service Internal Traffic Policy"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.08
+        "search_seconds": 0.084
       },
       {
         "id": "k8s-171",
@@ -2224,7 +2224,7 @@
           "content/en/docs/concepts/workloads/compositepodgroup-api/lifecycle.md § CompositePodGroup Lifecycle > Limitations and validation rules"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.078
+        "search_seconds": 0.083
       },
       {
         "id": "k8s-172",
@@ -2239,7 +2239,7 @@
           "content/en/docs/concepts/workloads/autoscaling/horizontal-pod-autoscale.md § Horizontal Pod Autoscaling > How does a HorizontalPodAutoscaler work? > Algorithm details"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.077
+        "search_seconds": 0.078
       },
       {
         "id": "k8s-173",
@@ -2254,7 +2254,7 @@
           "content/en/docs/concepts/services-networking/dns-pod-service.md § DNS for Services and Pods > DNS resolution on Windows nodes"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.079
+        "search_seconds": 0.08
       },
       {
         "id": "k8s-174",
@@ -2269,7 +2269,7 @@
           "content/en/docs/concepts/workloads/workload-api/topology-aware-scheduling.md § Topology-Aware Workload Scheduling > API configuration: scheduling constraints"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.079
+        "search_seconds": 0.078
       },
       {
         "id": "k8s-175",
@@ -2284,7 +2284,7 @@
           "content/en/docs/concepts/policy/limit-range.md § Limit Ranges > LimitRange and admission checks for Pods"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.08
+        "search_seconds": 0.082
       },
       {
         "id": "k8s-176",
@@ -2299,7 +2299,7 @@
           "content/en/docs/concepts/storage/persistent-volumes.md § Persistent Volumes > Lifecycle of a volume and claim > PersistentVolume deletion protection finalizer"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.077
+        "search_seconds": 0.082
       },
       {
         "id": "k8s-177",
@@ -2314,7 +2314,7 @@
           "content/en/docs/concepts/extend-kubernetes/compute-storage-net/device-plugins.md § Device Plugins > Device plugin registration"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.09
+        "search_seconds": 0.079
       },
       {
         "id": "k8s-178",
@@ -2329,7 +2329,7 @@
           "content/en/docs/concepts/workloads/controllers/daemonset.md § DaemonSet > Alternatives to DaemonSet > Deployments"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.097
+        "search_seconds": 0.08
       },
       {
         "id": "k8s-179",
@@ -2344,7 +2344,7 @@
           "content/en/docs/concepts/storage/storage-classes.md § Storage Classes > Parameters"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.09
+        "search_seconds": 0.088
       },
       {
         "id": "k8s-180",
@@ -2359,7 +2359,7 @@
           "content/en/docs/concepts/containers/cri.md § Container Runtime Interface (CRI)"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.086
+        "search_seconds": 0.093
       },
       {
         "id": "k8s-181",
@@ -2374,7 +2374,7 @@
           "content/en/docs/concepts/services-networking/service-traffic-policy.md § Service Internal Traffic Policy > How it works"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.085
+        "search_seconds": 0.089
       },
       {
         "id": "k8s-182",
@@ -2389,7 +2389,7 @@
           "content/en/docs/concepts/workloads/autoscaling/vertical-pod-autoscale.md § Vertical Pod Autoscaling > Update modes > Off"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.086
+        "search_seconds": 0.087
       },
       {
         "id": "k8s-183",
@@ -2404,7 +2404,7 @@
           "content/en/docs/concepts/resource-management/dynamic-resource-allocation/device-taints.md § Device Taints and Tolerations > Device taints and tolerations"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.082
+        "search_seconds": 0.089
       },
       {
         "id": "k8s-184",
@@ -2419,7 +2419,7 @@
           "content/en/docs/concepts/scheduling-eviction/api-eviction.md § API-initiated Eviction > Troubleshooting stuck evictions"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.083
+        "search_seconds": 0.092
       },
       {
         "id": "k8s-185",
@@ -2434,7 +2434,7 @@
           "content/en/docs/concepts/services-networking/service-traffic-policy.md § Service Internal Traffic Policy > How it works"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.086
+        "search_seconds": 0.094
       },
       {
         "id": "k8s-186",
@@ -2449,7 +2449,7 @@
           "content/en/docs/concepts/security/pod-security-standards.md § Pod Security Standards > Profile Details > Baseline"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.096
+        "search_seconds": 0.097
       },
       {
         "id": "k8s-187",
@@ -2464,7 +2464,7 @@
           "content/en/docs/concepts/windows/intro.md § Windows containers in Kubernetes > Compatibility and limitations > API compatibility > Field compatibility for Pod specifications"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.092
+        "search_seconds": 0.094
       },
       {
         "id": "k8s-191",
@@ -2476,7 +2476,7 @@
           "content/en/docs/concepts/scheduling-eviction/scheduler-perf-tuning.md § Scheduler Performance Tuning > Node scoring threshold > Default threshold"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.115
+        "search_seconds": 0.095
       },
       {
         "id": "k8s-192",
@@ -2488,7 +2488,7 @@
           "content/en/docs/concepts/workloads/autoscaling/horizontal-pod-autoscale.md § Horizontal Pod Autoscaling > Scaling on custom metrics"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.124
+        "search_seconds": 0.092
       },
       {
         "id": "k8s-193",
@@ -2500,7 +2500,7 @@
           "content/en/docs/concepts/configuration/windows-resource-management.md § Resource Management for Windows nodes > Resource reservation"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.12
+        "search_seconds": 0.093
       },
       {
         "id": "k8s-194",
@@ -2512,7 +2512,7 @@
           "content/en/docs/concepts/architecture/cgroups.md § About cgroup v2 > Using cgroup v2 > Requirements"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.108
+        "search_seconds": 0.095
       },
       {
         "id": "k8s-195",
@@ -2524,7 +2524,7 @@
           "content/en/docs/concepts/services-networking/gateway.md § Gateway API > Design principles"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.105
+        "search_seconds": 0.091
       },
       {
         "id": "k8s-196",
@@ -2536,7 +2536,7 @@
           "content/en/docs/concepts/workloads/workload-api/_index.md § Workload API > API structure > PodGroupTemplates"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.104
+        "search_seconds": 0.093
       },
       {
         "id": "k8s-197",
@@ -2560,7 +2560,7 @@
           "content/en/docs/concepts/workloads/pods/pod-qos.md § Pod Quality of Service Classes > Memory QoS with cgroup v2"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.097
+        "search_seconds": 0.095
       },
       {
         "id": "k8s-199",
@@ -2572,7 +2572,7 @@
           "content/en/docs/concepts/workloads/autoscaling/horizontal-pod-autoscale.md § Horizontal Pod Autoscaling > Pod readiness and autoscaling metrics"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.091
+        "search_seconds": 0.097
       },
       {
         "id": "k8s-200",
@@ -2584,7 +2584,7 @@
           "content/en/docs/concepts/overview/kubernetes-api.md § The Kubernetes API > OpenAPI interface definition > OpenAPI V3"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.089
+        "search_seconds": 0.109
       },
       {
         "id": "k8s-201",
@@ -2596,7 +2596,7 @@
           "content/en/docs/concepts/configuration/secret.md § Secrets > Working with Secrets > Using Secrets as files from a Pod"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.092
+        "search_seconds": 0.116
       },
       {
         "id": "k8s-202",
@@ -2608,7 +2608,7 @@
           "content/en/docs/concepts/storage/volume-attributes-classes.md § Volume Attributes Classes > The VolumeAttributesClass API > Resizer"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.092
+        "search_seconds": 0.111
       },
       {
         "id": "k8s-203",
@@ -2620,7 +2620,7 @@
           "content/en/docs/concepts/resource-management/dynamic-resource-allocation/dra-observability.md § Observability of Dynamic Resources > DRA device metadata in containers > Immediate and deferred metadata"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.097
+        "search_seconds": 0.102
       },
       {
         "id": "k8s-204",
@@ -2648,7 +2648,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 15 – Şikâyet üzerine veya resen incelemenin usul ve esasları"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.015
+        "search_seconds": 0.013
       },
       {
         "id": "kvkk-002",
@@ -2663,7 +2663,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 5 – Kişisel verilerin işlenme şartları"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.016
+        "search_seconds": 0.015
       },
       {
         "id": "kvkk-003",
@@ -2675,7 +2675,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 16 – Veri Sorumluları Sicili"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.014
+        "search_seconds": 0.013
       },
       {
         "id": "kvkk-004",
@@ -2689,7 +2689,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 21 – Kişisel Verileri Koruma Kurulu"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.014
+        "search_seconds": 0.013
       },
       {
         "id": "kvkk-005",
@@ -2745,7 +2745,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Beşinci Bölüm – Suçlar ve Kabahatler > Madde 18 – Kabahatler"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.011
+        "search_seconds": 0.012
       },
       {
         "id": "kvkk-009",
@@ -2787,7 +2787,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 24 – Başkan"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.012
+        "search_seconds": 0.013
       },
       {
         "id": "kvkk-012",
@@ -2799,7 +2799,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 7 – Kişisel verilerin silinmesi, yok edilmesi veya anonim hâle getirilmesi"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.009
+        "search_seconds": 0.013
       },
       {
         "id": "k8s-001",
@@ -2813,7 +2813,7 @@
           "content/en/docs/concepts/services-networking/service.md § Service > Service type"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.012
+        "search_seconds": 0.016
       },
       {
         "id": "k8s-002",
@@ -2868,7 +2868,7 @@
           "content/en/docs/concepts/cluster-administration/node-shutdown.md § Node Shutdowns > Graceful node shutdown > Pod Priority based graceful node shutdown"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.014
+        "search_seconds": 0.016
       },
       {
         "id": "k8s-006",
@@ -2882,7 +2882,7 @@
           "content/en/docs/concepts/workloads/management.md § Managing Workloads > Updating your application without an outage"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.017
+        "search_seconds": 0.019
       },
       {
         "id": "k8s-007",
@@ -2896,7 +2896,7 @@
           "content/en/docs/concepts/cluster-administration/admission-webhooks-good-practices.md § Admission Webhook Good Practices > Request filtering > Limit the scope of each webhook"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.015
+        "search_seconds": 0.016
       },
       {
         "id": "k8s-008",
@@ -2910,7 +2910,7 @@
           "content/en/docs/concepts/security/secrets-good-practices.md § Good practices for Kubernetes Secrets > Cluster administrators > Configure encryption at rest"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.014
+        "search_seconds": 0.012
       },
       {
         "id": "k8s-009",
@@ -2924,7 +2924,7 @@
           "content/en/docs/concepts/configuration/configmap.md § ConfigMaps > Motivation"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.013
+        "search_seconds": 0.011
       },
       {
         "id": "k8s-010",
@@ -2938,7 +2938,7 @@
           "content/en/docs/concepts/workloads/controllers/job.md § Jobs > Handling Pod and container failures > Backoff limit per index"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.017
+        "search_seconds": 0.015
       },
       {
         "id": "k8s-011",
@@ -2952,7 +2952,7 @@
           "content/en/docs/concepts/workloads/pods/pod-lifecycle.md § Pod Lifecycle > How Pods handle problems with containers > Container restarts > Pod-level container restart policy > Restart behavior comparison"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.014
+        "search_seconds": 0.012
       },
       {
         "id": "k8s-012",
@@ -2967,7 +2967,7 @@
           "content/en/docs/concepts/security/service-accounts.md § Service Accounts > Authenticating service account credentials > Authenticating service account credentials in your own code"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.014
+        "search_seconds": 0.013
       },
       {
         "id": "k8s-013",
@@ -2982,7 +2982,7 @@
           "content/en/docs/concepts/workloads/pods/pod-qos.md § Pod Quality of Service Classes > Quality of Service classes > BestEffort"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.023
+        "search_seconds": 0.017
       },
       {
         "id": "k8s-014",
@@ -2997,7 +2997,7 @@
           "content/en/docs/concepts/services-networking/network-policies.md § Network Policies > Targeting multiple namespaces by label"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.018
+        "search_seconds": 0.016
       },
       {
         "id": "k8s-015",
@@ -3012,7 +3012,7 @@
           "content/en/docs/concepts/storage/persistent-volumes.md § Persistent Volumes > Lifecycle of a volume and claim > Reclaiming > Delete"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.017
+        "search_seconds": 0.015
       },
       {
         "id": "k8s-016",
@@ -3024,7 +3024,7 @@
           "content/en/docs/concepts/architecture/garbage-collection.md § Garbage Collection > Owners and dependents"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.023
+        "search_seconds": 0.013
       },
       {
         "id": "k8s-017",
@@ -3036,7 +3036,7 @@
           "content/en/docs/concepts/policy/pid-limiting.md § Process ID Limits And Reservations"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.017
+        "search_seconds": 0.015
       },
       {
         "id": "k8s-018",
@@ -3048,7 +3048,7 @@
           "content/en/docs/concepts/security/security-checklist.md § Security Checklist > Secrets"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.014
+        "search_seconds": 0.013
       },
       {
         "id": "kvkk-101",
@@ -3062,7 +3062,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Birinci Bölüm – Amaç, Kapsam ve Tanımlar > Madde 3 – Tanımlar"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.012
+        "search_seconds": 0.011
       },
       {
         "id": "kvkk-103",
@@ -3076,7 +3076,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 9 – Kişisel verilerin yurt dışına aktarılması"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.012
+        "search_seconds": 0.011
       },
       {
         "id": "kvkk-104",
@@ -3090,7 +3090,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 27 – Personele ve özlük haklarına ilişkin hükümler"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.011
+        "search_seconds": 0.01
       },
       {
         "id": "kvkk-105",
@@ -3104,7 +3104,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Beşinci Bölüm – Suçlar ve Kabahatler > Madde 18 – Kabahatler"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.012
+        "search_seconds": 0.011
       },
       {
         "id": "kvkk-106",
@@ -3146,7 +3146,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 15 – Şikâyet üzerine veya resen incelemenin usul ve esasları"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.012
+        "search_seconds": 0.013
       },
       {
         "id": "kvkk-109",
@@ -3160,7 +3160,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 16 – Veri Sorumluları Sicili"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.011
+        "search_seconds": 0.014
       },
       {
         "id": "kvkk-110",
@@ -3174,7 +3174,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 9 – Kişisel verilerin yurt dışına aktarılması"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.009
+        "search_seconds": 0.015
       },
       {
         "id": "kvkk-111",
@@ -3188,7 +3188,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Birinci Bölüm – Amaç, Kapsam ve Tanımlar > Madde 2 – Kapsam"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.009
+        "search_seconds": 0.017
       },
       {
         "id": "kvkk-112",
@@ -3202,7 +3202,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Beşinci Bölüm – Suçlar ve Kabahatler > Madde 17 – Suçlar"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.009
+        "search_seconds": 0.021
       },
       {
         "id": "kvkk-113",
@@ -3216,7 +3216,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 26 – Kişisel Verileri Koruma Uzmanı ve uzman yardımcıları"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.012
+        "search_seconds": 0.021
       },
       {
         "id": "kvkk-114",
@@ -3230,7 +3230,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 5 – Kişisel verilerin işlenme şartları"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.012
+        "search_seconds": 0.027
       },
       {
         "id": "kvkk-115",
@@ -3244,7 +3244,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 22 – Kurulun görev ve yetkileri"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.01
+        "search_seconds": 0.024
       },
       {
         "id": "kvkk-116",
@@ -3258,7 +3258,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Üçüncü Bölüm – Haklar ve Yükümlülükler > Madde 10 – Veri sorumlusunun aydınlatma yükümlülüğü"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.01
+        "search_seconds": 0.023
       },
       {
         "id": "kvkk-117",
@@ -3272,7 +3272,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 9 – Kişisel verilerin yurt dışına aktarılması"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.011
+        "search_seconds": 0.022
       },
       {
         "id": "kvkk-118",
@@ -3286,7 +3286,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 15 – Şikâyet üzerine veya resen incelemenin usul ve esasları"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.009
+        "search_seconds": 0.016
       },
       {
         "id": "kvkk-119",
@@ -3314,7 +3314,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Üçüncü Bölüm – Haklar ve Yükümlülükler > Madde 12 – Veri güvenliğine ilişkin yükümlülükler"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.012
+        "search_seconds": 0.019
       },
       {
         "id": "kvkk-121",
@@ -3328,7 +3328,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Yedinci Bölüm – Çeşitli Hükümler > Geçici Madde 1 – Geçiş hükümleri"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.011
+        "search_seconds": 0.024
       },
       {
         "id": "kvkk-122",
@@ -3342,7 +3342,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 21 – Kişisel Verileri Koruma Kurulu"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.013
+        "search_seconds": 0.016
       },
       {
         "id": "kvkk-123",
@@ -3356,7 +3356,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 16 – Veri Sorumluları Sicili"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.011
+        "search_seconds": 0.019
       },
       {
         "id": "kvkk-124",
@@ -3370,7 +3370,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 15 – Şikâyet üzerine veya resen incelemenin usul ve esasları"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.014
+        "search_seconds": 0.015
       },
       {
         "id": "kvkk-125",
@@ -3384,7 +3384,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 25 – Başkanlığın oluşumu ve görevleri"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.014
+        "search_seconds": 0.012
       },
       {
         "id": "kvkk-126",
@@ -3440,7 +3440,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 22 – Kurulun görev ve yetkileri"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.012
+        "search_seconds": 0.013
       },
       {
         "id": "kvkk-130",
@@ -3454,7 +3454,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 9 – Kişisel verilerin yurt dışına aktarılması"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.011
+        "search_seconds": 0.012
       },
       {
         "id": "kvkk-131",
@@ -3468,7 +3468,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 21 – Kişisel Verileri Koruma Kurulu"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.011
+        "search_seconds": 0.012
       },
       {
         "id": "kvkk-132",
@@ -3482,7 +3482,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 21 – Kişisel Verileri Koruma Kurulu"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.011
+        "search_seconds": 0.013
       },
       {
         "id": "kvkk-133",
@@ -3510,7 +3510,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 27 – Personele ve özlük haklarına ilişkin hükümler"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.013
+        "search_seconds": 0.011
       },
       {
         "id": "kvkk-135",
@@ -3524,7 +3524,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Yedinci Bölüm – Çeşitli Hükümler > Geçici Madde 1 – Geçiş hükümleri"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.014
+        "search_seconds": 0.011
       },
       {
         "id": "kvkk-136",
@@ -3538,7 +3538,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 5 – Kişisel verilerin işlenme şartları"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.011
+        "search_seconds": 0.012
       },
       {
         "id": "kvkk-137",
@@ -3552,7 +3552,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Yedinci Bölüm – Çeşitli Hükümler > Geçici Madde 1 – Geçiş hükümleri"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.012
+        "search_seconds": 0.011
       },
       {
         "id": "kvkk-151",
@@ -3567,7 +3567,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 16 – Veri Sorumluları Sicili"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.013
+        "search_seconds": 0.011
       },
       {
         "id": "kvkk-152",
@@ -3582,7 +3582,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Beşinci Bölüm – Suçlar ve Kabahatler > Madde 18 – Kabahatler"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.014
+        "search_seconds": 0.013
       },
       {
         "id": "kvkk-153",
@@ -3597,7 +3597,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 22 – Kurulun görev ve yetkileri"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.013
+        "search_seconds": 0.012
       },
       {
         "id": "kvkk-154",
@@ -3612,7 +3612,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 15 – Şikâyet üzerine veya resen incelemenin usul ve esasları"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.016
+        "search_seconds": 0.015
       },
       {
         "id": "kvkk-155",
@@ -3627,7 +3627,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 27 – Personele ve özlük haklarına ilişkin hükümler"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.014
+        "search_seconds": 0.013
       },
       {
         "id": "kvkk-156",
@@ -3657,7 +3657,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 6 – Özel nitelikli kişisel verilerin işlenme şartları"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.014
+        "search_seconds": 0.012
       },
       {
         "id": "kvkk-158",
@@ -3672,7 +3672,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Beşinci Bölüm – Suçlar ve Kabahatler > Madde 18 – Kabahatler"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.013
+        "search_seconds": 0.012
       },
       {
         "id": "kvkk-171",
@@ -3684,7 +3684,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 9 – Kişisel verilerin yurt dışına aktarılması"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.013
+        "search_seconds": 0.01
       },
       {
         "id": "kvkk-172",
@@ -3708,7 +3708,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 6 – Özel nitelikli kişisel verilerin işlenme şartları"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.014
+        "search_seconds": 0.01
       },
       {
         "id": "kvkk-174",
@@ -3720,7 +3720,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Yedinci Bölüm – Çeşitli Hükümler > Geçici Madde 2"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.012
+        "search_seconds": 0.011
       },
       {
         "id": "kvkk-175",
@@ -3732,7 +3732,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 9 – Kişisel verilerin yurt dışına aktarılması"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.013
+        "search_seconds": 0.011
       },
       {
         "id": "kvkk-176",
@@ -3744,7 +3744,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 24 – Başkan"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.012
+        "search_seconds": 0.01
       },
       {
         "id": "kvkk-177",
@@ -3756,7 +3756,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 16 – Veri Sorumluları Sicili"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.013
+        "search_seconds": 0.01
       },
       {
         "id": "kvkk-178",
@@ -3768,7 +3768,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Yedinci Bölüm – Çeşitli Hükümler > Geçici Madde 2"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.013
+        "search_seconds": 0.011
       },
       {
         "id": "k8s-101",
@@ -3782,7 +3782,7 @@
           "content/en/docs/concepts/architecture/mixed-version-proxy.md § Mixed Version Proxy > Mixed version proxying"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.017
+        "search_seconds": 0.012
       },
       {
         "id": "k8s-102",
@@ -3796,7 +3796,7 @@
           "content/en/docs/concepts/workloads/pods/probes.md § Liveness, Readiness, and Startup Probes > Configuration fields"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.016
+        "search_seconds": 0.014
       },
       {
         "id": "k8s-103",
@@ -3810,7 +3810,7 @@
           "content/en/docs/concepts/workloads/autoscaling/horizontal-pod-autoscale.md § Horizontal Pod Autoscaling > Pod readiness and autoscaling metrics > Good practice for pod readiness"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.016
+        "search_seconds": 0.015
       },
       {
         "id": "k8s-104",
@@ -3824,7 +3824,7 @@
           "content/en/docs/concepts/workloads/autoscaling/vertical-pod-autoscale.md § Vertical Pod Autoscaling > Resource policies > controlledResources"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.012
+        "search_seconds": 0.01
       },
       {
         "id": "k8s-105",
@@ -3838,7 +3838,7 @@
           "content/en/docs/concepts/workloads/autoscaling/vertical-pod-autoscale.md § Vertical Pod Autoscaling > Update modes"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.01
+        "search_seconds": 0.011
       },
       {
         "id": "k8s-106",
@@ -3852,7 +3852,7 @@
           "content/en/docs/concepts/workloads/workload-api/_index.md § Workload API > API structure > CompositePodGroupTemplates > Structure and constraints"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.011
+        "search_seconds": 0.012
       },
       {
         "id": "k8s-107",
@@ -3866,7 +3866,7 @@
           "content/en/docs/concepts/scheduling-eviction/podgroup-scheduling.md § PodGroup Scheduling > Hierarchical scheduling with CompositePodGroups"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.013
+        "search_seconds": 0.014
       },
       {
         "id": "k8s-108",
@@ -3894,7 +3894,7 @@
           "content/en/docs/concepts/workloads/controllers/deployment.md § Deployments > Updating a Deployment > Label selector updates"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.013
+        "search_seconds": 0.015
       },
       {
         "id": "k8s-110",
@@ -3908,7 +3908,7 @@
           "content/en/docs/concepts/workloads/controllers/replicaset.md § ReplicaSet > Writing a ReplicaSet manifest > Pod Selector"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.016
+        "search_seconds": 0.014
       },
       {
         "id": "k8s-111",
@@ -3922,7 +3922,7 @@
           "content/en/docs/concepts/workloads/pods/probes.md § Liveness, Readiness, and Startup Probes > When to use each probe > When should you use a startup probe?"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.015
+        "search_seconds": 0.012
       },
       {
         "id": "k8s-112",
@@ -3950,7 +3950,7 @@
           "content/en/docs/concepts/resource-management/dynamic-resource-allocation/device-taints.md § Device Taints and Tolerations > Device taints and tolerations > Taints set by an admin"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.012
+        "search_seconds": 0.011
       },
       {
         "id": "k8s-114",
@@ -3964,7 +3964,7 @@
           "content/en/docs/concepts/resource-management/dynamic-resource-allocation/dra-features.md § DRA Features > Optional node operations > Operational considerations > In-place driver updates"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.017
+        "search_seconds": 0.018
       },
       {
         "id": "k8s-115",
@@ -3992,7 +3992,7 @@
           "content/en/docs/concepts/workloads/compositepodgroup-api/_index.md § CompositePodGroup API"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.01
+        "search_seconds": 0.011
       },
       {
         "id": "k8s-117",
@@ -4062,7 +4062,7 @@
           "content/en/docs/concepts/services-networking/dns-pod-service.md § DNS for Services and Pods > Pods > Pod's setHostnameAsFQDN field"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.015
+        "search_seconds": 0.014
       },
       {
         "id": "k8s-122",
@@ -4076,7 +4076,7 @@
           "content/en/docs/concepts/configuration/manage-resources-containers.md § Resource Management for Pods and Containers > Requests and limits"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.015
+        "search_seconds": 0.014
       },
       {
         "id": "k8s-123",
@@ -4090,7 +4090,7 @@
           "content/en/docs/concepts/workloads/pods/advanced-pod-config.md § Advanced Pod Configuration > PriorityClasses > Defining a PriorityClass"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.013
+        "search_seconds": 0.012
       },
       {
         "id": "k8s-125",
@@ -4118,7 +4118,7 @@
           "content/en/docs/concepts/windows/intro.md § Windows containers in Kubernetes > Compatibility and limitations"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.018
+        "search_seconds": 0.019
       },
       {
         "id": "k8s-127",
@@ -4160,7 +4160,7 @@
           "content/en/docs/concepts/architecture/cgroups.md § About cgroup v2 > Using cgroup v2 > Linux Distribution cgroup v2 support"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.011
+        "search_seconds": 0.01
       },
       {
         "id": "k8s-132",
@@ -4188,7 +4188,7 @@
           "content/en/docs/concepts/scheduling-eviction/node-pressure-eviction.md § Node-pressure Eviction > Eviction signals and thresholds > Eviction signals"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.015
+        "search_seconds": 0.013
       },
       {
         "id": "k8s-134",
@@ -4216,7 +4216,7 @@
           "content/en/docs/concepts/services-networking/gateway.md § Gateway API"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.013
+        "search_seconds": 0.014
       },
       {
         "id": "k8s-136",
@@ -4230,7 +4230,7 @@
           "content/en/docs/concepts/cluster-administration/node-autoscaling.md § Node Autoscaling > Node provisioning"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.01
+        "search_seconds": 0.011
       },
       {
         "id": "k8s-137",
@@ -4244,7 +4244,7 @@
           "content/en/docs/concepts/services-networking/topology-aware-routing.md § Topology Aware Routing > Constraints"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.007
+        "search_seconds": 0.008
       },
       {
         "id": "k8s-138",
@@ -4258,7 +4258,7 @@
           "content/en/docs/concepts/workloads/pods/probes.md § Liveness, Readiness, and Startup Probes > Probe mechanism details > HTTP probes"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.008
+        "search_seconds": 0.009
       },
       {
         "id": "k8s-139",
@@ -4286,7 +4286,7 @@
           "content/en/docs/concepts/services-networking/topology-aware-routing.md § Topology Aware Routing"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.013
+        "search_seconds": 0.014
       },
       {
         "id": "k8s-142",
@@ -4314,7 +4314,7 @@
           "content/en/docs/concepts/services-networking/gateway.md § Gateway API > Resource model"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.011
+        "search_seconds": 0.012
       },
       {
         "id": "k8s-146",
@@ -4356,7 +4356,7 @@
           "content/en/docs/concepts/overview/working-with-objects/finalizers.md § Finalizers > How finalizers work"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.011
+        "search_seconds": 0.012
       },
       {
         "id": "k8s-150",
@@ -4398,7 +4398,7 @@
           "content/en/docs/concepts/scheduling-eviction/_index.md § Scheduling, Preemption and Eviction > Pod Disruption"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.014
+        "search_seconds": 0.015
       },
       {
         "id": "k8s-162",
@@ -4412,7 +4412,7 @@
           "content/en/docs/concepts/architecture/cgroups.md § About cgroup v2 > Identify the cgroup version on Linux Nodes"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.009
+        "search_seconds": 0.01
       },
       {
         "id": "k8s-163",
@@ -4426,7 +4426,7 @@
           "content/en/docs/concepts/services-networking/dns-pod-service.md § DNS for Services and Pods > Pods > Pod's DNS Policy"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.012
+        "search_seconds": 0.013
       },
       {
         "id": "k8s-164",
@@ -4468,7 +4468,7 @@
           "content/en/docs/concepts/storage/volume-attributes-classes.md § Volume Attributes Classes > The VolumeAttributesClass API > Provisioner"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.008
+        "search_seconds": 0.009
       },
       {
         "id": "k8s-167",
@@ -4482,7 +4482,7 @@
           "content/en/docs/concepts/workloads/workload-api/disruption-and-priority.md § Pod Group Disruption and Priority > Disruption mode types > Single"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.011
+        "search_seconds": 0.012
       },
       {
         "id": "k8s-168",
@@ -4510,7 +4510,7 @@
           "content/en/docs/concepts/workloads/compositepodgroup-api/lifecycle.md § CompositePodGroup Lifecycle > Limitations and validation rules"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.012
+        "search_seconds": 0.013
       },
       {
         "id": "k8s-172",
@@ -4525,7 +4525,7 @@
           "content/en/docs/concepts/workloads/pods/probes.md § Liveness, Readiness, and Startup Probes > Configuration fields"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.013
+        "search_seconds": 0.014
       },
       {
         "id": "k8s-173",
@@ -4540,7 +4540,7 @@
           "content/en/docs/concepts/services-networking/dns-pod-service.md § DNS for Services and Pods > DNS resolution on Windows nodes"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.013
+        "search_seconds": 0.014
       },
       {
         "id": "k8s-174",
@@ -4585,7 +4585,7 @@
           "content/en/docs/concepts/overview/working-with-objects/owners-dependents.md § Owners and Dependents > Ownership and finalizers"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.012
+        "search_seconds": 0.013
       },
       {
         "id": "k8s-177",
@@ -4600,7 +4600,7 @@
           "content/en/docs/concepts/extend-kubernetes/compute-storage-net/device-plugins.md § Device Plugins > Device plugin integration with the Topology Manager"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.013
+        "search_seconds": 0.015
       },
       {
         "id": "k8s-178",
@@ -4615,7 +4615,7 @@
           "content/en/docs/concepts/workloads/controllers/_index.md § Workload Management"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.017
+        "search_seconds": 0.013
       },
       {
         "id": "k8s-179",
@@ -4630,7 +4630,7 @@
           "content/en/docs/concepts/storage/volume-attributes-classes.md § Volume Attributes Classes > The VolumeAttributesClass API > Resizer"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.013
+        "search_seconds": 0.011
       },
       {
         "id": "k8s-180",
@@ -4675,7 +4675,7 @@
           "content/en/docs/concepts/workloads/autoscaling/vertical-pod-autoscale.md § Vertical Pod Autoscaling > How does a VerticalPodAutoscaler work?"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.014
+        "search_seconds": 0.011
       },
       {
         "id": "k8s-183",
@@ -4690,7 +4690,7 @@
           "content/en/docs/concepts/resource-management/dynamic-resource-allocation/dra-api.md § DRA API Objects > Derived attributes"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.015
+        "search_seconds": 0.013
       },
       {
         "id": "k8s-184",
@@ -4705,7 +4705,7 @@
           "content/en/docs/concepts/workloads/controllers/replicaset.md § ReplicaSet > Working with ReplicaSets > Scaling a ReplicaSet"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.014
+        "search_seconds": 0.013
       },
       {
         "id": "k8s-185",
@@ -4720,7 +4720,7 @@
           "content/en/docs/concepts/services-networking/service.md § Service > Defining a Service > Services without selectors > Custom EndpointSlices"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.011
+        "search_seconds": 0.012
       },
       {
         "id": "k8s-186",
@@ -4762,7 +4762,7 @@
           "content/en/docs/concepts/scheduling-eviction/assign-pod-node.md § Assigning Pods to Nodes > Affinity and anti-affinity > Inter-pod affinity and anti-affinity > More practical use-cases"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.014
+        "search_seconds": 0.016
       },
       {
         "id": "k8s-192",
@@ -4798,7 +4798,7 @@
           "content/en/docs/concepts/architecture/cgroups.md § About cgroup v2 > Using cgroup v2"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.012
+        "search_seconds": 0.014
       },
       {
         "id": "k8s-195",
@@ -4810,7 +4810,7 @@
           "content/en/docs/concepts/policy/pid-limiting.md § Process ID Limits And Reservations"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.01
+        "search_seconds": 0.011
       },
       {
         "id": "k8s-196",
@@ -4822,7 +4822,7 @@
           "content/en/docs/concepts/security/rbac-good-practices.md § Role Based Access Control Good Practices > Kubernetes RBAC - privilege escalation risks > Workload creation"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.011
+        "search_seconds": 0.014
       },
       {
         "id": "k8s-197",
@@ -4834,7 +4834,7 @@
           "content/en/docs/concepts/workloads/autoscaling/horizontal-pod-autoscale.md § Horizontal Pod Autoscaling > How does a HorizontalPodAutoscaler work?"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.011
+        "search_seconds": 0.01
       },
       {
         "id": "k8s-198",
@@ -4858,7 +4858,7 @@
           "content/en/docs/concepts/storage/storage-limits.md § Node-specific Volume Limits > Dynamic volume limits > CSI volume attach limits and cluster autoscaler"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.013
+        "search_seconds": 0.012
       },
       {
         "id": "k8s-200",
@@ -4894,7 +4894,7 @@
           "content/en/docs/concepts/storage/volume-attributes-classes.md § Volume Attributes Classes > The VolumeAttributesClass API > Provisioner"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.01
+        "search_seconds": 0.009
       },
       {
         "id": "k8s-203",
@@ -4906,7 +4906,7 @@
           "content/en/docs/concepts/resource-management/dynamic-resource-allocation/dra-observability.md § Observability of Dynamic Resources > DRA device metadata in containers > Custom drivers"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.012
+        "search_seconds": 0.013
       },
       {
         "id": "k8s-204",
@@ -4918,7 +4918,7 @@
           "content/en/docs/concepts/extend-kubernetes/api-extension/apiserver-aggregation.md § Kubernetes API Aggregation Layer > Aggregation layer"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.014
+        "search_seconds": 0.011
       }
     ],
     "hybrid": [
@@ -4934,7 +4934,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 15 – Şikâyet üzerine veya resen incelemenin usul ve esasları"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.098
+        "search_seconds": 0.097
       },
       {
         "id": "kvkk-002",
@@ -4949,7 +4949,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 5 – Kişisel verilerin işlenme şartları"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.118
+        "search_seconds": 0.096
       },
       {
         "id": "kvkk-003",
@@ -4961,7 +4961,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Yedinci Bölüm – Çeşitli Hükümler > Geçici Madde 1 – Geçiş hükümleri"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.12
+        "search_seconds": 0.093
       },
       {
         "id": "kvkk-004",
@@ -4975,7 +4975,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 21 – Kişisel Verileri Koruma Kurulu"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.124
+        "search_seconds": 0.096
       },
       {
         "id": "kvkk-005",
@@ -4989,7 +4989,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 21 – Kişisel Verileri Koruma Kurulu"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.146
+        "search_seconds": 0.095
       },
       {
         "id": "kvkk-006",
@@ -5003,7 +5003,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 9 – Kişisel verilerin yurt dışına aktarılması"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.17
+        "search_seconds": 0.094
       },
       {
         "id": "kvkk-007",
@@ -5017,7 +5017,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Üçüncü Bölüm – Haklar ve Yükümlülükler > Madde 12 – Veri güvenliğine ilişkin yükümlülükler"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.166
+        "search_seconds": 0.118
       },
       {
         "id": "kvkk-008",
@@ -5031,7 +5031,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 13 – Veri sorumlusuna başvuru"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.151
+        "search_seconds": 0.09
       },
       {
         "id": "kvkk-009",
@@ -5046,7 +5046,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Üçüncü Bölüm – Haklar ve Yükümlülükler > Madde 12 – Veri güvenliğine ilişkin yükümlülükler"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.135
+        "search_seconds": 0.09
       },
       {
         "id": "kvkk-010",
@@ -5061,7 +5061,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 9 – Kişisel verilerin yurt dışına aktarılması"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.132
+        "search_seconds": 0.091
       },
       {
         "id": "kvkk-011",
@@ -5073,7 +5073,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Yedinci Bölüm – Çeşitli Hükümler > Madde 28 – İstisnalar"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.156
+        "search_seconds": 0.09
       },
       {
         "id": "kvkk-012",
@@ -5085,7 +5085,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 8 – Kişisel verilerin aktarılması"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.152
+        "search_seconds": 0.092
       },
       {
         "id": "k8s-001",
@@ -5099,7 +5099,7 @@
           "content/en/docs/concepts/services-networking/service.md § Service > Service type > `type: LoadBalancer` > Load balancers with mixed protocol types"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.152
+        "search_seconds": 0.093
       },
       {
         "id": "k8s-002",
@@ -5114,7 +5114,7 @@
           "content/en/docs/concepts/workloads/pods/probes.md § Liveness, Readiness, and Startup Probes > Types of probe > Startup probe"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.145
+        "search_seconds": 0.093
       },
       {
         "id": "k8s-003",
@@ -5126,7 +5126,7 @@
           "content/en/docs/concepts/security/multi-tenancy.md § Multi-tenancy > Implementations > Virtual control plane per tenant"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.155
+        "search_seconds": 0.093
       },
       {
         "id": "k8s-004",
@@ -5140,7 +5140,7 @@
           "content/en/docs/concepts/services-networking/service.md § Service > Service type > `type: NodePort` > Reserve Nodeport ranges to avoid collisions"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.168
+        "search_seconds": 0.092
       },
       {
         "id": "k8s-005",
@@ -5154,7 +5154,7 @@
           "content/en/docs/concepts/workloads/controllers/statefulset.md § StatefulSets > Limitations"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.203
+        "search_seconds": 0.092
       },
       {
         "id": "k8s-006",
@@ -5168,7 +5168,7 @@
           "content/en/docs/concepts/workloads/controllers/deployment.md § Deployments > Updating a Deployment"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.206
+        "search_seconds": 0.095
       },
       {
         "id": "k8s-007",
@@ -5182,7 +5182,7 @@
           "content/en/docs/concepts/architecture/leases.md § Leases > Node heartbeats"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.152
+        "search_seconds": 0.094
       },
       {
         "id": "k8s-008",
@@ -5196,7 +5196,7 @@
           "content/en/docs/concepts/security/security-checklist.md § Security Checklist > Secrets"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.151
+        "search_seconds": 0.093
       },
       {
         "id": "k8s-009",
@@ -5210,7 +5210,7 @@
           "content/en/docs/concepts/storage/volumes.md § Volumes > Types of volumes > configMap"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.118
+        "search_seconds": 0.091
       },
       {
         "id": "k8s-010",
@@ -5224,7 +5224,7 @@
           "content/en/docs/concepts/workloads/controllers/job.md § Jobs > Handling Pod and container failures > Pod failure policy"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.119
+        "search_seconds": 0.109
       },
       {
         "id": "k8s-011",
@@ -5238,7 +5238,7 @@
           "content/en/docs/concepts/workloads/controllers/job.md § Jobs > Job termination and cleanup"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.128
+        "search_seconds": 0.096
       },
       {
         "id": "k8s-012",
@@ -5253,7 +5253,7 @@
           "content/en/docs/concepts/services-networking/service.md § Service > Services in Kubernetes"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.13
+        "search_seconds": 0.092
       },
       {
         "id": "k8s-013",
@@ -5268,7 +5268,7 @@
           "content/en/docs/concepts/scheduling-eviction/pod-priority-preemption.md § Pod Priority and Preemption > Interactions between Pod priority and quality of service"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.13
+        "search_seconds": 0.096
       },
       {
         "id": "k8s-014",
@@ -5283,7 +5283,7 @@
           "content/en/docs/concepts/services-networking/network-policies.md § Network Policies > Default policies > Default deny all ingress traffic"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.118
+        "search_seconds": 0.09
       },
       {
         "id": "k8s-015",
@@ -5298,7 +5298,7 @@
           "content/en/docs/concepts/storage/persistent-volumes.md § Persistent Volumes > PersistentVolumeClaims > Class"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.11
+        "search_seconds": 0.092
       },
       {
         "id": "k8s-016",
@@ -5310,7 +5310,7 @@
           "content/en/docs/concepts/architecture/_index.md § Cluster Architecture"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.107
+        "search_seconds": 0.094
       },
       {
         "id": "k8s-017",
@@ -5322,7 +5322,7 @@
           "content/en/docs/concepts/storage/storage-limits.md § Node-specific Volume Limits > Kubernetes default limits"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.108
+        "search_seconds": 0.105
       },
       {
         "id": "k8s-018",
@@ -5334,7 +5334,7 @@
           "content/en/docs/concepts/security/security-checklist.md § Security Checklist > Secrets"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.106
+        "search_seconds": 0.098
       },
       {
         "id": "kvkk-101",
@@ -5348,7 +5348,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 21 – Kişisel Verileri Koruma Kurulu"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.102
+        "search_seconds": 0.098
       },
       {
         "id": "kvkk-103",
@@ -5362,7 +5362,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 21 – Kişisel Verileri Koruma Kurulu"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.111
+        "search_seconds": 0.095
       },
       {
         "id": "kvkk-104",
@@ -5376,7 +5376,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 21 – Kişisel Verileri Koruma Kurulu"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.103
+        "search_seconds": 0.11
       },
       {
         "id": "kvkk-105",
@@ -5390,7 +5390,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 23 – Kurulun çalışma esasları"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.105
+        "search_seconds": 0.095
       },
       {
         "id": "kvkk-106",
@@ -5404,7 +5404,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 21 – Kişisel Verileri Koruma Kurulu"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.105
+        "search_seconds": 0.092
       },
       {
         "id": "kvkk-107",
@@ -5418,7 +5418,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 13 – Veri sorumlusuna başvuru"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.1
+        "search_seconds": 0.092
       },
       {
         "id": "kvkk-108",
@@ -5432,7 +5432,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 21 – Kişisel Verileri Koruma Kurulu"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.118
+        "search_seconds": 0.09
       },
       {
         "id": "kvkk-109",
@@ -5446,7 +5446,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 23 – Kurulun çalışma esasları"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.106
+        "search_seconds": 0.092
       },
       {
         "id": "kvkk-110",
@@ -5460,7 +5460,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 8 – Kişisel verilerin aktarılması"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.098
+        "search_seconds": 0.097
       },
       {
         "id": "kvkk-111",
@@ -5474,7 +5474,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Üçüncü Bölüm – Haklar ve Yükümlülükler > Madde 12 – Veri güvenliğine ilişkin yükümlülükler"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.096
+        "search_seconds": 0.093
       },
       {
         "id": "kvkk-112",
@@ -5488,7 +5488,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Beşinci Bölüm – Suçlar ve Kabahatler > Madde 17 – Suçlar"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.095
+        "search_seconds": 0.088
       },
       {
         "id": "kvkk-113",
@@ -5502,7 +5502,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Birinci Bölüm – Amaç, Kapsam ve Tanımlar > Madde 3 – Tanımlar"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.094
+        "search_seconds": 0.09
       },
       {
         "id": "kvkk-114",
@@ -5516,7 +5516,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 9 – Kişisel verilerin yurt dışına aktarılması"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.088
+        "search_seconds": 0.092
       },
       {
         "id": "kvkk-115",
@@ -5530,7 +5530,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 6 – Özel nitelikli kişisel verilerin işlenme şartları"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.091
+        "search_seconds": 0.097
       },
       {
         "id": "kvkk-116",
@@ -5544,7 +5544,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 5 – Kişisel verilerin işlenme şartları"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.095
+        "search_seconds": 0.091
       },
       {
         "id": "kvkk-117",
@@ -5558,7 +5558,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 9 – Kişisel verilerin yurt dışına aktarılması"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.093
+        "search_seconds": 0.091
       },
       {
         "id": "kvkk-118",
@@ -5572,7 +5572,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 15 – Şikâyet üzerine veya resen incelemenin usul ve esasları"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.092
+        "search_seconds": 0.089
       },
       {
         "id": "kvkk-119",
@@ -5586,7 +5586,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 13 – Veri sorumlusuna başvuru"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.099
+        "search_seconds": 0.088
       },
       {
         "id": "kvkk-120",
@@ -5600,7 +5600,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Üçüncü Bölüm – Haklar ve Yükümlülükler > Madde 12 – Veri güvenliğine ilişkin yükümlülükler"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.103
+        "search_seconds": 0.088
       },
       {
         "id": "kvkk-121",
@@ -5614,7 +5614,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Üçüncü Bölüm – Haklar ve Yükümlülükler > Madde 10 – Veri sorumlusunun aydınlatma yükümlülüğü"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.101
+        "search_seconds": 0.091
       },
       {
         "id": "kvkk-122",
@@ -5628,7 +5628,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 27 – Personele ve özlük haklarına ilişkin hükümler"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.103
+        "search_seconds": 0.092
       },
       {
         "id": "kvkk-123",
@@ -5642,7 +5642,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 15 – Şikâyet üzerine veya resen incelemenin usul ve esasları"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.107
+        "search_seconds": 0.089
       },
       {
         "id": "kvkk-124",
@@ -5656,7 +5656,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Üçüncü Bölüm – Haklar ve Yükümlülükler > Madde 11 – İlgili kişinin hakları"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.113
+        "search_seconds": 0.09
       },
       {
         "id": "kvkk-125",
@@ -5670,7 +5670,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 25 – Başkanlığın oluşumu ve görevleri"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.099
+        "search_seconds": 0.09
       },
       {
         "id": "kvkk-126",
@@ -5684,7 +5684,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 13 – Veri sorumlusuna başvuru"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.1
+        "search_seconds": 0.09
       },
       {
         "id": "kvkk-127",
@@ -5698,7 +5698,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Birinci Bölüm – Amaç, Kapsam ve Tanımlar > Madde 3 – Tanımlar"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.098
+        "search_seconds": 0.088
       },
       {
         "id": "kvkk-128",
@@ -5712,7 +5712,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Yedinci Bölüm – Çeşitli Hükümler > Madde 28 – İstisnalar"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.101
+        "search_seconds": 0.09
       },
       {
         "id": "kvkk-129",
@@ -5726,7 +5726,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 22 – Kurulun görev ve yetkileri"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.108
+        "search_seconds": 0.088
       },
       {
         "id": "kvkk-130",
@@ -5740,7 +5740,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Yedinci Bölüm – Çeşitli Hükümler > Geçici Madde 2"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.112
+        "search_seconds": 0.092
       },
       {
         "id": "kvkk-131",
@@ -5754,7 +5754,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 21 – Kişisel Verileri Koruma Kurulu"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.104
+        "search_seconds": 0.093
       },
       {
         "id": "kvkk-132",
@@ -5768,7 +5768,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 23 – Kurulun çalışma esasları"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.099
+        "search_seconds": 0.088
       },
       {
         "id": "kvkk-133",
@@ -5782,7 +5782,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 27 – Personele ve özlük haklarına ilişkin hükümler"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.097
+        "search_seconds": 0.087
       },
       {
         "id": "kvkk-134",
@@ -5796,7 +5796,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 21 – Kişisel Verileri Koruma Kurulu"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.093
+        "search_seconds": 0.104
       },
       {
         "id": "kvkk-135",
@@ -5810,7 +5810,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Yedinci Bölüm – Çeşitli Hükümler > Geçici Madde 1 – Geçiş hükümleri"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.091
+        "search_seconds": 0.094
       },
       {
         "id": "kvkk-136",
@@ -5824,7 +5824,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 8 – Kişisel verilerin aktarılması"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.091
+        "search_seconds": 0.092
       },
       {
         "id": "kvkk-137",
@@ -5838,7 +5838,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 25 – Başkanlığın oluşumu ve görevleri"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.092
+        "search_seconds": 0.094
       },
       {
         "id": "kvkk-151",
@@ -5853,7 +5853,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Beşinci Bölüm – Suçlar ve Kabahatler > Madde 18 – Kabahatler"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.094
+        "search_seconds": 0.088
       },
       {
         "id": "kvkk-152",
@@ -5868,7 +5868,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Beşinci Bölüm – Suçlar ve Kabahatler > Madde 18 – Kabahatler"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.091
+        "search_seconds": 0.092
       },
       {
         "id": "kvkk-153",
@@ -5883,7 +5883,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Beşinci Bölüm – Suçlar ve Kabahatler > Madde 18 – Kabahatler"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.092
+        "search_seconds": 0.093
       },
       {
         "id": "kvkk-154",
@@ -5898,7 +5898,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 15 – Şikâyet üzerine veya resen incelemenin usul ve esasları"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.096
+        "search_seconds": 0.091
       },
       {
         "id": "kvkk-155",
@@ -5913,7 +5913,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Beşinci Bölüm – Suçlar ve Kabahatler > Madde 17 – Suçlar"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.094
+        "search_seconds": 0.091
       },
       {
         "id": "kvkk-156",
@@ -5928,7 +5928,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 19 – Kişisel Verileri Koruma Kurumu"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.096
+        "search_seconds": 0.092
       },
       {
         "id": "kvkk-157",
@@ -5958,7 +5958,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Üçüncü Bölüm – Haklar ve Yükümlülükler > Madde 10 – Veri sorumlusunun aydınlatma yükümlülüğü"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.099
+        "search_seconds": 0.093
       },
       {
         "id": "kvkk-171",
@@ -5970,7 +5970,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Üçüncü Bölüm – Haklar ve Yükümlülükler > Madde 12 – Veri güvenliğine ilişkin yükümlülükler"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.118
+        "search_seconds": 0.09
       },
       {
         "id": "kvkk-172",
@@ -5982,7 +5982,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 9 – Kişisel verilerin yurt dışına aktarılması"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.101
+        "search_seconds": 0.093
       },
       {
         "id": "kvkk-173",
@@ -5994,7 +5994,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > İkinci Bölüm – Kişisel Verilerin İşlenmesi > Madde 8 – Kişisel verilerin aktarılması"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.108
+        "search_seconds": 0.092
       },
       {
         "id": "kvkk-174",
@@ -6006,7 +6006,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 27 – Personele ve özlük haklarına ilişkin hükümler"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.108
+        "search_seconds": 0.089
       },
       {
         "id": "kvkk-175",
@@ -6018,7 +6018,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 22 – Kurulun görev ve yetkileri"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.098
+        "search_seconds": 0.091
       },
       {
         "id": "kvkk-176",
@@ -6030,7 +6030,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 25 – Başkanlığın oluşumu ve görevleri"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.094
+        "search_seconds": 0.09
       },
       {
         "id": "kvkk-177",
@@ -6042,7 +6042,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Dördüncü Bölüm – Başvuru, Şikâyet ve Veri Sorumluları Sicili > Madde 16 – Veri Sorumluları Sicili"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.093
+        "search_seconds": 0.092
       },
       {
         "id": "kvkk-178",
@@ -6054,7 +6054,7 @@
           "kvkk/6698.md § Kişisel Verilerin Korunması Kanunu > Altıncı Bölüm – Kişisel Verileri Koruma Kurumu ve Teşkilat > Madde 27 – Personele ve özlük haklarına ilişkin hükümler"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.091
+        "search_seconds": 0.094
       },
       {
         "id": "k8s-101",
@@ -6068,7 +6068,7 @@
           "content/en/docs/concepts/extend-kubernetes/api-extension/apiserver-aggregation.md § Kubernetes API Aggregation Layer > Aggregation layer > Response latency"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.09
+        "search_seconds": 0.092
       },
       {
         "id": "k8s-102",
@@ -6082,7 +6082,7 @@
           "content/en/docs/concepts/workloads/autoscaling/horizontal-pod-autoscale.md § Horizontal Pod Autoscaling > Configurable scaling behavior > Default behavior"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.085
+        "search_seconds": 0.092
       },
       {
         "id": "k8s-103",
@@ -6096,7 +6096,7 @@
           "content/en/docs/concepts/workloads/autoscaling/horizontal-pod-autoscale.md § Horizontal Pod Autoscaling > Pod readiness and autoscaling metrics > Good practice for pod readiness"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.089
+        "search_seconds": 0.092
       },
       {
         "id": "k8s-104",
@@ -6110,7 +6110,7 @@
           "content/en/docs/concepts/workloads/autoscaling/vertical-pod-autoscale.md § Vertical Pod Autoscaling > How does a VerticalPodAutoscaler work?"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.083
+        "search_seconds": 0.087
       },
       {
         "id": "k8s-105",
@@ -6124,7 +6124,7 @@
           "content/en/docs/concepts/workloads/autoscaling/vertical-pod-autoscale.md § Vertical Pod Autoscaling > Resource policies"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.084
+        "search_seconds": 0.086
       },
       {
         "id": "k8s-106",
@@ -6138,7 +6138,7 @@
           "content/en/docs/concepts/workloads/compositepodgroup-api/lifecycle.md § CompositePodGroup Lifecycle > Limitations and validation rules"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.084
+        "search_seconds": 0.093
       },
       {
         "id": "k8s-107",
@@ -6152,7 +6152,7 @@
           "content/en/docs/concepts/workloads/podgroup-api/_index.md § PodGroup API > What is a PodGroup?"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.082
+        "search_seconds": 0.089
       },
       {
         "id": "k8s-108",
@@ -6166,7 +6166,7 @@
           "content/en/docs/concepts/extend-kubernetes/compute-storage-net/device-plugins.md § Device Plugins > Monitoring device plugin resources > `List` gRPC endpoint"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.083
+        "search_seconds": 0.09
       },
       {
         "id": "k8s-109",
@@ -6180,7 +6180,7 @@
           "content/en/docs/concepts/workloads/controllers/deployment.md § Deployments > Writing a Deployment Spec > Selector"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.085
+        "search_seconds": 0.092
       },
       {
         "id": "k8s-110",
@@ -6194,7 +6194,7 @@
           "content/en/docs/concepts/workloads/controllers/deployment.md § Deployments > Updating a Deployment > Label selector updates"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.102
+        "search_seconds": 0.091
       },
       {
         "id": "k8s-111",
@@ -6208,7 +6208,7 @@
           "content/en/docs/concepts/workloads/controllers/replicationcontroller.md § ReplicationController > Alternatives to ReplicationController > DaemonSet"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.1
+        "search_seconds": 0.092
       },
       {
         "id": "k8s-112",
@@ -6222,7 +6222,7 @@
           "content/en/docs/concepts/resource-management/dynamic-resource-allocation/dra-api.md § DRA API Objects > List type attributes"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.095
+        "search_seconds": 0.092
       },
       {
         "id": "k8s-113",
@@ -6236,7 +6236,7 @@
           "content/en/docs/concepts/resource-management/dynamic-resource-allocation/device-taints.md § Device Taints and Tolerations > Device taints and tolerations > Taints set by an admin"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.086
+        "search_seconds": 0.098
       },
       {
         "id": "k8s-114",
@@ -6250,7 +6250,7 @@
           "content/en/docs/concepts/security/hardening-guide/dynamic-resource-allocation.md § Hardening Guide - Dynamic Resource Allocation > Example RBAC patterns > Node-local DRA driver permissions"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.099
+        "search_seconds": 0.125
       },
       {
         "id": "k8s-115",
@@ -6264,7 +6264,7 @@
           "content/en/docs/concepts/scheduling-eviction/scheduling-framework.md § Scheduling Framework > Plugin configuration"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.102
+        "search_seconds": 0.125
       },
       {
         "id": "k8s-116",
@@ -6278,7 +6278,7 @@
           "content/en/docs/concepts/workloads/workload-api/policies.md § PodGroup Scheduling Policies > Policies in CompositePodGroups"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.102
+        "search_seconds": 0.122
       },
       {
         "id": "k8s-117",
@@ -6292,7 +6292,7 @@
           "content/en/docs/concepts/workloads/compositepodgroup-api/lifecycle.md § CompositePodGroup Lifecycle > Creation ordering"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.101
+        "search_seconds": 0.12
       },
       {
         "id": "k8s-118",
@@ -6306,7 +6306,7 @@
           "content/en/docs/concepts/workloads/_index.md § Workloads > Workload placement"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.107
+        "search_seconds": 0.121
       },
       {
         "id": "k8s-119",
@@ -6320,7 +6320,7 @@
           "content/en/docs/concepts/workloads/pods/pod-qos.md § Pod Quality of Service Classes > Memory QoS with cgroup v2 > Configuring memory reservation"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.1
+        "search_seconds": 0.122
       },
       {
         "id": "k8s-120",
@@ -6334,7 +6334,7 @@
           "content/en/docs/concepts/workloads/pods/probes.md § Liveness, Readiness, and Startup Probes > Types of probe > Liveness probe"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.097
+        "search_seconds": 0.126
       },
       {
         "id": "k8s-121",
@@ -6348,7 +6348,7 @@
           "content/en/docs/concepts/services-networking/dns-pod-service.md § DNS for Services and Pods > Pods > Pod's setHostnameAsFQDN field"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.096
+        "search_seconds": 0.124
       },
       {
         "id": "k8s-122",
@@ -6362,7 +6362,7 @@
           "content/en/docs/concepts/configuration/manage-resources-containers.md § Resource Management for Pods and Containers > Requests and limits"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.097
+        "search_seconds": 0.129
       },
       {
         "id": "k8s-123",
@@ -6376,7 +6376,7 @@
           "content/en/docs/concepts/workloads/controllers/statefulset.md § StatefulSets > Pod Identity > Pod index label"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.093
+        "search_seconds": 0.12
       },
       {
         "id": "k8s-125",
@@ -6390,7 +6390,7 @@
           "content/en/docs/concepts/architecture/mixed-version-proxy.md § Mixed Version Proxy > Mixed version proxying > How it works under the hood"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.09
+        "search_seconds": 0.128
       },
       {
         "id": "k8s-126",
@@ -6404,7 +6404,7 @@
           "content/en/docs/concepts/workloads/pods/user-namespaces.md § User Namespaces"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.096
+        "search_seconds": 0.112
       },
       {
         "id": "k8s-127",
@@ -6418,7 +6418,7 @@
           "content/en/docs/concepts/services-networking/dns-pod-service.md § DNS for Services and Pods > Pods > Pod's DNS Policy"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.096
+        "search_seconds": 0.1
       },
       {
         "id": "k8s-129",
@@ -6432,7 +6432,7 @@
           "content/en/docs/concepts/windows/_index.md § Windows in Kubernetes"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.099
+        "search_seconds": 0.096
       },
       {
         "id": "k8s-131",
@@ -6446,7 +6446,7 @@
           "content/en/docs/concepts/architecture/cgroups.md § About cgroup v2 > What is cgroup v2?"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.099
+        "search_seconds": 0.092
       },
       {
         "id": "k8s-132",
@@ -6460,7 +6460,7 @@
           "content/en/docs/concepts/storage/storage-classes.md § Storage Classes > Parameters"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.095
+        "search_seconds": 0.09
       },
       {
         "id": "k8s-133",
@@ -6474,7 +6474,7 @@
           "content/en/docs/concepts/scheduling-eviction/api-eviction.md § API-initiated Eviction > How API-initiated eviction works"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.093
+        "search_seconds": 0.092
       },
       {
         "id": "k8s-134",
@@ -6488,7 +6488,7 @@
           "content/en/docs/concepts/overview/working-with-objects/owners-dependents.md § Owners and Dependents > Owner references in object specifications"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.089
+        "search_seconds": 0.103
       },
       {
         "id": "k8s-135",
@@ -6502,7 +6502,7 @@
           "content/en/docs/concepts/overview/kubernetes-api.md § The Kubernetes API"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.088
+        "search_seconds": 0.096
       },
       {
         "id": "k8s-136",
@@ -6516,7 +6516,7 @@
           "content/en/docs/concepts/cluster-administration/node-autoscaling.md § Node Autoscaling > Node provisioning"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.09
+        "search_seconds": 0.092
       },
       {
         "id": "k8s-137",
@@ -6530,7 +6530,7 @@
           "content/en/docs/concepts/services-networking/service-traffic-policy.md § Service Internal Traffic Policy > How it works"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.084
+        "search_seconds": 0.092
       },
       {
         "id": "k8s-138",
@@ -6544,7 +6544,7 @@
           "content/en/docs/concepts/services-networking/service.md § Service > Service type > `type: LoadBalancer` > Specifying class of load balancer implementation"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.085
+        "search_seconds": 0.094
       },
       {
         "id": "k8s-139",
@@ -6558,7 +6558,7 @@
           "content/en/docs/concepts/windows/intro.md § Windows containers in Kubernetes > Container runtimes"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.088
+        "search_seconds": 0.097
       },
       {
         "id": "k8s-140",
@@ -6572,7 +6572,7 @@
           "content/en/docs/concepts/services-networking/topology-aware-routing.md § Topology Aware Routing > Enabling Topology Aware Routing"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.092
+        "search_seconds": 0.094
       },
       {
         "id": "k8s-142",
@@ -6586,7 +6586,7 @@
           "content/en/docs/concepts/workloads/autoscaling/vertical-pod-autoscale.md § Vertical Pod Autoscaling > How does a VerticalPodAutoscaler work?"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.089
+        "search_seconds": 0.096
       },
       {
         "id": "k8s-145",
@@ -6600,7 +6600,7 @@
           "content/en/docs/concepts/services-networking/gateway.md § Gateway API > Design principles"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.087
+        "search_seconds": 0.096
       },
       {
         "id": "k8s-146",
@@ -6614,7 +6614,7 @@
           "content/en/docs/concepts/architecture/mixed-version-proxy.md § Mixed Version Proxy > Enabling Peer-aggregated Discovery and Mixed Version Proxy > Proxy transport and authentication between API servers"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.095
+        "search_seconds": 0.089
       },
       {
         "id": "k8s-148",
@@ -6628,7 +6628,7 @@
           "content/en/docs/concepts/overview/working-with-objects/owners-dependents.md § Owners and Dependents > Ownership and finalizers"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.098
+        "search_seconds": 0.09
       },
       {
         "id": "k8s-149",
@@ -6642,7 +6642,7 @@
           "content/en/docs/concepts/overview/working-with-objects/owners-dependents.md § Owners and Dependents > Ownership and finalizers"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.105
+        "search_seconds": 0.089
       },
       {
         "id": "k8s-150",
@@ -6656,7 +6656,7 @@
           "content/en/docs/concepts/workloads/workload-api/_index.md § Workload API > API structure > PodGroupTemplates"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.116
+        "search_seconds": 0.091
       },
       {
         "id": "k8s-151",
@@ -6670,7 +6670,7 @@
           "content/en/docs/concepts/workloads/workload-api/workloadbuilder.md § Scheduling Building Block APIs and the workloadbuilder Library > The workloadbuilder library > How a controller uses it"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.122
+        "search_seconds": 0.091
       },
       {
         "id": "k8s-161",
@@ -6684,7 +6684,7 @@
           "content/en/docs/concepts/workloads/autoscaling/vertical-pod-autoscale.md § Vertical Pod Autoscaling > LimitRange resources"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.119
+        "search_seconds": 0.092
       },
       {
         "id": "k8s-162",
@@ -6698,7 +6698,7 @@
           "content/en/docs/concepts/architecture/cgroups.md § About cgroup v2"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.104
+        "search_seconds": 0.092
       },
       {
         "id": "k8s-163",
@@ -6712,7 +6712,7 @@
           "content/en/docs/concepts/services-networking/windows-networking.md § Networking on Windows > Network modes"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.1
+        "search_seconds": 0.089
       },
       {
         "id": "k8s-164",
@@ -6726,7 +6726,7 @@
           "content/en/docs/concepts/services-networking/gateway.md § Gateway API > Design principles"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.095
+        "search_seconds": 0.088
       },
       {
         "id": "k8s-165",
@@ -6740,7 +6740,7 @@
           "content/en/docs/concepts/workloads/pods/probes.md § Liveness, Readiness, and Startup Probes > Probe mechanism details > HTTP probes"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.098
+        "search_seconds": 0.089
       },
       {
         "id": "k8s-166",
@@ -6754,7 +6754,7 @@
           "content/en/docs/concepts/storage/volume-attributes-classes.md § Volume Attributes Classes > The VolumeAttributesClass API > Resizer"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.107
+        "search_seconds": 0.085
       },
       {
         "id": "k8s-167",
@@ -6768,7 +6768,7 @@
           "content/en/docs/concepts/workloads/workload-api/disruption-and-priority.md § Pod Group Disruption and Priority > Pod group priority"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.107
+        "search_seconds": 0.092
       },
       {
         "id": "k8s-168",
@@ -6782,7 +6782,7 @@
           "content/en/docs/concepts/services-networking/service-traffic-policy.md § Service Internal Traffic Policy > How it works"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.094
+        "search_seconds": 0.087
       },
       {
         "id": "k8s-171",
@@ -6797,7 +6797,7 @@
           "content/en/docs/concepts/workloads/compositepodgroup-api/lifecycle.md § CompositePodGroup Lifecycle > Limitations and validation rules"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.095
+        "search_seconds": 0.09
       },
       {
         "id": "k8s-172",
@@ -6812,7 +6812,7 @@
           "content/en/docs/concepts/workloads/pods/probes.md § Liveness, Readiness, and Startup Probes > Configuration fields"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.094
+        "search_seconds": 0.091
       },
       {
         "id": "k8s-173",
@@ -6827,7 +6827,7 @@
           "content/en/docs/concepts/windows/user-guide.md § Guide for Running Windows Containers in Kubernetes > Getting Started: Deploying a Windows workload"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.094
+        "search_seconds": 0.092
       },
       {
         "id": "k8s-174",
@@ -6842,7 +6842,7 @@
           "content/en/docs/concepts/workloads/workload-api/policies.md § PodGroup Scheduling Policies"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.094
+        "search_seconds": 0.091
       },
       {
         "id": "k8s-175",
@@ -6857,7 +6857,7 @@
           "content/en/docs/concepts/policy/limit-range.md § Limit Ranges"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.088
+        "search_seconds": 0.096
       },
       {
         "id": "k8s-176",
@@ -6872,7 +6872,7 @@
           "content/en/docs/concepts/overview/working-with-objects/owners-dependents.md § Owners and Dependents > Ownership and finalizers"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.092
+        "search_seconds": 0.114
       },
       {
         "id": "k8s-177",
@@ -6887,7 +6887,7 @@
           "content/en/docs/concepts/extend-kubernetes/compute-storage-net/device-plugins.md § Device Plugins > Device plugin integration with the Topology Manager"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.099
+        "search_seconds": 0.091
       },
       {
         "id": "k8s-178",
@@ -6902,7 +6902,7 @@
           "content/en/docs/concepts/workloads/controllers/daemonset.md § DaemonSet > Alternatives to DaemonSet > Deployments"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.103
+        "search_seconds": 0.09
       },
       {
         "id": "k8s-179",
@@ -6917,7 +6917,7 @@
           "content/en/docs/concepts/storage/volume-attributes-classes.md § Volume Attributes Classes > The VolumeAttributesClass API"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.092
+        "search_seconds": 0.098
       },
       {
         "id": "k8s-180",
@@ -6932,7 +6932,7 @@
           "content/en/docs/concepts/architecture/cgroups.md § About cgroup v2"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.092
+        "search_seconds": 0.117
       },
       {
         "id": "k8s-181",
@@ -6947,7 +6947,7 @@
           "content/en/docs/concepts/services-networking/service-traffic-policy.md § Service Internal Traffic Policy > Using Service Internal Traffic Policy"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.095
+        "search_seconds": 0.126
       },
       {
         "id": "k8s-182",
@@ -6962,7 +6962,7 @@
           "content/en/docs/concepts/workloads/autoscaling/vertical-pod-autoscale.md § Vertical Pod Autoscaling > Update modes > InPlace"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.093
+        "search_seconds": 0.125
       },
       {
         "id": "k8s-183",
@@ -6977,7 +6977,7 @@
           "content/en/docs/concepts/resource-management/dynamic-resource-allocation/dra-api.md § DRA API Objects > List type attributes > Details for DRA Driver Authors"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.089
+        "search_seconds": 0.129
       },
       {
         "id": "k8s-184",
@@ -6992,7 +6992,7 @@
           "content/en/docs/concepts/workloads/controllers/replicaset.md § ReplicaSet > Writing a ReplicaSet manifest > Pod Selector"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.086
+        "search_seconds": 0.148
       },
       {
         "id": "k8s-185",
@@ -7007,7 +7007,7 @@
           "content/en/docs/concepts/services-networking/topology-aware-routing.md § Topology Aware Routing > Constraints"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.087
+        "search_seconds": 0.138
       },
       {
         "id": "k8s-186",
@@ -7022,7 +7022,7 @@
           "content/en/docs/concepts/policy/resource-quotas.md § Resource Quotas > How Kubernetes ResourceQuotas work"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.084
+        "search_seconds": 0.128
       },
       {
         "id": "k8s-187",
@@ -7037,7 +7037,7 @@
           "content/en/docs/concepts/windows/intro.md § Windows containers in Kubernetes > Compatibility and limitations > API compatibility > Field compatibility for Pod specifications"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.09
+        "search_seconds": 0.126
       },
       {
         "id": "k8s-191",
@@ -7049,7 +7049,7 @@
           "content/en/docs/concepts/cluster-administration/swap-memory-management.md § Swap memory management"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.085
+        "search_seconds": 0.142
       },
       {
         "id": "k8s-192",
@@ -7061,7 +7061,7 @@
           "content/en/docs/concepts/cluster-administration/node-autoscaling.md § Node Autoscaling > Related components > Workload autoscalers based on cluster size"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.087
+        "search_seconds": 0.12
       },
       {
         "id": "k8s-193",
@@ -7073,7 +7073,7 @@
           "content/en/docs/concepts/services-networking/windows-networking.md § Networking on Windows"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.093
+        "search_seconds": 0.122
       },
       {
         "id": "k8s-194",
@@ -7085,7 +7085,7 @@
           "content/en/docs/concepts/architecture/cgroups.md § About cgroup v2 > Using cgroup v2"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.091
+        "search_seconds": 0.125
       },
       {
         "id": "k8s-195",
@@ -7097,7 +7097,7 @@
           "content/en/docs/concepts/policy/resource-quotas.md § Resource Quotas > Types of resource quota > Quota on object count > Specialized syntax"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.09
+        "search_seconds": 0.114
       },
       {
         "id": "k8s-196",
@@ -7109,7 +7109,7 @@
           "content/en/docs/concepts/workloads/podgroup-api/lifecycle.md § PodGroup Lifecycle > Controller-managed and user-managed PodGroups"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.091
+        "search_seconds": 0.114
       },
       {
         "id": "k8s-197",
@@ -7121,7 +7121,7 @@
           "content/en/docs/concepts/workloads/autoscaling/vertical-pod-autoscale.md § Vertical Pod Autoscaling > Update modes > Initial"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.091
+        "search_seconds": 0.11
       },
       {
         "id": "k8s-198",
@@ -7133,7 +7133,7 @@
           "content/en/docs/concepts/configuration/manage-resources-containers.md § Resource Management for Pods and Containers > Requests and limits"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.094
+        "search_seconds": 0.106
       },
       {
         "id": "k8s-199",
@@ -7145,7 +7145,7 @@
           "content/en/docs/concepts/workloads/autoscaling.md § Autoscaling Workloads > Scaling workloads automatically > Autoscaling based on cluster size"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.103
+        "search_seconds": 0.105
       },
       {
         "id": "k8s-200",
@@ -7157,7 +7157,7 @@
           "content/en/docs/concepts/services-networking/ingress.md § Ingress"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.098
+        "search_seconds": 0.097
       },
       {
         "id": "k8s-201",
@@ -7169,7 +7169,7 @@
           "content/en/docs/concepts/security/secrets-good-practices.md § Good practices for Kubernetes Secrets > Cluster administrators > Configure least-privilege access to Secrets"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.11
+        "search_seconds": 0.096
       },
       {
         "id": "k8s-202",
@@ -7181,7 +7181,7 @@
           "content/en/docs/concepts/policy/resource-quotas.md § Resource Quotas > Quota scopes > VolumeAttributesClass scope"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.125
+        "search_seconds": 0.092
       },
       {
         "id": "k8s-203",
@@ -7193,7 +7193,7 @@
           "content/en/docs/concepts/resource-management/dynamic-resource-allocation/dra-observability.md § Observability of Dynamic Resources > DRA device metadata in containers > Device metadata protocol"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.129
+        "search_seconds": 0.106
       },
       {
         "id": "k8s-204",
@@ -7205,7 +7205,7 @@
           "content/en/docs/concepts/workloads/controllers/replicationcontroller.md § ReplicationController > Alternatives to ReplicationController > Deployment (Recommended)"
         ],
         "rerank_seconds": 0.0,
-        "search_seconds": 0.132
+        "search_seconds": 0.091
       }
     ]
   },

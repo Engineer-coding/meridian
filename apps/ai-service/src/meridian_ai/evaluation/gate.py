@@ -27,7 +27,7 @@ RETRIEVAL_CODE = (
     "evaluation/metrics.py",
     "evaluation/runner.py",
 )
-ANSWER_CODE = (*RETRIEVAL_CODE, "answering.py", "llm.py")
+ANSWER_CODE = (*RETRIEVAL_CODE, "answering.py", "llm.py", "llm_anthropic.py")
 REDTEAM_CODE = (*ANSWER_CODE, "agent.py", "agent_sql.py", "evaluation/redteam.py")
 
 
