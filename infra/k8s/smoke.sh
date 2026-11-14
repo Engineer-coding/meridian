@@ -9,6 +9,9 @@ USER_PASSWORD=${3:?parola}
 NS=${K8S_NAMESPACE:-meridian}
 ISSUER="$APP/auth/realms/meridian"
 CURL_IMAGE=curlimages/curl:8.17.0
+# Let's Encrypt staging sertifikası (DEMO_TLS=staging) güvenilir değildir: SMOKE_INSECURE=1 ile curl -k.
+INSECURE=()
+[ "${SMOKE_INSECURE:-0}" = 1 ] && INSECURE=(-k)
 
 failures=0
 step() { echo "== $*"; }
@@ -33,15 +36,15 @@ in_cluster() {
 }
 
 step "1. web sayfası"
-code=$(curl -s -o /dev/null -w '%{http_code}' "$APP/signed-out")
+code=$(curl "${INSECURE[@]}" -s -o /dev/null -w '%{http_code}' "$APP/signed-out")
 [ "$code" = 200 ] && ok "/signed-out 200" || fail "/signed-out $code"
 
 step "2. issuer tarayıcıdan"
-issuer=$(curl -s "$ISSUER/.well-known/openid-configuration" | sed -n 's/.*"issuer":"\([^"]*\)".*/\1/p')
+issuer=$(curl "${INSECURE[@]}" -s "$ISSUER/.well-known/openid-configuration" | sed -n 's/.*"issuer":"\([^"]*\)".*/\1/p')
 [ "$issuer" = "$ISSUER" ] && ok "issuer $issuer" || fail "issuer '$issuer' (beklenen $ISSUER)"
 
 step "3. issuer küme içinden (CoreDNS yönlendirmesi)"
-inner=$(in_cluster issuer smoke curl -s -m 10 "$ISSUER/.well-known/openid-configuration" | sed -n 's/.*"issuer":"\([^"]*\)".*/\1/p')
+inner=$(in_cluster issuer smoke curl "${INSECURE[@]}" -s -m 10 "$ISSUER/.well-known/openid-configuration" | sed -n 's/.*"issuer":"\([^"]*\)".*/\1/p')
 [ "$inner" = "$ISSUER" ] && ok "pod issuer'a ulaşıyor" || fail "pod issuer'a ulaşamıyor ('$inner')"
 
 step "4. API hazır"

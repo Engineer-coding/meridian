@@ -11,7 +11,7 @@ SOURCE_COUNT=0
 TENANT=""
 
 token_for() {
-  curl -s -m 10 "$ISSUER/protocol/openid-connect/token" \
+  curl "${INSECURE[@]}" -s -m 10 "$ISSUER/protocol/openid-connect/token" \
     -d grant_type=password -d client_id=meridian-dev-cli -d scope=openid \
     --data-urlencode "username=$1" --data-urlencode "password=$2" \
     | sed -n 's/.*"access_token":"\([^"]*\)".*/\1/p'

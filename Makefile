@@ -4,7 +4,7 @@ COMPOSE = docker compose -f infra/compose/compose.yaml --env-file .env
 
 PYTHON ?= python
 
-.PHONY: up down ps logs psql reset smoke contract-lint eval-validate api-test ai-test ai-run web-test web-e2e e2e-full web-run eval eval-smoke eval-answers eval-redteam obs-check load images helm-test k8s-up k8s-dev k8s-down k8s-smoke tf-check
+.PHONY: up down ps logs psql reset smoke contract-lint eval-validate api-test ai-test ai-run web-test web-e2e e2e-full web-run eval eval-smoke eval-answers eval-redteam obs-check load images helm-test k8s-up k8s-dev k8s-down k8s-smoke tf-check demo-up demo-down demo-smoke
 
 up:
 	$(COMPOSE) up -d --wait
@@ -105,6 +105,7 @@ helm-test:
 	helm unittest $(CHART)
 	bash infra/k8s/test-preflight.sh
 	bash infra/k8s/test-up-demo.sh
+	bash infra/demo/test-demo.sh
 	helm template meridian $(CHART) -f $(CHART)/values-local.yaml | $(KUBECONFORM)
 	helm template meridian $(CHART) -f $(CHART)/values-local.yaml -f $(CHART)/values-ci.yaml | $(KUBECONFORM)
 	helm template meridian $(CHART) -f $(CHART)/values-demo.yaml --set appUrl=https://meridian.1.2.3.4.sslip.io --set image.tag=sha-0000000 | $(KUBECONFORM)
@@ -137,3 +138,13 @@ tf-check:
 	if grep -rnE 'ANTHROPIC|SESSION_SECRET|DB_[A-Z_]*PASSWORD|KEYCLOAK_ADMIN' infra/terraform --include='*.tf' --include='*.tftpl'; then \
 		echo "Terraform kodunda uygulama sırrı"; exit 1; \
 	fi
+
+# Canlı demo (ADR-0009, docs/runbooks/demo.md): Hetzner'de tek sunucu; HCLOUD_TOKEN gerekli.
+demo-up:
+	bash infra/demo/up.sh
+
+demo-down:
+	bash infra/demo/down.sh
+
+demo-smoke:
+	bash infra/demo/smoke.sh
