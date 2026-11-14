@@ -14,8 +14,13 @@ Biçim: [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/).
 - Üretim imajları: `apps/api/Dockerfile`, `apps/web/Dockerfile` (Next.js standalone), AI servisi için CI'a özel `test` hedefi; `images` iş akışı main ve sürüm etiketlerinde GHCR'a gönderir (`ghcr.io/engineer-coding/meridian-{api,ai,web}`). `make images`.
 - CI: `helm` (lint, helm-unittest, kubeconform) ve `k8s` (kind + Argo CD + duman testi; sahte model ve GitHub) işleri; elle tetikleme (`workflow_dispatch`).
 - Tehdit T19 uygulandı: AI servisinin iç ucu ağ politikasıyla ayrıldı.
+- Canlı demo (ADR-0009, [runbook](docs/runbooks/demo.md)): `make demo-up` Hetzner'de kalıcı bir IPv4 (bir kez) ve tek bir k3s sunucusu (CPX32, Terraform) açar, Meridian'ı Argo CD ile `main`'in son commit'inden ve GHCR imajlarından `https://meridian.<ip>.sslip.io` adresine kurar (cert-manager + Let's Encrypt, `DEMO_TLS=staging` provası). `make demo-down` yalnızca sunucuyu siler; TLS sertifikası yedeklenip sonraki kurulumda geri yüklenir. Sırlar kurulumda rastgele üretilir ve git dışında kalır; Terraform state'ine uygulama sırrı girmez.
+- Demo değerleri (`values-demo.yaml`): yalnızca Claude Haiku, token fiyatlarıyla maliyet muhasebesi, `demo` izleyici ve parolası Secret'tan gelen `demo-admin`, Keycloak yönetim konsolu ve master realm dışarıya kapalı, kaba kuvvet koruması, iz örnekleme 0,2.
+- `demo-reaper` iş akışı: saatlik, süresi geçen (`expires-at`) demo sunucularını siler; kalıcı IP'ye dokunmaz, etiketi bozuk sunucuyu raporlar.
+- CI: `terraform` işi (`make tf-check`); `make helm-test` demo betiklerinin ve silme işinin testlerini de çalıştırır.
 
 ### Changed
+- İzleme pod'larına NetworkPolicy; kaynak listesi boş bir politika artık her şeyi reddeder (önce her yerden izin veriyordu).
 - İzleme, Postgres başlangıç ve geliştirme realm'i dosyaları `infra/compose/` altından `infra/helm/meridian/files/` altına taşındı; compose oradan bağlar. Araç sürümleri `infra/versions.env` içinde.
 - Kanıt doğrulaması (`verify_quote`) modelin çıktısındaki tırnaklı parçaları ve satırları da dener: barındırılan modeller doğru alıntıyı önsözle sarıyor ya da arkasına not ekliyordu. Haiku'da gereksiz "bilmiyorum" %42 → %26; `llama3.2:3b`'de %30 → %27, doğru %61 → %63. Uydurma alıntı yine reddedilir.
 - Raporların parmak izi `llm_anthropic.py`'yi de kapsar; `make eval-answers` ve `make eval-redteam` `LLM=` değişkeni alır.
