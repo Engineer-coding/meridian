@@ -1,6 +1,11 @@
 # infra/demo betiklerinin ortak yardımcıları (kaynak gösterilir). ROOT, SSH_KEY, SSH_PUBLIC_KEY, KNOWN_HOSTS
 # ve TERRAFORM_VERSION çağıranda tanımlıdır.
 
+# Windows (Git Bash, make altında MSYS_NO_PATHCONV=1): yerel araçlara (kubectl.exe) /c/... değil C:/... verilir.
+native_path() {
+  if command -v cygpath >/dev/null; then cygpath -m "$1"; else echo "$1"; fi
+}
+
 # Terraform: TF_CMD verilmişse o komut (testler, kurulu terraform), yoksa sabit sürümlü Docker imajı.
 tf() {
   local dir=$1

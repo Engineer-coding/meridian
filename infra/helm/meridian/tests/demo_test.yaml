@@ -52,6 +52,19 @@ tests:
     asserts:
       - matchRegex: {path: 'data["meridian-realm.json"]', pattern: '"value":\s*"\$\{DEMO_ADMIN_PASSWORD\}"'}
       - matchRegex: {path: 'data["meridian-realm.json"]', pattern: '"bruteForceProtected":\s*true'}
+  - it: never locks the public demo user out for long
+    template: templates/keycloak.yaml
+    documentSelector: {path: kind, value: ConfigMap}
+    asserts:
+      - matchRegex: {path: 'data["meridian-realm.json"]', pattern: '"permanentLockout":\s*false'}
+      - matchRegex: {path: 'data["meridian-realm.json"]', pattern: '"maxFailureWaitSeconds":\s*60'}
+  - it: gives the demo tenant the team quota so one visitor cannot use up the day
+    template: templates/seed.yaml
+    documentSelector: {path: kind, value: Job}
+    asserts:
+      - matchRegex:
+          path: spec.template.spec.containers[0].env[?(@.name == "SEED_PLAN")].value
+          pattern: '"plan":"team"'
   - it: gives Keycloak the demo-admin password from the secret
     template: templates/keycloak.yaml
     documentSelector: {path: kind, value: Deployment}

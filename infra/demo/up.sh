@@ -14,7 +14,7 @@ DEMO_KUBECONFIG=${DEMO_KUBECONFIG:-$ROOT/infra/terraform/demo/kubeconfig}
 DEMO_ENV_FILE=${DEMO_ENV_FILE:-$ROOT/.env}
 SSH_KEY=${SSH_KEY:-$HOME/.ssh/id_ed25519}
 SSH_PUBLIC_KEY=${SSH_PUBLIC_KEY:-$SSH_KEY.pub}
-KNOWN_HOSTS=$ROOT/infra/terraform/demo/known_hosts
+KNOWN_HOSTS=${DEMO_KNOWN_HOSTS:-$ROOT/infra/terraform/demo/known_hosts}
 
 die() { echo "HATA: $*" >&2; exit 1; }
 log() { echo "==> $*"; }
@@ -29,6 +29,25 @@ fi
 [ -n "${ANTHROPIC_API_KEY:-}" ] || die "ANTHROPIC_API_KEY gerekli: demoda model yalnızca Claude Haiku (ortam ya da .env)"
 [ -f "$SSH_PUBLIC_KEY" ] || die "SSH açık anahtarı yok: $SSH_PUBLIC_KEY (SSH_KEY=... ile değiştirin)"
 case "${DEMO_TLS:-prod}" in prod | staging) ;; *) die "DEMO_TLS prod ya da staging olmalı" ;; esac
+
+# Kurulacak commit ve imajları: GHCR'da yoksa (images iş akışı bitmemiş, başarısız ya da paketler özel)
+# sunucu açılmadan durulur; yoksa ücretli sunucu ImagePullBackOff'ta bekler.
+revision=${DEMO_REVISION:-$(git -C "$ROOT" ls-remote origin refs/heads/main | cut -f1)}
+[[ "$revision" =~ ^[0-9a-f]{40}$ ]] || die "main'in commit'i bulunamadı (DEMO_REVISION=<40 karakter> verin)"
+for image in api ai web; do
+  ref="ghcr.io/engineer-coding/meridian-$image:sha-${revision:0:7}"
+  docker manifest inspect "$ref" >/dev/null 2>&1     || die "$ref yok ya da herkese açık değil (images iş akışını ve GHCR paket görünürlüğünü kontrol edin)"
+done
+
+# Unutulan sunucuyu silen iş açık mı? GitHub, etkinliği olmayan herkese açık repoda zamanlanmış işleri
+# 60 gün sonra kapatır; HCLOUD_TOKEN sırrı yoksa iş her saat "başarılı" görünür ama hiçbir şey silmez.
+if command -v gh >/dev/null; then
+  state=$(gh workflow view demo-reaper.yml --json state --jq .state 2>/dev/null || echo bilinmiyor)
+  [ "$state" = active ] || echo "UYARI: demo-reaper iş akışı açık değil ($state): sunucuyu kendiniz kapatın (make demo-down) ya da Actions'tan etkinleştirin" >&2
+  gh secret list 2>/dev/null | grep -q '^HCLOUD_TOKEN'     || echo "UYARI: demo-reaper için HCLOUD_TOKEN repo sırrı yok: süresi geçen sunucu silinmez" >&2
+else
+  echo "UYARI: demo-reaper durumu denetlenemedi (gh yok): sunucuyu kapatmayı unutmayın" >&2
+fi
 
 # --- sırlar: yalnızca ilk kurulumda üretilir ------------------------------------------------------
 if [ ! -f "$DEMO_SECRETS" ]; then
@@ -66,6 +85,8 @@ tf demo init -input=false >/dev/null
 tf demo apply -auto-approve -input=false -var "expires_at=$expires_at" -var "operator_cidr=$operator_cidr" \
   -var "k3s_version=$K3S_VERSION" -var "ssh_public_key_path=$(tf_key_path)"
 host=$(tf demo output -raw host)
+# Sunucu yeniden kurulmuş olabilir (aynı IP, yeni host anahtarı; ör. silme işinden sonra): eski anahtar unutulur.
+rm -f "$KNOWN_HOSTS"
 
 # --- k3s hazır olunca kubeconfig ------------------------------------------------------------------------
 log "k3s bekleniyor"
@@ -79,9 +100,7 @@ umask 077
 demo_ssh "$ip" 'cat /etc/rancher/k3s/k3s.yaml' | sed "s|https://127.0.0.1:6443|https://$ip:6443|" > "$DEMO_KUBECONFIG"
 
 # --- Meridian ----------------------------------------------------------------------------------------
-revision=${DEMO_REVISION:-$(git -C "$ROOT" ls-remote origin refs/heads/main | cut -f1)}
-[[ "$revision" =~ ^[0-9a-f]{40}$ ]] || die "main'in commit'i bulunamadı (DEMO_REVISION=<40 karakter> verin)"
-KUBECONFIG=$DEMO_KUBECONFIG APP_HOST=$host DEMO_SECRETS=$DEMO_SECRETS DEMO_TLS=${DEMO_TLS:-prod} \
+KUBECONFIG=$(native_path "$DEMO_KUBECONFIG") APP_HOST=$host DEMO_SECRETS=$DEMO_SECRETS DEMO_TLS=${DEMO_TLS:-prod} \
   bash "${DEMO_UP_K8S:-$ROOT/infra/k8s/up.sh}" demo argo "$revision"
 
 until_local=$(date -d "@$expires_at" '+%Y-%m-%d %H:%M' 2>/dev/null || echo "$expires_at")

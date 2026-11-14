@@ -11,7 +11,7 @@ DEMO_KUBECONFIG=${DEMO_KUBECONFIG:-$ROOT/infra/terraform/demo/kubeconfig}
 DEMO_TLS_BACKUP=${DEMO_TLS_BACKUP:-$ROOT/infra/gitops/demo/tls-backup.yaml}
 SSH_KEY=${SSH_KEY:-$HOME/.ssh/id_ed25519}
 SSH_PUBLIC_KEY=${SSH_PUBLIC_KEY:-$SSH_KEY.pub}
-KNOWN_HOSTS=$ROOT/infra/terraform/demo/known_hosts
+KNOWN_HOSTS=${DEMO_KNOWN_HOSTS:-$ROOT/infra/terraform/demo/known_hosts}
 
 die() { echo "HATA: $*" >&2; exit 1; }
 log() { echo "==> $*"; }
@@ -23,7 +23,7 @@ log() { echo "==> $*"; }
 log "TLS sertifikası yedekleniyor"
 tmp=$(mktemp)
 trap 'rm -f "$tmp"' EXIT
-if KUBECONFIG=$DEMO_KUBECONFIG kubectl -n meridian get secret meridian-tls -o yaml > "$tmp" 2>/dev/null && [ -s "$tmp" ]; then
+if KUBECONFIG=$(native_path "$DEMO_KUBECONFIG") kubectl -n meridian get secret meridian-tls -o yaml > "$tmp" 2>/dev/null && [ -s "$tmp" ]; then
   # Kümeye özgü kimlik alanları atılır: yedek yeni kümede olduğu gibi uygulanır.
   umask 077
   grep -vE '^\s+(uid|resourceVersion|creationTimestamp|managedFields):' "$tmp" > "$DEMO_TLS_BACKUP"
