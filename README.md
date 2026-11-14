@@ -118,6 +118,24 @@ Grafana dışarıya açık değildir: `kubectl -n meridian port-forward svc/graf
 make k8s-down
 ```
 
+## Canlı demo
+
+Demo yalnızca gösterim sırasında açıktır: Hetzner'de tek bir k3s sunucusu, adresi
+`https://meridian.<ip>.sslip.io`, sertifikası Let's Encrypt'ten, modeli Claude Haiku. Giriş: `demo` / `meridian-demo`
+(izleyici; `meridian-demo` kiracısında KVKK ve Kubernetes belgelerine soru sorar). Kısa tur: bir soru sorun
+("Veri sorumlusu başvuruyu kaç gün içinde sonuçlandırır?"), atıf düğmesinin üzerine gelin, ajan sayfasına bakın.
+
+```bash
+HCLOUD_TOKEN=... make demo-up
+```
+
+```bash
+HCLOUD_TOKEN=... make demo-down
+```
+
+Kurulum, maliyet ve sorun giderme: [docs/runbooks/demo.md](docs/runbooks/demo.md). Kapatılmayan sunucuyu saatlik
+iş siler; kalıcı IP kaldığı için link değişmez. 3 saatlik bir demo €0,20'nin altında tutar.
+
 ## Testler ve kontroller
 
 | Komut | İş |
@@ -134,13 +152,14 @@ make k8s-down
 | `make load` | k6 yük testi ([ADR-0019](docs/adr/0019-load-test.md)) |
 | `make helm-test` | Helm chart: lint, birim testleri (helm-unittest), şema doğrulaması (kubeconform) |
 | `make k8s-smoke` | Kümedeki kurulumun duman testi |
+| `make tf-check` | Demo Terraform'u: biçim, doğrulama, sır taraması (Docker ile) |
 
 CI ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) bunların modelsiz olanlarını, kind kümesine Argo CD ile kurulumu ve gitleaks taramasını çalıştırır.
 
 ## Durum
 
-Henüz yok: canlı demo ortamı (Terraform, TLS; [ADR-0009](docs/adr/0009-gitops-deployment.md) Faz 6.3), web ve
-dosya yükleme kaynak çekicileri. Küçük yerel modelle cevap kalitesi canlı kullanım için yeterli değildir; ölçümler
+Henüz yok: web ve dosya yükleme kaynak çekicileri. Canlı demo kodu hazır; ilk gerçek kurulum sahibinin Hetzner
+hesabıyla yapılacak ([runbook](docs/runbooks/demo.md)). Küçük yerel modelle cevap kalitesi canlı kullanım için yeterli değildir; ölçümler
 [CHANGELOG.md](CHANGELOG.md) ve [`packages/eval/reports`](packages/eval/reports) içindedir.
 
 Üçüncü taraf içerik: [NOTICE.md](NOTICE.md).
