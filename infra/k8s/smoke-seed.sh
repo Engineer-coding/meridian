@@ -19,8 +19,12 @@ token_for() {
 
 api() { # api <method> <path> [body] — web etiketli geçici pod üzerinden (ağ politikası API'ye izin verir)
   local method=$1 path=$2 body=${3:-}
+  # Gövde dizide: boşluklu soru metni tek argüman kalmalı. Oluşturma uçları Idempotency-Key ister.
+  local data=()
+  [ -n "$body" ] && data=(--data "$body")
   in_cluster api-call web curl -s -m 60 -X "$method" -H "Authorization: Bearer $TOKEN" \
-    -H 'Content-Type: application/json' ${body:+--data "$body"} "$API$path"
+    -H 'Content-Type: application/json' -H "Idempotency-Key: smoke-$RANDOM$RANDOM$RANDOM" \
+    "${data[@]}" "$API$path"
 }
 
 seed_tenant_id() {
