@@ -15,12 +15,21 @@ step() { echo "== $*"; }
 ok() { echo "   tamam: $*"; }
 fail() { echo "   BAŞARISIZ: $*"; failures=$((failures + 1)); }
 
-# Geçici bir pod içinde komut; etiket ağ politikasını sınamak için verilir.
+# Geçici bir pod içinde komut; etiket ağ politikasını sınamak için verilir. Çıktı loglardan okunur:
+# `kubectl run -i --rm` kısa süren kapsayıcının çıktısını bağlanmadan kaçırabiliyor. Çıkış kodu pod'unkidir.
 in_cluster() {
-  local name=$1 component=$2
+  local name="$1-$RANDOM$RANDOM" component=$2 phase=""
   shift 2
-  kubectl -n "$NS" run "$name-$RANDOM" --rm -i --restart=Never --quiet --image="$CURL_IMAGE" \
-    --labels="app.kubernetes.io/component=$component" --command -- "$@" 2>/dev/null
+  kubectl -n "$NS" run "$name" --restart=Never --quiet --image="$CURL_IMAGE" \
+    --labels="app.kubernetes.io/component=$component" --command -- "$@" >/dev/null 2>&1 || return 1
+  for _ in $(seq 1 120); do
+    phase=$(kubectl -n "$NS" get pod "$name" -o jsonpath='{.status.phase}' 2>/dev/null)
+    [ "$phase" = Succeeded ] || [ "$phase" = Failed ] && break
+    sleep 1
+  done
+  kubectl -n "$NS" logs "$name" 2>/dev/null
+  kubectl -n "$NS" delete pod "$name" --wait=false >/dev/null 2>&1
+  [ "$phase" = Succeeded ]
 }
 
 step "1. web sayfası"
