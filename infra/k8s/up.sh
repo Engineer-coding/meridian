@@ -31,13 +31,8 @@ if ! cluster_exists && (exec 3<>/dev/tcp/127.0.0.1/80) 2>/dev/null; then
   die "127.0.0.1:80 kullanımda; kind bu portu Traefik'e bağlar. Portu kullanan süreci kapatın."
 fi
 if [ "$MODE" = argo ]; then
-  if [[ "$REVISION" =~ ^[0-9a-f]{40}$ ]]; then
-    git -C "$ROOT" fetch --quiet --depth=1 origin "$REVISION" 2>/dev/null \
-      || die "revision '$REVISION' uzak depoda yok"
-  else
-    [ -n "$(git -C "$ROOT" ls-remote origin "$REVISION")" ] \
-      || die "revision '$REVISION' uzak depoda yok; Argo CD GitHub'dan okur: önce push edin ya da make k8s-dev kullanın"
-  fi
+  # Dal adı yerine tam commit: Argo tam olarak imajların derlendiği ağacı kurar (preflight.sh).
+  REVISION=$(cd "$ROOT" && bash infra/k8s/preflight.sh argo "$REVISION") || exit 1
 fi
 
 # --- küme ve imajlar ----------------------------------------------------------------------------
@@ -53,6 +48,11 @@ ai_image=meridian-ai:local
 [ "$ENV" = ci ] && ai_image=meridian-ai-test:local
 log "imajlar yükleniyor"
 kind load docker-image --name "$CLUSTER" meridian-api:local "$ai_image" meridian-web:local
+# Etiket hep ":local": manifest değişmediği için pod'lar yeni imajı kendiliğinden almaz. Yeniden açılan
+# pod düğümdeki yeni imajla başlar (IfNotPresent); manifest aynı kaldığı için Argo bir fark görmez.
+if kubectl get namespace "$NS" >/dev/null 2>&1; then
+  kubectl -n "$NS" delete pod -l 'app.kubernetes.io/component in (api,ai,web)' --wait=false >/dev/null 2>&1 || true
+fi
 
 env_file="$ROOT/.env"
 [ "$ENV" = ci ] && env_file="$ROOT/.env.example"
@@ -90,15 +90,20 @@ bash "$ROOT/infra/k8s/coredns.sh" "$HOST"
 if [ "$MODE" = argo ]; then
   log "Meridian (Argo CD, revision $REVISION)"
   render_app "$ROOT/infra/gitops/$ENV/meridian.yaml" | kubectl apply -f - >/dev/null
-  kubectl -n argocd wait application/meridian --for=jsonpath='{.status.sync.status}'=Synced --timeout=900s
+  # Bu commit'in senkron işlemi beklenir; önceki kurulumun durumu sayılmaz. PostSync seed kancası işlemin
+  # parçasıdır: işlem seed bitince "Succeeded" olur, seed başarısızsa hemen "Failed".
+  log "Argo CD senkronu ve seed bekleniyor (ilk indeksleme CPU'da dakikalar sürer)"
+  phase=""
+  for _ in $(seq 1 360); do
+    synced=$(kubectl -n argocd get application meridian -o jsonpath='{.status.operationState.syncResult.revision}' 2>/dev/null)
+    phase=$(kubectl -n argocd get application meridian -o jsonpath='{.status.operationState.phase}' 2>/dev/null)
+    if [ "$synced" = "$REVISION" ]; then
+      case "$phase" in Succeeded | Failed | Error) break ;; esac
+    fi
+    sleep 5
+  done
+  [ "$phase" = Succeeded ] || die "Argo CD senkronu: '${phase:-zaman aşımı}' (seed: kubectl -n $NS logs job/meridian-seed; ayrıntı: kubectl -n argocd get application meridian -o yaml)"
   kubectl -n argocd wait application/meridian --for=jsonpath='{.status.health.status}'=Healthy --timeout=900s
-  # Seed bir PostSync kancası: uygulama sağlıklı görünürken indeksleme sürüyor olabilir.
-  if kubectl -n "$NS" get cronjob meridian-seed >/dev/null 2>&1; then
-    log "seed işi bekleniyor (indeksleme)"
-    for _ in $(seq 1 60); do kubectl -n "$NS" get job meridian-seed >/dev/null 2>&1 && break; sleep 5; done
-    kubectl -n "$NS" wait --for=condition=complete job/meridian-seed --timeout=1800s \
-      || die "seed işi bitmedi: kubectl -n $NS logs job/meridian-seed"
-  fi
 else
   log "Meridian (helm, çalışma ağacı)"
   helm upgrade --install meridian "$ROOT/infra/helm/meridian" -n "$NS" "${values[@]}" --wait --timeout 15m
