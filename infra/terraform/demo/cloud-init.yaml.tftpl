@@ -1,0 +1,5 @@
+#cloud-config
+# k3s tek düğüm (ADR-0009): Traefik'i Argo CD kurar (kind ile aynı), düğüm ingress etiketini taşır.
+package_update: true
+runcmd:
+  - curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION='${k3s_version}' sh -s - --disable traefik --node-label ingress-ready=true --tls-san ${ip} --write-kubeconfig-mode 600

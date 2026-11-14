@@ -176,3 +176,11 @@ jobs:
           kubectl -n meridian get events --sort-by=.lastTimestamp | tail -40
           for d in meridian-api meridian-ai meridian-web keycloak; do kubectl -n meridian logs deploy/$d --tail=40 || true; done
           kubectl -n meridian logs job/meridian-seed --tail=40 || true
+
+  # Canlı demonun Terraform kodu (ADR-0009): biçim, doğrulama, sır taraması. Hesap ya da token gerekmez.
+  terraform:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - run: make tf-check
