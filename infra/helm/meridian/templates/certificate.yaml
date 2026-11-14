@@ -1,0 +1,16 @@
+{{- with .Values.ingress.tls }}
+{{- if and .secretName .issuer }}
+# Let's Encrypt sertifikası (cert-manager, HTTP-01). ClusterIssuer'lar küme kurulumunda gelir (infra/gitops/bootstrap).
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: meridian
+  labels: {{- include "meridian.labels" (dict "root" $ "component" "ingress") | nindent 4 }}
+spec:
+  secretName: {{ .secretName }}
+  dnsNames: [{{ include "meridian.host" $ }}]
+  issuerRef:
+    kind: ClusterIssuer
+    name: {{ .issuer }}
+{{- end }}
+{{- end }}

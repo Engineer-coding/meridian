@@ -13,6 +13,17 @@ Pod'lar Keycloak'a ingress üzerinden gider (CoreDNS yönlendirmesi), bu yüzden
   (dict "name" "rabbitmq" "target" "rabbitmq" "from" (list "api" "ai" "prometheus") "traefik" false)
   (dict "name" "redis" "target" "redis" "from" (list "api") "traefik" false)
 -}}
+{{- if .Values.observability.enabled -}}
+{{- /* İzleme: loglar ve izler tüm kiracıları içerir; yalnızca yazanlar ve okuyanlar erişir. Grafana: port-forward. */ -}}
+{{- $stores := list "otel-collector" "grafana" "prometheus" -}}
+{{- $rules = concat $rules (list
+  (dict "name" "otel-collector" "target" "otel-collector" "from" (list "api" "ai" "web" "prometheus") "traefik" false)
+  (dict "name" "tempo" "target" "tempo" "from" $stores "traefik" false)
+  (dict "name" "loki" "target" "loki" "from" $stores "traefik" false)
+  (dict "name" "prometheus" "target" "prometheus" "from" (list "grafana") "traefik" false)
+  (dict "name" "grafana" "target" "grafana" "from" (list) "traefik" false)
+) -}}
+{{- end -}}
 {{- range $rules }}
 ---
 apiVersion: networking.k8s.io/v1
@@ -24,6 +35,7 @@ spec:
   podSelector:
     matchLabels: {app.kubernetes.io/component: {{ .target }}}
   policyTypes: [Ingress]
+  {{- if or .from .traefik }}
   ingress:
     - from:
         {{- range .from }}
@@ -32,5 +44,9 @@ spec:
         {{- if .traefik }}
         - {{- toYaml $traefik | nindent 10 }}
         {{- end }}
+  {{- else }}
+  # Boş "from" her yerden izin demektir; kaynak yoksa hiçbir pod erişemez.
+  ingress: []
+  {{- end }}
 {{- end }}
 {{- end }}

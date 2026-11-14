@@ -106,6 +106,7 @@ helm-test:
 	bash infra/k8s/test-preflight.sh
 	helm template meridian $(CHART) -f $(CHART)/values-local.yaml | $(KUBECONFORM)
 	helm template meridian $(CHART) -f $(CHART)/values-local.yaml -f $(CHART)/values-ci.yaml | $(KUBECONFORM)
+	helm template meridian $(CHART) -f $(CHART)/values-demo.yaml --set appUrl=https://meridian.1.2.3.4.sslip.io --set image.tag=sha-0000000 | $(KUBECONFORM)
 
 # Yerel Kubernetes (ADR-0009): kind + Argo CD. k8s-up dalı GitHub'dan çeker (push edilmiş olmalı);
 # k8s-dev aynı chart'ı çalışma ağacından kurar. Önce: make images.

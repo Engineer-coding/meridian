@@ -1,0 +1,121 @@
+suite: demo
+values:
+  - ../values-demo.yaml
+set:
+  appUrl: https://meridian.1.2.3.4.sslip.io
+  image.tag: sha-abc1234
+tests:
+  - it: serves TLS on websecure
+    template: templates/ingressroute.yaml
+    documentSelector: {path: metadata.name, value: meridian}
+    asserts:
+      - equal: {path: spec.entryPoints, value: [websecure]}
+      - equal: {path: spec.tls.secretName, value: meridian-tls}
+  - it: redirects plain http to https
+    template: templates/ingressroute.yaml
+    documentSelector: {path: metadata.name, value: meridian-http}
+    asserts:
+      - equal: {path: spec.entryPoints, value: [web]}
+      - equal: {path: 'spec.routes[0].match', value: 'Host(`meridian.1.2.3.4.sslip.io`)'}
+      - equal: {path: "spec.routes[0].middlewares[0].name", value: meridian-https}
+  - it: defines the https redirect middleware
+    template: templates/ingressroute.yaml
+    documentSelector: {path: metadata.name, value: meridian-https}
+    asserts:
+      - equal: {path: spec.redirectScheme, value: {scheme: https, permanent: true}}
+  - it: blocks the Keycloak admin console and master realm before the /auth rule
+    template: templates/ingressroute.yaml
+    documentSelector: {path: metadata.name, value: meridian}
+    asserts:
+      - equal:
+          path: spec.routes[0].match
+          value: Host(`meridian.1.2.3.4.sslip.io`) && (PathPrefix(`/auth/admin`) || PathPrefix(`/auth/realms/master`))
+      - equal: {path: "spec.routes[0].middlewares[0].name", value: meridian-block}
+      - equal:
+          path: spec.routes[1].match
+          value: Host(`meridian.1.2.3.4.sslip.io`) && PathPrefix(`/auth`)
+  - it: lets only localhost through the block middleware
+    template: templates/ingressroute.yaml
+    documentSelector: {path: metadata.name, value: meridian-block}
+    asserts:
+      - equal: {path: spec.ipAllowList.sourceRange, value: [127.0.0.1/32]}
+  - it: asks cert-manager for the host
+    template: templates/certificate.yaml
+    asserts:
+      - isKind: {of: Certificate}
+      - equal: {path: spec.dnsNames, value: [meridian.1.2.3.4.sslip.io]}
+      - equal: {path: spec.issuerRef, value: {kind: ClusterIssuer, name: letsencrypt}}
+      - equal: {path: spec.secretName, value: meridian-tls}
+  - it: takes the demo-admin password from the secret through a Keycloak placeholder
+    template: templates/keycloak.yaml
+    documentSelector: {path: kind, value: ConfigMap}
+    asserts:
+      - matchRegex: {path: 'data["meridian-realm.json"]', pattern: '"value":\s*"\$\{DEMO_ADMIN_PASSWORD\}"'}
+      - matchRegex: {path: 'data["meridian-realm.json"]', pattern: '"bruteForceProtected":\s*true'}
+  - it: gives Keycloak the demo-admin password from the secret
+    template: templates/keycloak.yaml
+    documentSelector: {path: kind, value: Deployment}
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DEMO_ADMIN_PASSWORD
+            valueFrom: {secretKeyRef: {name: meridian-secrets, key: DEMO_ADMIN_PASSWORD}}
+  - it: seeds as demo-admin with the secret password
+    template: templates/seed.yaml
+    documentSelector: {path: kind, value: Job}
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: SEED_ADMIN_PASSWORD
+            valueFrom: {secretKeyRef: {name: meridian-secrets, key: DEMO_ADMIN_PASSWORD}}
+  - it: prices Haiku tokens
+    template: templates/api.yaml
+    documentSelector: {path: kind, value: Deployment}
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content: {name: MERIDIAN_USAGE_PROMPTUSDPERMILLION, value: "0.10"}
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content: {name: MERIDIAN_USAGE_COMPLETIONUSDPERMILLION, value: "0.50"}
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: ghcr.io/engineer-coding/meridian-api:sha-abc1234
+  - it: uses only the hosted model
+    template: templates/ai.yaml
+    documentSelector: {path: kind, value: Deployment}
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content: {name: LLM_CHAIN, value: anthropic/claude-haiku-5-5}
+      - notContains:
+          path: spec.template.spec.containers[0].env
+          content: {name: OLLAMA_URL, value: http://host.docker.internal:11434}
+  - it: lets only the services reach the collector
+    template: templates/networkpolicies.yaml
+    documentSelector: {path: metadata.name, value: otel-collector}
+    asserts:
+      - equal:
+          path: spec.ingress[0].from
+          value:
+            - podSelector: {matchLabels: {app.kubernetes.io/component: api}}
+            - podSelector: {matchLabels: {app.kubernetes.io/component: ai}}
+            - podSelector: {matchLabels: {app.kubernetes.io/component: web}}
+            - podSelector: {matchLabels: {app.kubernetes.io/component: prometheus}}
+  - it: denies all ingress to grafana (kubectl port-forward only)
+    template: templates/networkpolicies.yaml
+    documentSelector: {path: metadata.name, value: grafana}
+    asserts:
+      - equal: {path: spec.ingress, value: []}
+  - it: lets only the collector, grafana and prometheus reach the stores
+    template: templates/networkpolicies.yaml
+    documentSelector: {path: metadata.name, value: loki}
+    asserts:
+      - equal:
+          path: spec.ingress[0].from
+          value:
+            - podSelector: {matchLabels: {app.kubernetes.io/component: otel-collector}}
+            - podSelector: {matchLabels: {app.kubernetes.io/component: grafana}}
+            - podSelector: {matchLabels: {app.kubernetes.io/component: prometheus}}
