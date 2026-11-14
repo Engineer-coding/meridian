@@ -90,19 +90,32 @@ bash "$ROOT/infra/k8s/coredns.sh" "$HOST"
 if [ "$MODE" = argo ]; then
   log "Meridian (Argo CD, revision $REVISION)"
   render_app "$ROOT/infra/gitops/$ENV/meridian.yaml" | kubectl apply -f - >/dev/null
-  # Bu commit'in senkron işlemi beklenir; önceki kurulumun durumu sayılmaz. PostSync seed kancası işlemin
-  # parçasıdır: işlem seed bitince "Succeeded" olur, seed başarısızsa hemen "Failed".
+  # Bu commit beklenir, önceki kurulumun durumu sayılmaz:
+  # - Argo bu commit'i karşılaştırmış ve küme ona eşit (Synced) olmalı;
+  # - bu commit için bir senkron işlemi varsa (chart değişmişse olur) bitmiş olmalı. PostSync seed kancası
+  #   işlemin parçasıdır: seed bitince "Succeeded", başarısızsa hemen "Failed".
+  # Chart değişmeyen bir commit'te Argo yeni işlem başlatmaz; o durumda Synced olmak yeterlidir.
   log "Argo CD senkronu ve seed bekleniyor (ilk indeksleme CPU'da dakikalar sürer)"
-  phase=""
+  app() { kubectl -n argocd get application meridian -o jsonpath="$1" 2>/dev/null; }
+  ready=""
   for _ in $(seq 1 360); do
-    synced=$(kubectl -n argocd get application meridian -o jsonpath='{.status.operationState.syncResult.revision}' 2>/dev/null)
-    phase=$(kubectl -n argocd get application meridian -o jsonpath='{.status.operationState.phase}' 2>/dev/null)
-    if [ "$synced" = "$REVISION" ]; then
-      case "$phase" in Succeeded | Failed | Error) break ;; esac
+    compared=$(app '{.status.sync.revision}')
+    status=$(app '{.status.sync.status}')
+    op_revision=$(app '{.status.operationState.syncResult.revision}')
+    phase=$(app '{.status.operationState.phase}')
+    if [ "$op_revision" = "$REVISION" ]; then
+      case "$phase" in
+        Failed | Error) die "Argo CD senkronu '$phase' (seed: kubectl -n $NS logs job/meridian-seed; ayrıntı: kubectl -n argocd get application meridian -o yaml)" ;;
+        Running | Terminating) sleep 5; continue ;;
+      esac
+    fi
+    if [ "$compared" = "$REVISION" ] && [ "$status" = Synced ]; then
+      ready=1
+      break
     fi
     sleep 5
   done
-  [ "$phase" = Succeeded ] || die "Argo CD senkronu: '${phase:-zaman aşımı}' (seed: kubectl -n $NS logs job/meridian-seed; ayrıntı: kubectl -n argocd get application meridian -o yaml)"
+  [ -n "$ready" ] || die "Argo CD $REVISION commit'ine 30 dakikada eşitlenmedi (kubectl -n argocd get application meridian -o yaml)"
   kubectl -n argocd wait application/meridian --for=jsonpath='{.status.health.status}'=Healthy --timeout=900s
 else
   log "Meridian (helm, çalışma ağacı)"
