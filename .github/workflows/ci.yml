@@ -148,7 +148,7 @@ jobs:
           curl -fsSL "https://github.com/yannh/kubeconform/releases/download/${KUBECONFORM_VERSION}/kubeconform-linux-amd64.tar.gz" | tar xz -C /tmp
           sudo install /tmp/kubeconform /usr/local/bin/kubeconform
           helm plugin install https://github.com/helm-unittest/helm-unittest --version "${HELM_UNITTEST_VERSION}" --verify=false
-      - run: make helm-test
+      - run: make helm-test PYTHON=python3
 
   # Yerel kümenin aynısı: kind + Argo CD; chart bu commit'ten senkronlanır, model ve GitHub sahte (values-ci.yaml).
   k8s:
