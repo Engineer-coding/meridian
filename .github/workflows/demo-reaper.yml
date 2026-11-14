@@ -1,0 +1,30 @@
+name: demo-reaper
+
+# Süresi geçen canlı demo sunucularını siler (ADR-0009, infra/demo/reaper.py): unutulan demo fatura biriktirmesin.
+# Yalnızca app=meridian-demo etiketli sunuculara bakar; kalıcı IP'ye dokunmaz. Repo sırrı HCLOUD_TOKEN yoksa atlar.
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Yalnızca listele, silme
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: demo-reaper
+  cancel-in-progress: false
+
+jobs:
+  reap:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 infra/demo/reaper.py ${{ inputs.dry_run && '--dry-run' || '' }}
+        env:
+          HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
