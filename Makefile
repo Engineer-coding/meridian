@@ -4,7 +4,7 @@ COMPOSE = docker compose -f infra/compose/compose.yaml --env-file .env
 
 PYTHON ?= python
 
-.PHONY: up down ps logs psql reset smoke contract-lint eval-validate api-test ai-test ai-run web-test web-e2e e2e-full web-run eval eval-smoke eval-answers eval-redteam obs-check load images helm-test k8s-up k8s-dev k8s-down k8s-smoke
+.PHONY: up down ps logs psql reset smoke contract-lint eval-validate api-test ai-test ai-run web-test web-e2e e2e-full web-run eval eval-smoke eval-answers eval-redteam obs-check load images helm-test k8s-up k8s-dev k8s-down k8s-smoke tf-check
 
 up:
 	$(COMPOSE) up -d --wait
@@ -123,3 +123,17 @@ k8s-down:
 
 k8s-smoke:
 	bash infra/k8s/smoke.sh http://meridian.localtest.me alice alice
+
+# Terraform (canlı demo, ADR-0009): biçim, doğrulama ve sır taraması. Terraform kurulu olmak zorunda değil.
+TERRAFORM_VERSION := $(shell grep '^TERRAFORM_VERSION=' infra/versions.env | cut -d= -f2)
+TERRAFORM = docker run --rm -v "$(CURDIR)/infra/terraform:/tf" -w /tf/$(1) hashicorp/terraform:$(TERRAFORM_VERSION)
+tf-check:
+	$(call TERRAFORM,.) fmt -check -recursive
+	for dir in persistent demo; do \
+		test -f infra/terraform/$$dir/main.tf || { echo "infra/terraform/$$dir/main.tf yok"; exit 1; }; \
+		$(call TERRAFORM,$$dir) init -backend=false -input=false >/dev/null && \
+		$(call TERRAFORM,$$dir) validate || exit 1; \
+	done
+	if grep -rnE 'ANTHROPIC|SESSION_SECRET|DB_[A-Z_]*PASSWORD|KEYCLOAK_ADMIN' infra/terraform --include='*.tf' --include='*.tftpl'; then \
+		echo "Terraform kodunda uygulama sırrı"; exit 1; \
+	fi
