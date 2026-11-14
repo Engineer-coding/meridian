@@ -20,6 +20,8 @@ expect() { # expect <ok|fail> <açıklama> <revision> [beklenen mesaj parçası]
 }
 
 TMP=$(mktemp -d)
+# Windows (Git Bash, make altında): git.exe /tmp yolunu tanımaz.
+command -v cygpath >/dev/null && TMP=$(cygpath -m "$TMP")
 trap 'rm -rf "$TMP"' EXIT
 git init -q --bare "$TMP/origin.git"
 git init -q -b work "$TMP/work"
