@@ -37,6 +37,9 @@ spec:
             {{- include "meridian.secretEnv" (dict "root" $ "name" .) | nindent 12 }}
             {{- end }}
             {{- include "meridian.otelEnv" . | nindent 12 }}
+            {{- with .Values.api.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
           startupProbe:
             httpGet: {path: /actuator/health/liveness, port: http}
             periodSeconds: 5

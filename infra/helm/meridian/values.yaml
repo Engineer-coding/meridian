@@ -16,6 +16,10 @@ ingress:
   # Traefik'in kurulu olduğu namespace: NetworkPolicy ingress denetleyicisine buradan izin verir.
   controllerNamespace: traefik
   entryPoints: [web]
+  # TLS: secretName doluysa HTTPS ve HTTP→HTTPS yönlendirmesi; issuer doluysa cert-manager Certificate.
+  tls: {secretName: "", issuer: ""}
+  # Keycloak yönetim konsolu ve master realm dışarıya kapalı (herkese açık ortam).
+  blockKeycloakAdmin: false
 
 networkPolicies:
   enabled: true
@@ -23,6 +27,8 @@ networkPolicies:
 api:
   repository: meridian-api
   dbPoolSize: 20
+  # Ortama özel ek ortam değişkenleri, ör. token fiyatları (meridian.usage.*).
+  extraEnv: []
   resources:
     requests: {cpu: 250m, memory: 512Mi}
     limits: {memory: 1Gi}
@@ -67,6 +73,7 @@ keycloak:
   image: quay.io/keycloak/keycloak:26.8.0
   # meridian-dev-cli istemcisinin parola akışı (seed işi ve yük testi kullanır). Herkese açık ortamda kapalı.
   directGrants: false
+  bruteForceProtection: false
   # Realm kullanıcıları. Kimlikler sabit: üyelikler Keycloak yeniden başlayınca da geçerli kalır.
   # password: düz parola (yalnızca yerel); passwordEnv: Keycloak'ın ortamındaki değişken adı (Secret'tan gelir).
   users: []

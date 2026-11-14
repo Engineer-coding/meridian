@@ -1,0 +1,61 @@
+# Canlı demo (Hetzner + k3s, ADR-0009). appUrl ve image.tag Argo CD Application'ından gelir (infra/gitops/demo).
+# Herkese açık bir ortam: geliştirme kullanıcıları yok, yönetim konsolu kapalı, sırlar Secret'tan.
+image:
+  registry: ghcr.io/engineer-coding/
+  pullPolicy: IfNotPresent
+
+ingress:
+  entryPoints: [websecure]
+  tls:
+    secretName: meridian-tls
+    issuer: letsencrypt
+  blockKeycloakAdmin: true
+
+api:
+  # Haiku 5.5 fiyatı (1M token başına, 100K altı istemler): kullanım paneli maliyeti gösterir.
+  extraEnv:
+    - {name: MERIDIAN_USAGE_PROMPTUSDPERMILLION, value: "0.10"}
+    - {name: MERIDIAN_USAGE_COMPLETIONUSDPERMILLION, value: "0.50"}
+
+ai:
+  # Sunucuda Ollama yok: Haiku düşerse cevap "yalnızca kaynaklar" olur (ADR-0008).
+  llmChain: anthropic/claude-haiku-5-5
+  ollamaUrl: ""
+
+keycloak:
+  # Seed işi parola akışıyla girer. demo'nun parolası zaten herkese açık, demo-admin'inki rastgele;
+  # kaba kuvvet koruması açık.
+  directGrants: true
+  bruteForceProtection: true
+  users:
+    - id: dddddddd-0000-4000-8000-0000000000d1
+      username: demo
+      email: demo@meridian.test
+      password: meridian-demo
+    - id: dddddddd-0000-4000-8000-0000000000a1
+      username: demo-admin
+      email: demo-admin@meridian.test
+      passwordEnv: DEMO_ADMIN_PASSWORD
+
+observability:
+  enabled: true
+  sampling: 0.2
+
+seed:
+  enabled: true
+  admin: demo-admin
+  adminPasswordEnv: DEMO_ADMIN_PASSWORD
+  tenant: {slug: meridian-demo, name: Meridian Demo}
+  collection: Belgeler
+  sources:
+    - name: KVKK 6698
+      repository: Engineer-coding/meridian
+      branch: main
+      paths: [packages/eval/corpus/kvkk]
+    - name: Kubernetes Pods
+      repository: kubernetes/website
+      branch: main
+      paths: [content/en/docs/concepts/workloads/pods]
+  viewers:
+    - {userId: dddddddd-0000-4000-8000-0000000000d1, email: demo@meridian.test}
+  timeoutSeconds: 1800

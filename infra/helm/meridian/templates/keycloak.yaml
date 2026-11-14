@@ -24,6 +24,9 @@
 {{- end -}}
 {{- $_ := set $realm "clients" $clients -}}
 {{- $_ := set $realm "users" $users -}}
+{{- if .Values.keycloak.bruteForceProtection -}}
+{{- $_ := set $realm "bruteForceProtected" true -}}
+{{- end -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
