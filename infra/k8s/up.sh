@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
-# Yerel ya da CI kind kümesini kurar (ADR-0009). Tekrar çalıştırmak güvenli.
-#   bash infra/k8s/up.sh <local|ci> <argo|helm> [revision]
+# Yerel ya da CI kind kümesini, ya da demo (k3s) kümesini kurar (ADR-0009). Tekrar çalıştırmak güvenli.
+#   bash infra/k8s/up.sh <local|ci|demo> <argo|helm> [revision]
+#   demo: KUBECONFIG ve APP_HOST zorunlu; imajlar GHCR'dan (sha-<commit>), sırlar DEMO_SECRETS dosyasından,
+#         TLS cert-manager ile (DEMO_TLS=prod|staging). Genelde infra/demo/up.sh çağırır.
 #   argo: Argo CD chart'ı GitHub'daki revision'dan senkronlar (dal push edilmiş olmalı).
 #   helm: aynı chart'ı çalışma ağacından doğrudan kurar (hızlı deneme, Argo yok).
 set -euo pipefail
@@ -19,15 +21,26 @@ HOST=${APP_HOST:-meridian.localtest.me}
 die() { echo "HATA: $*" >&2; exit 1; }
 log() { echo "==> $*"; }
 
-case "$ENV" in local | ci) ;; *) die "ortam local ya da ci olmalı: $ENV" ;; esac
+case "$ENV" in local | ci | demo) ;; *) die "ortam local, ci ya da demo olmalı: $ENV" ;; esac
 case "$MODE" in argo | helm) ;; *) die "kip argo ya da helm olmalı: $MODE" ;; esac
 
 # --- ön kontroller: küme kurulmadan önce durur -----------------------------------------------
-for tool in docker kind kubectl helm openssl; do
+tools=(docker kind kubectl helm openssl)
+if [ "$ENV" = demo ]; then
+  [ "$MODE" = argo ] || die "demo yalnızca argo kipinde kurulur"
+  [ -n "${KUBECONFIG:-}" ] && [ -f "$KUBECONFIG" ] || die "demo için KUBECONFIG gerekli (infra/demo/up.sh yazar)"
+  [ -n "${APP_HOST:-}" ] || die "demo için APP_HOST gerekli, ör. meridian.<ip>.sslip.io"
+  DEMO_SECRETS=${DEMO_SECRETS:-$ROOT/infra/gitops/demo/secrets.env}
+  DEMO_TLS_BACKUP=${DEMO_TLS_BACKUP:-$ROOT/infra/gitops/demo/tls-backup.yaml}
+  case "${DEMO_TLS:-prod}" in prod) TLS_ISSUER=letsencrypt ;; staging) TLS_ISSUER=letsencrypt-staging ;;
+    *) die "DEMO_TLS prod ya da staging olmalı" ;; esac
+  tools=(kubectl openssl)
+fi
+for tool in "${tools[@]}"; do
   command -v "$tool" >/dev/null || die "$tool bulunamadı (README: Kubernetes'te çalıştırma)"
 done
 cluster_exists() { kind get clusters 2>/dev/null | grep -qx "$CLUSTER"; }
-if ! cluster_exists && (exec 3<>/dev/tcp/127.0.0.1/80) 2>/dev/null; then
+if [ "$ENV" != demo ] && ! cluster_exists && (exec 3<>/dev/tcp/127.0.0.1/80) 2>/dev/null; then
   die "127.0.0.1:80 kullanımda; kind bu portu Traefik'e bağlar. Portu kullanan süreci kapatın."
 fi
 if [ "$MODE" = argo ]; then
@@ -35,13 +48,16 @@ if [ "$MODE" = argo ]; then
   REVISION=$(cd "$ROOT" && bash infra/k8s/preflight.sh argo "$REVISION") || exit 1
 fi
 
-# --- küme ve imajlar ----------------------------------------------------------------------------
-if cluster_exists; then
+# --- küme ve imajlar (yalnızca kind; demo kümesini Terraform açar, imajlar GHCR'da) ----------------
+if [ "$ENV" = demo ]; then
+  log "demo kümesi ($(kubectl get nodes -o jsonpath='{.items[0].status.nodeInfo.kubeletVersion}' 2>/dev/null))"
+elif cluster_exists; then
   log "kind kümesi '$CLUSTER' zaten var"
 else
   log "kind kümesi oluşturuluyor ($KIND_NODE_IMAGE)"
   kind create cluster --config "$ROOT/infra/kind/cluster.yaml" --image "$KIND_NODE_IMAGE" --wait 120s
 fi
+if [ "$ENV" != demo ]; then
 kubectl config use-context "kind-$CLUSTER" >/dev/null
 
 ai_image=meridian-ai:local
@@ -53,9 +69,11 @@ kind load docker-image --name "$CLUSTER" meridian-api:local "$ai_image" meridian
 if kubectl get namespace "$NS" >/dev/null 2>&1; then
   kubectl -n "$NS" delete pod -l 'app.kubernetes.io/component in (api,ai,web)' --wait=false >/dev/null 2>&1 || true
 fi
+fi
 
 env_file="$ROOT/.env"
 [ "$ENV" = ci ] && env_file="$ROOT/.env.example"
+[ "$ENV" = demo ] && env_file="$DEMO_SECRETS"
 [ -f "$env_file" ] || die "$env_file yok (cp .env.example .env)"
 bash "$ROOT/infra/k8s/secrets.sh" "$env_file"
 
@@ -63,8 +81,22 @@ values=(-f "$ROOT/infra/helm/meridian/values-local.yaml")
 [ "$ENV" = ci ] && values+=(-f "$ROOT/infra/helm/meridian/values-ci.yaml")
 
 render_app() {
-  sed -e "s|REVISION|$REVISION|g" -e "s|TRAEFIK_CHART_VERSION|$TRAEFIK_CHART_VERSION|g" "$1"
+  sed -e "s|REVISION|$REVISION|g" -e "s|TRAEFIK_CHART_VERSION|$TRAEFIK_CHART_VERSION|g"     -e "s|APP_URL|https://$HOST|g" -e "s|IMAGE_TAG|sha-${REVISION:0:7}|g" -e "s|TLS_ISSUER|${TLS_ISSUER:-}|g"     -e "s|ACME_EMAIL|${ACME_EMAIL:-}|g" "$1"
 }
+
+# --- demo: TLS (cert-manager, Let's Encrypt HTTP-01) ---------------------------------------------
+if [ "$ENV" = demo ]; then
+  if [ -f "$DEMO_TLS_BACKUP" ]; then
+    # Aynı ad için haftada 5 sertifika: önceki kurulumun sertifikası geri yüklenir, cert-manager yenilemez.
+    log "TLS sertifikası yedekten geri yükleniyor"
+    kubectl get namespace "$NS" >/dev/null 2>&1 || kubectl create namespace "$NS" >/dev/null
+    kubectl -n "$NS" apply -f "$DEMO_TLS_BACKUP" >/dev/null
+  fi
+  log "cert-manager $CERT_MANAGER_VERSION"
+  kubectl apply --server-side --force-conflicts     -f "https://github.com/cert-manager/cert-manager/releases/download/$CERT_MANAGER_VERSION/cert-manager.yaml" >/dev/null
+  kubectl -n cert-manager rollout status deployment/cert-manager-webhook --timeout=300s
+  render_app "$ROOT/infra/gitops/bootstrap/cluster-issuers.yaml" | kubectl apply -f - >/dev/null
+fi
 
 # --- ingress denetleyicisi -----------------------------------------------------------------------
 if [ "$MODE" = argo ]; then
@@ -121,4 +153,6 @@ else
   log "Meridian (helm, çalışma ağacı)"
   helm upgrade --install meridian "$ROOT/infra/helm/meridian" -n "$NS" "${values[@]}" --wait --timeout 15m
 fi
-log "hazır: http://$HOST"
+scheme=http
+[ "$ENV" = demo ] && scheme=https
+log "hazır: $scheme://$HOST"

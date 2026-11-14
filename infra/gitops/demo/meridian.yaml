@@ -1,0 +1,28 @@
+# Canlı demo (Hetzner + k3s). REVISION, APP_URL, IMAGE_TAG ve TLS_ISSUER infra/k8s/up.sh tarafından doldurulur:
+# imajlar GHCR'da bu commit'in etiketiyle (sha-<7>), adres kalıcı IP'nin sslip.io adı.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: meridian
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Engineer-coding/meridian.git
+    targetRevision: REVISION
+    path: infra/helm/meridian
+    helm:
+      valueFiles: [values-demo.yaml]
+      parameters:
+        - name: appUrl
+          value: APP_URL
+        - name: image.tag
+          value: IMAGE_TAG
+        - name: ingress.tls.issuer
+          value: TLS_ISSUER
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: meridian
+  syncPolicy:
+    automated: {prune: true, selfHeal: true}
+    syncOptions: [CreateNamespace=true]
