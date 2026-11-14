@@ -103,3 +103,9 @@ bu durumda link değişir.
   ssh -i ~/.ssh/id_ed25519 root@<ip> cloud-init status --long
   ```
 - **Sunucu açık kaldı mı:** Hetzner konsolu ya da *Actions → demo-reaper → Run workflow* (dry-run).
+- **`make demo-up` "UYARI: demo-reaper" yazıyor:** Saatlik silme işi kapalı ya da sırsız; unutulan sunucu silinmez.
+  GitHub, etkinliği olmayan herkese açık repoda zamanlanmış işleri 60 gün sonra kapatır: *Actions → demo-reaper →
+  Enable workflow*. Sır: *Settings → Secrets → Actions → HCLOUD_TOKEN*. İkinci güvence olarak Hetzner konsolunda
+  proje için bir maliyet uyarısı (*Usage → Cost alert*) kurun.
+- **`make demo-up` imaj bulunamadı diyor:** `main`'e son birleştirmeden sonra `images` iş akışı bitmemiş ya da başarısız
+  olmuş, ya da GHCR paketleri özel. Sunucu açılmadan durulur; iş akışı bitince tekrar çalıştırın.

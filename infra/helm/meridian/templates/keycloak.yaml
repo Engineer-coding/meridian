@@ -25,7 +25,12 @@
 {{- $_ := set $realm "clients" $clients -}}
 {{- $_ := set $realm "users" $users -}}
 {{- if .Values.keycloak.bruteForceProtection -}}
+{{- /* Herkese açık demo kullanıcısı kalıcı kilitlenmez; bekleme en çok 1 dakika (yoksa tek kişi demoyu kapatır). */ -}}
 {{- $_ := set $realm "bruteForceProtected" true -}}
+{{- $_ := set $realm "permanentLockout" false -}}
+{{- $_ := set $realm "failureFactor" 10 -}}
+{{- $_ := set $realm "waitIncrementSeconds" 10 -}}
+{{- $_ := set $realm "maxFailureWaitSeconds" 60 -}}
 {{- end -}}
 apiVersion: v1
 kind: ConfigMap

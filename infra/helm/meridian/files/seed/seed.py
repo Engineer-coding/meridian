@@ -160,6 +160,27 @@ def wait_until_ready(api: httpx.Client, tenant_id: str) -> None:
         time.sleep(10)
 
 
+def connect() -> psycopg.Connection:
+    return psycopg.connect(
+        psycopg.conninfo.make_conninfo(
+            host=os.environ.get("POSTGRES_HOST", "postgres"),
+            dbname=os.environ["POSTGRES_DB"],
+            user=os.environ["POSTGRES_USER"],
+            password=os.environ["POSTGRES_PASSWORD"],
+        )
+    )
+
+
+def ensure_plan(tenant_id: str) -> None:
+    """Plan API'de değiştirilemez (ADR-0014); demo kiracısının kotası planla belirlenir."""
+    plan = PLAN["tenant"].get("plan")
+    if not plan:
+        return
+    with connect() as db:
+        db.execute("UPDATE core.tenants SET plan = %s WHERE id = %s", (plan, tenant_id))
+    log(f"plan: {plan}")
+
+
 def ensure_viewers(tenant_id: str) -> None:
     conninfo = psycopg.conninfo.make_conninfo(
         host=os.environ.get("POSTGRES_HOST", "postgres"),
@@ -189,6 +210,7 @@ def main() -> None:
         collection_id = ensure_collection(api, tenant["id"])
         ensure_sources(api, tenant["id"], collection_id)
         wait_until_ready(api, tenant["id"])
+    ensure_plan(tenant["id"])
     ensure_viewers(tenant["id"])
     log("tamam")
 

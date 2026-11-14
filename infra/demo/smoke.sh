@@ -14,6 +14,6 @@ KNOWN_HOSTS=$ROOT/infra/terraform/demo/known_hosts
 host=$(tf demo output -raw host)
 insecure=0
 [ "${DEMO_TLS:-prod}" = staging ] && insecure=1
-KUBECONFIG=${DEMO_KUBECONFIG:-$ROOT/infra/terraform/demo/kubeconfig} SMOKE_INSECURE=$insecure \
+KUBECONFIG=$(native_path "${DEMO_KUBECONFIG:-$ROOT/infra/terraform/demo/kubeconfig}") SMOKE_INSECURE=$insecure \
   SMOKE_VIEWER=demo SMOKE_VIEWER_PASSWORD=meridian-demo SMOKE_TENANT=meridian-demo \
   bash "$ROOT/infra/k8s/smoke.sh" "https://$host" demo meridian-demo

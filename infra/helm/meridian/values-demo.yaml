@@ -45,7 +45,8 @@ seed:
   enabled: true
   admin: demo-admin
   adminPasswordEnv: DEMO_ADMIN_PASSWORD
-  tenant: {slug: meridian-demo, name: Meridian Demo}
+  # team: günde 2M token (Haiku ile en çok ~$1); free (200 bin) bir ziyaretçiyle dakikalar içinde biterdi.
+  tenant: {slug: meridian-demo, name: Meridian Demo, plan: team}
   collection: Belgeler
   sources:
     - name: KVKK 6698
