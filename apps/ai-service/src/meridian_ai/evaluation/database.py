@@ -14,7 +14,7 @@ import psycopg
 
 from meridian_ai.evaluation.corpus import REPO_ROOT
 
-INIT_SCRIPTS = REPO_ROOT / "infra" / "compose" / "postgres" / "init"
+INIT_SCRIPTS = REPO_ROOT / "infra" / "helm" / "meridian" / "files" / "postgres" / "init"
 MIGRATIONS = REPO_ROOT / "apps" / "api" / "src" / "main" / "resources" / "db" / "migration"
 
 SUPERUSER = "meridian"

@@ -43,6 +43,10 @@ tests:
       - contains:
           path: spec.template.spec.containers[0].env
           content: {name: EMBEDDING_CACHE_DIR, value: /models}
+      # İmajdaki kullanıcının ev dizini yok; HuggingFace istemcisi önbelleğini oraya yazamaz.
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content: {name: HF_HOME, value: /models/huggingface}
       - contains:
           path: spec.template.spec.containers[0].volumeMounts
           content: {name: models, mountPath: /models}

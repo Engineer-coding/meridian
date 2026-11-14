@@ -9,7 +9,7 @@ npm ci
 npm run dev        # http://localhost:3000; Keycloak, API ve AI servisi çalışıyor olmalı
 ```
 
-Yerel kullanıcılar `infra/compose/keycloak/meridian-realm.json` içindedir. Yönetim paneli `/admin`
+Yerel kullanıcılar `infra/helm/meridian/files/keycloak/meridian-realm.json` içindedir. Yönetim paneli `/admin`
 altındadır: kaynaklar, kullanım ve kota, değerlendirme, API anahtarları, denetim kayıtları. Ajan `/agent`
 sayfasındadır; adımları gösterir, yazma işlemlerinde onay ister.
 

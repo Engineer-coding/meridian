@@ -41,6 +41,8 @@ spec:
             - name: MCP_ALLOWED_HOSTS
               value: {{ printf "[%q,%q]" $host (printf "%s:*" $host) | squote }}
             - {name: EMBEDDING_CACHE_DIR, value: /models}
+            # Kullanıcının ev dizini yok: HuggingFace istemcisi kendi önbelleğini model diskine yazar.
+            - {name: HF_HOME, value: /models/huggingface}
             {{- with .Values.ai.llmChain }}
             - {name: LLM_CHAIN, value: {{ . | quote }}}
             {{- end }}
