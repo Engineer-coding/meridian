@@ -46,3 +46,11 @@ test-results/
 # Yük testi süreç logları büyük ve yereldir; özetler ve rapor depoya girer.
 packages/load/reports/logs/
 .superpowers/
+
+# Canlı demo (ADR-0009): sırlar, sertifika yedeği, Terraform state ve kubeconfig repoya girmez
+infra/gitops/demo/secrets.env
+infra/gitops/demo/tls-backup.yaml
+infra/terraform/**/.terraform/
+infra/terraform/**/.terraform.lock.hcl.bak
+infra/terraform/**/terraform.tfstate*
+infra/terraform/demo/kubeconfig

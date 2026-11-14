@@ -104,6 +104,7 @@ helm-test:
 	helm lint $(CHART) -f $(CHART)/values-local.yaml
 	helm unittest $(CHART)
 	bash infra/k8s/test-preflight.sh
+	bash infra/k8s/test-up-demo.sh
 	helm template meridian $(CHART) -f $(CHART)/values-local.yaml | $(KUBECONFORM)
 	helm template meridian $(CHART) -f $(CHART)/values-local.yaml -f $(CHART)/values-ci.yaml | $(KUBECONFORM)
 	helm template meridian $(CHART) -f $(CHART)/values-demo.yaml --set appUrl=https://meridian.1.2.3.4.sslip.io --set image.tag=sha-0000000 | $(KUBECONFORM)
