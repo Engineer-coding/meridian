@@ -26,7 +26,7 @@ import org.testcontainers.utility.MountableFile;
 @SpringBootTest
 public abstract class PostgresIntegrationTest {
 
-    private static final String INIT = "../../infra/compose/postgres/init/";
+    private static final String INIT = "../../infra/helm/meridian/files/postgres/init/";
 
     protected static final String APP_PASSWORD = "app_test";
     protected static final String RELAY_PASSWORD = "relay_test";

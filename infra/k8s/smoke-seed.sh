@@ -66,7 +66,11 @@ viewer_round
 
 step "7a. Keycloak yeniden başlayınca giriş ve üyelik"
 kubectl -n "$NS" delete pod -l app.kubernetes.io/component=keycloak --wait=true >/dev/null
-kubectl -n "$NS" rollout status deployment/keycloak --timeout=300s >/dev/null
+# rollout status, silinen pod'un yerine yenisi hazır olmadan dönebilir: token verene kadar beklenir.
+for _ in $(seq 1 60); do
+  [ -n "$(token_for "$VIEWER" "$VIEWER_PASSWORD")" ] && break
+  sleep 5
+done
 before=$SOURCE_COUNT
 viewer_round
 
