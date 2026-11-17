@@ -120,7 +120,11 @@ make k8s-down
 
 ## Canlı demo
 
-Demo yalnızca gösterim sırasında açıktır: Hetzner'de tek bir k3s sunucusu, adresi
+**Şu an canlı bir adres yok.** Barındırma ücretli olduğu için demo kapalı; kodu hazır ve CI her PR'da aynı chart'ı
+kind kümesine Argo CD ile kurup sınıyor. Sistemi görmenin ücretsiz yolu yerel kurulumdur:
+[Kubernetes'te çalıştırma](#kubernetesde-çalıştırma) ya da [Yerelde çalıştırma](#yerelde-çalıştırma).
+
+Açıldığında demo yalnızca gösterim sırasında çalışır: Hetzner'de tek bir k3s sunucusu, adresi
 `https://meridian.<ip>.sslip.io`, sertifikası Let's Encrypt'ten, modeli Claude Haiku. Giriş: `demo` / `meridian-demo`
 (izleyici; `meridian-demo` kiracısında KVKK ve Kubernetes belgelerine soru sorar). Kısa tur: bir soru sorun
 ("Veri sorumlusu başvuruyu kaç gün içinde sonuçlandırır?"), atıf düğmesinin üzerine gelin, ajan sayfasına bakın.
@@ -158,8 +162,12 @@ CI ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) bunların modelsiz o
 
 ## Durum
 
-Henüz yok: web ve dosya yükleme kaynak çekicileri. Canlı demo kodu hazır; ilk gerçek kurulum sahibinin Hetzner
-hesabıyla yapılacak ([runbook](docs/runbooks/demo.md)). Küçük yerel modelle cevap kalitesi canlı kullanım için yeterli değildir; ölçümler
-[CHANGELOG.md](CHANGELOG.md) ve [`packages/eval/reports`](packages/eval/reports) içindedir.
+- **Cevap kalitesi:** Claude Haiku 5.5 ile tüm değerlendirme eşikleri geçiyor (cevaplı sorularda doğru %70,
+  gereksiz "bilmiyorum" %26, ortanca 1,9 sn). Yerel `llama3.2:3b` de eşikleri geçiyor ama CPU'da bir cevap ~65 sn
+  sürüyor. Ölçümler [CHANGELOG.md](CHANGELOG.md) ve [`packages/eval/reports`](packages/eval/reports) içinde.
+- **Dağıtım:** Yerel kind kümesi Argo CD ile kuruluyor ve CI'da sınanıyor. Canlı demonun kodu (Terraform, k3s,
+  Let's Encrypt, otomatik silme) hazır ama henüz gerçek bir sunucuda çalıştırılmadı
+  ([runbook](docs/runbooks/demo.md)).
+- **Henüz yok:** web ve dosya yükleme kaynak çekicileri.
 
 Üçüncü taraf içerik: [NOTICE.md](NOTICE.md).
